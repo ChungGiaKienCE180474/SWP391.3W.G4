@@ -1,0 +1,90 @@
+body {
+    background-color: #f6f6fa;
+    font-family: Arial, sans-serif;
+}
+
+/* Điều chỉnh chiều rộng nội dung chính */
+.main-content {
+    width: calc(100% - 250px);
+}
+
+/* Định dạng lại tiêu đề h1 */
+.profile-title {
+    font-size: 32px;
+    /* Tăng kích thước chữ */
+    font-weight: bold;
+    text-align: center;
+    color: #222;
+    /* Màu chữ đậm hơn */
+    text-transform: uppercase;
+    /* Chuyển chữ thành in hoa */
+    letter-spacing: 1.5px;
+    /* Giãn cách chữ */
+    margin-bottom: 20px;
+    /* Thêm khoảng cách dưới */
+}
+
+/* Tạo hiệu ứng hover cho bảng */
+.table-hover tbody tr:hover {
+    background-color: #e0e0e0;
+    /* Màu hover đậm hơn để dễ nhận biết */
+}
+
+/* Canh chỉnh nội dung bảng */
+.table th,
+.table td {
+    text-align: left;
+}
+
+/* Định dạng logo */
+.logo {
+    width: 120px;
+    /* Tăng kích thước */
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+    /* Thêm viền xanh cho nổi bật */
+}
+
+/* Định dạng lại nút Change Password */
+.change-password-btn {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+    /* Giảm padding để nút nhỏ hơn */
+    font-size: 14px;
+    /* Giảm kích thước chữ */
+    border-radius: 5px;
+    /* Bo góc nhẹ để gọn hơn */
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.change-password-btn:hover {
+    background-color: #0056b3;
+}
+
+/* CSS cho nút Save */
+.btn-save {
+    background-color: #28a745;
+    /* Màu xanh lá (Bootstrap success) */
+    color: white;
+    /* Chữ màu trắng */
+    font-weight: bold;
+    font-size: 14px;
+    /* Giảm cỡ chữ để gọn hơn */
+    padding: 6px 12px;
+    /* Giảm kích thước padding */
+    border-radius: 5px;
+    /* Bo góc nhẹ */
+    border: none;
+    /* Loại bỏ viền */
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+    /* Màu xanh lá đậm hơn khi hover */
+}
