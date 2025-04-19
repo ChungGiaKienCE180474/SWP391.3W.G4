@@ -33,6 +33,7 @@
 
         <body>
             <jsp:include page="../layout/header.jsp" />
+
             <style>
                 .message {
                     padding: 10px;
@@ -50,7 +51,6 @@
                     margin-left: auto;
                 }
 
-
                 .bot {
                     background-color: #39a89f;
                     color: black;
@@ -64,25 +64,27 @@
                     flex-direction: column;
                 }
             </style>
+
             <div class="chat-container" style="
-                position: fixed; 
-                top: 50%; 
-                left: 50%; 
-                transform: translate(-50%, -50%);
-                width: 800px; 
-                height: 500px; 
-                background: rgb(255, 255, 255); 
-                padding: 20px; 
-                border-radius: 10px; 
-                border: 2px solid rgb(85, 165, 145);
-                box-shadow: 0 0 15px rgba(0,0,0,0.2);">
+        position: fixed; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        width: 800px; 
+        height: 500px; 
+        background: rgb(255, 255, 255); 
+        padding: 20px; 
+        border-radius: 10px; 
+        border: 2px solid rgb(85, 165, 145);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);">
 
                 <div id="chat-box" style="
-                    height: 400px;
+            height: 400px;
             overflow-y: auto;
-                    border: 1px solid #ddd;
-                    padding: 10px;
-                    background: #f9f9f9;"></div>
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;">
+                </div>
 
                 <div style="display: flex; margin-top: 10px;">
                     <input type="text" id="user-input" class="form-control" placeholder="Enter the message..."
@@ -121,9 +123,12 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            chatBox.removeChild(typingIndicator);
                             let botReply = data.candidates[0].content.parts[0].text;
-                            addMessage(botReply, "bot");
+                            // Delay 1.5s before showing bot reply
+                            setTimeout(() => {
+                                chatBox.removeChild(typingIndicator);
+                                addMessage(botReply, "bot");
+                            }, 1500); // <-- thời gian delay tại đây
                         })
                         .catch(error => {
                             chatBox.removeChild(typingIndicator);
@@ -140,9 +145,6 @@
                 function addMessage(text, sender) {
                     let chatBox = document.getElementById("chat-box");
                     let messageDiv = document.createElement("div");
-                    messageDiv.classList.add("message", sender);
-                    messageDiv.textContent = text;
-                    chatBox.appendChild(messageDiv);
                     messageDiv.classList.add("message", sender);
                     messageDiv.textContent = text;
                     chatBox.appendChild(messageDiv);

@@ -1,6 +1,7 @@
 package group04.gundamshop.domain;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,13 +24,13 @@ public class Cart {
     private int sum;
 
     // user_id
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     // cart_detail_id
     @OneToMany(mappedBy = "cart")
-    List<CartDetail> cartDetails;
+    private List<CartDetail> cartDetails;
 
     public long getId() {
         return id;
@@ -63,10 +64,20 @@ public class Cart {
         this.cartDetails = cartDetails;
     }
 
-    // ✅ Thêm phương thức này để tính tổng tiền trong giỏ hàng
+    // ✅ Phương thức này để tính tổng tiền trong giỏ hàng
     public double getTotalPrice() {
         return cartDetails.stream()
                 .mapToDouble(cd -> cd.getPrice() * cd.getQuantity())
                 .sum();
+    }
+
+    // ✅ Phương thức này để lấy danh sách các item từ cartDetails
+    public List<CartDetail> getItems() {
+        return cartDetails;
+    }
+
+    // ✅ Phương thức để kiểm tra xem giỏ hàng có chứa sản phẩm hay không
+    public boolean hasItems() {
+        return cartDetails != null && !cartDetails.isEmpty();
     }
 }

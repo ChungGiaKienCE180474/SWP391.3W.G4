@@ -139,6 +139,12 @@
             <version>6.4.1.Final</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>4.0.1</version> <!-- You can check for the latest version -->
+    <scope>provided</scope>
+</dependency>
 
 
         <!-- Nguyên bổ sung cho giới hạng từ mô tả thành 20 -->

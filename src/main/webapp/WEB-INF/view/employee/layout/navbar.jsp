@@ -12,7 +12,7 @@
                 <li><a href="/employee/order" class="btn btn-light w-100 text-start mb-3"><i
                             class="bi bi-clipboard-fill"></i> Manage Order</a></li>
                 <li><a href="/employee/profile/${sessionScope.id}" class="btn btn-light w-100 text-start mb-3"><i
-                            class="bi bi-calendar-fill"></i>Employee Profile</a></li>
+                            class="bi bi-calendar-fill"></i> Employee Profile</a></li>
                 <form method="post" action="/logout">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <button class="btn btn-danger w-100 text-start"><a><i class="bi bi-box-arrow-right"></i>
