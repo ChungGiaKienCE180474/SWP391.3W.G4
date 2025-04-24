@@ -42,7 +42,7 @@ public class ChangePassController {
             HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "All fields are required.");
+            model.addAttribute("errorMessage", "Please correct the errors below.");
             return "admin/changepass/pass";
         }
 
@@ -61,15 +61,15 @@ public class ChangePassController {
         }
 
         if (!passwordEncoder.matches(passwordChangeForm.getCurrentPassword(), user.get().getPassword())) {
-            model.addAttribute("errorMessage", "Current password is incorrect.");
+            bindingResult.rejectValue("currentPassword", "error.passwordChangeForm", "Current password is incorrect.");
             return "admin/changepass/pass";
         }
 
         if (!passwordChangeForm.getNewPassword().equals(passwordChangeForm.getConfirmPassword())) {
-            model.addAttribute("errorMessage", "New password and confirmation password do not match.");
+            bindingResult.rejectValue("confirmPassword", "error.passwordChangeForm",
+                    "New password and confirmation password do not match.");
             return "admin/changepass/pass";
         }
-
         if (passwordChangeForm.getNewPassword().length() < 6) {
             model.addAttribute("errorMessage", "New password must contain 6 letters.");
             return "admin/changepass/pass";
@@ -80,7 +80,7 @@ public class ChangePassController {
             return "admin/changepass/pass";
         }
 
-        // Băm mật khẩu mới trước khi lưu
+        // Lưu mật khẩu mới
         String hashedNewPassword = passwordEncoder.encode(passwordChangeForm.getNewPassword());
         userService.updatePassword(user.get().getEmail(), hashedNewPassword);
 
@@ -103,7 +103,7 @@ public class ChangePassController {
             HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "All fields are required.");
+            model.addAttribute("errorMessage", "Please correct the errors below.");
             return "employee/changepass/pass";
         }
 
@@ -130,7 +130,6 @@ public class ChangePassController {
             model.addAttribute("errorMessage", "New password and confirmation password do not match.");
             return "employee/changepass/pass";
         }
-
         if (passwordChangeForm.getNewPassword().length() < 6) {
             model.addAttribute("errorMessage", "New password must contain 6 letters.");
             return "employee/changepass/pass";
@@ -140,6 +139,7 @@ public class ChangePassController {
             model.addAttribute("errorMessage", "Confirmm password must contain 6 letters.");
             return "employee/changepass/pass";
         }
+
         // Băm mật khẩu mới trước khi lưu
         String hashedNewPassword = passwordEncoder.encode(passwordChangeForm.getNewPassword());
         userService.updatePassword(user.get().getEmail(), hashedNewPassword);
@@ -163,7 +163,7 @@ public class ChangePassController {
             HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "All fields are required.");
+            model.addAttribute("errorMessage", "Please correct the errors below.");
             return "customer/changepass/pass";
         }
 
@@ -171,7 +171,7 @@ public class ChangePassController {
         String email = (String) session.getAttribute("email");
 
         if (email == null || email.isEmpty()) {
-            model.addAttribute("errorMessage", "Session has expired or user is not logged in.");
+            model.addAttribute("errorMessage", "Session has expired or user is no0t logged in.");
             return "customer/changepass/pass";
         }
 
@@ -200,7 +200,6 @@ public class ChangePassController {
             model.addAttribute("errorMessage", "Confirmm password must contain 6 letters.");
             return "customer/changepass/pass";
         }
-
         // Băm mật khẩu mới trước khi lưu
         String hashedNewPassword = passwordEncoder.encode(passwordChangeForm.getNewPassword());
         userService.updatePassword(user.get().getEmail(), hashedNewPassword);
