@@ -181,6 +181,11 @@ uri="http://www.springframework.org/tags/form" %>
               placeholder="Password"
               cssClass="form-control"
             />
+            <i
+              style="position: absolute; left: 340px"
+              class="fa fa-eye toggle-password"
+              onclick="togglePassword(this)"
+            ></i>
             <form:errors path="password" cssClass="error-message" />
           </div>
           <div class="form-group">
@@ -191,6 +196,11 @@ uri="http://www.springframework.org/tags/form" %>
               placeholder="Confirm Password"
               cssClass="form-control"
             />
+            <i
+              style="position: absolute; left: 340px"
+              class="fa fa-eye toggle-password"
+              onclick="togglePassword(this)"
+            ></i>
             <form:errors path="confirmPassword" cssClass="error-message" />
           </div>
           <div class="form-group">
@@ -225,4 +235,18 @@ uri="http://www.springframework.org/tags/form" %>
       </div>
     </div>
   </body>
+  <script>
+    function togglePassword(icon) {
+      const passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+  </script>
 </html>

@@ -61,7 +61,7 @@
 
         .btn-home:hover {
             background-color: #0056b3;
-            transform: scale(1.05);
+            color: white;
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
         }
 

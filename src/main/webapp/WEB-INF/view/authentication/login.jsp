@@ -231,6 +231,16 @@ uri="http://www.springframework.org/tags/form" %>
         color: #e67e22;
       }
 
+      /* Fixed toggle-password positioning */
+      .input-group .toggle-password {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
       /* Responsive design */
       @media (max-width: 768px) {
         .container {
@@ -305,15 +315,15 @@ uri="http://www.springframework.org/tags/form" %>
             <input
               type="password"
               name="password"
+              id="password"
               placeholder="Password"
               required
             />
+            <i style="position: absolute; left: 340px;"
+              class="fa fa-eye toggle-password"
+              onclick="togglePassword(this)"
+            ></i>
           </div>
-
-          <!-- <div class="remember-me">
-            <input type="checkbox" id="rememberMe" name="remember-me" />
-            <label for="rememberMe">Remember me</label>
-          </div> -->
 
           <input
             type="hidden"
@@ -321,7 +331,9 @@ uri="http://www.springframework.org/tags/form" %>
             value="${_csrf.token}"
           />
 
-          <button type="submit" class="login-btn">Login</button>
+          <div class="input-group">
+            <button type="submit" class="login-btn">Login</button>
+          </div>
 
           <div class="links">
             <a href="/forgotpassword">Forgot Password?</a>
@@ -336,4 +348,18 @@ uri="http://www.springframework.org/tags/form" %>
       </div>
     </div>
   </body>
+  <script>
+    function togglePassword(icon) {
+      const passwordInput = document.getElementById("password");
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+    }
+  </script>
 </html>
