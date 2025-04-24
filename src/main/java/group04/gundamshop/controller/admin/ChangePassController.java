@@ -1,11 +1,7 @@
 package group04.gundamshop.controller.admin;
 
-import group04.gundamshop.domain.PasswordChangeForm;
-import group04.gundamshop.domain.User;
-import group04.gundamshop.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +9,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Optional;
+import group04.gundamshop.domain.PasswordChangeForm;
+import group04.gundamshop.domain.User;
+import group04.gundamshop.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class ChangePassController {
@@ -69,6 +70,16 @@ public class ChangePassController {
             return "admin/changepass/pass";
         }
 
+        if (passwordChangeForm.getNewPassword().length() < 6) {
+            model.addAttribute("errorMessage", "New password must contain 6 letters.");
+            return "admin/changepass/pass";
+        }
+
+        if (passwordChangeForm.getConfirmPassword().length() < 6) {
+            model.addAttribute("errorMessage", "Confirmm password must contain 6 letters.");
+            return "admin/changepass/pass";
+        }
+
         // Băm mật khẩu mới trước khi lưu
         String hashedNewPassword = passwordEncoder.encode(passwordChangeForm.getNewPassword());
         userService.updatePassword(user.get().getEmail(), hashedNewPassword);
@@ -120,6 +131,15 @@ public class ChangePassController {
             return "employee/changepass/pass";
         }
 
+        if (passwordChangeForm.getNewPassword().length() < 6) {
+            model.addAttribute("errorMessage", "New password must contain 6 letters.");
+            return "employee/changepass/pass";
+        }
+
+        if (passwordChangeForm.getConfirmPassword().length() < 6) {
+            model.addAttribute("errorMessage", "Confirmm password must contain 6 letters.");
+            return "employee/changepass/pass";
+        }
         // Băm mật khẩu mới trước khi lưu
         String hashedNewPassword = passwordEncoder.encode(passwordChangeForm.getNewPassword());
         userService.updatePassword(user.get().getEmail(), hashedNewPassword);
@@ -168,6 +188,16 @@ public class ChangePassController {
 
         if (!passwordChangeForm.getNewPassword().equals(passwordChangeForm.getConfirmPassword())) {
             model.addAttribute("errorMessage", "New password and confirmation password do not match.");
+            return "customer/changepass/pass";
+        }
+
+        if (passwordChangeForm.getNewPassword().length() < 6) {
+            model.addAttribute("errorMessage", "New password must contain 6 letters.");
+            return "customer/changepass/pass";
+        }
+
+        if (passwordChangeForm.getConfirmPassword().length() < 6) {
+            model.addAttribute("errorMessage", "Confirmm password must contain 6 letters.");
             return "customer/changepass/pass";
         }
 
