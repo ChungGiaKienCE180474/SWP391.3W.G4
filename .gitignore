@@ -18,8 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-### IntelliJ gundam shop ###
-src/main/resources/application.properties
+
 
 
 ### NetBeans ###
