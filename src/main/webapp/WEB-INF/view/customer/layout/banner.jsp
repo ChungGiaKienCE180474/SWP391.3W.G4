@@ -5,24 +5,24 @@
 <div id="hero-banner" class="position-relative" style="height: 100vh; width: 100%; overflow: hidden;">
     <div id="carouselId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="3000"
          style="height: 100%; width: 100%;">
-        <!-- Slide Inner -->
+        
         <div class="carousel-inner" style="height: 100%; width: 100%;">
-            <!-- Slide 1 -->
+            
             <div class="carousel-item active" data-bs-interval="3000">
                 <img src="/client/img/banner01.jpg" class="d-block w-100"
                      style="height: 100vh; object-fit: contain;" alt="First Slide">
             </div>
-            <!-- Slide 2 -->
+            
             <div class="carousel-item" data-bs-interval="3000">
                 <img src="/client/img/banner02.jpg" class="d-block w-100"
                      style="height: 100vh; object-fit: contain;" alt="Second Slide">
             </div>
-            <!-- Slide 3 -->
+            
             <div class="carousel-item" data-bs-interval="3000">
                 <img src="/client/img/banner03.jpg" class="d-block w-100"
                      style="height: 100vh; object-fit: contain;" alt="Third Slide">
             </div>
-            <!-- Slide 4 -->
+            
             <div class="carousel-item" data-bs-interval="3000">
                 <img src="/client/img/banner04.jpg" class="d-block w-100"
                      style="height: 100vh; object-fit: contain;" alt="Fourth Slide">

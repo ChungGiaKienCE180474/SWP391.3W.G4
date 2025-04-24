@@ -2,7 +2,7 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
         <div class="p-3 d-flex flex-column align-items-center"
-            style="width: 250px; min-height: 100vh; background-color: #1D3865;">
+            style="width: 250px; min-height: 100vh; background-color: #020101;">
             <img src="/images/logo.jpg" alt="Logo" class="logo mb-4"
                 style="width: 160px; height: auto; display: block; margin: 0 auto;">
             <ul class="list-unstyled w-100">

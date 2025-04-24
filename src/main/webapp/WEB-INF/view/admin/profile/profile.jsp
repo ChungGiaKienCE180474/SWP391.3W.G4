@@ -80,8 +80,8 @@
                 <div class="main-content">
                     <!-- Header -->
                     <div class="header">
-                        <div><strong>Gundam Shop</strong></div>
-                        <div>Hello, ${newUser.email}</div>
+                        <div><strong>Lego Shop</strong></div>
+                        <div>Hi, ${newUser.email}</div>
                     </div>
 
                     <!-- Page Content -->

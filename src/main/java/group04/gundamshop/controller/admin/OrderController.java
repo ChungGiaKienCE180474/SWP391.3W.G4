@@ -96,7 +96,7 @@ public class OrderController {
         return "admin/order/detail";
         // Trả về tên view để hiển thị trang chi tiết đơn hàng.
     }
-    
+
     /**
      * Hiển thị trang cập nhật đơn hàng.
      *

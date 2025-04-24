@@ -92,7 +92,7 @@
                     }
 
                     .contact-section {
-                        background-image: url('/client/img/anhgundam1.jpg');
+                        background-image: url('/client/img/Contact_Img.png');
                         background-repeat: no-repeat;
                         background-size: cover;
                         background-attachment: fixed;

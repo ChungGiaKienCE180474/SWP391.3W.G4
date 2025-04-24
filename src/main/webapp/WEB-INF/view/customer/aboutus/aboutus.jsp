@@ -9,8 +9,7 @@
   <!-- Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap"
     rel="stylesheet" />
 
   <!-- Icon Font Stylesheet -->
@@ -91,8 +90,6 @@
       font-size: 2rem;
       font-weight: 600;
     }
-    
-
   </style>
 </head>
 
@@ -105,13 +102,15 @@
     <!-- About Us Section -->
     <div class="content-wrapper">
       <div class="map-responsive">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d694.5639155902129!2d105.73118578461738!3d10.012990044528165!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0881cea972a63%3A0x3b2b8c1e93735c0!2zQ2hpIE5ow6FuaCBDw7RuZyBUeSBUTkhIIFBo4bqnbiBN4buBbSBGUFQgSOG7kyBDaMOtIE1pbmggdOG6oWkgQ-G6p24gVGjGoQ!5e0!3m2!1svi!2s!4v1744095329026!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1043.0242097679557!2d105.73109210022393!3d10.012645611591076!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a089e2b10096f3%3A0x2e719911c0bc03b!2zVMOyYSBHYW1tYSDEkEggRlBUIEPhuqduIFRoxqE!5e1!3m2!1sen!2s!4v1745308879223!5m2!1sen!2s"
+          width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
       <div class="about-us">
         <h2>About Us</h2>
-        <h3>Gundam Shop</h3>
+        <h3>Lego Shop</h3>
         <p>
-GundamShop is an e-commerce website specializing in providing products related to Gundam - the famous robot model series from Japan. With the goal of delivering high-quality products to Gundam enthusiasts, GundamShop offers a wide range of models, including popular lines such as High Grade (HG), Master Grade (MG), Perfect Grade (PG), as well as specialized assembly tools and accessories. The website is not just a shopping platform but also a space to connect the community, share assembly experiences, and exchange tips on model maintenance. Featuring a modern, user-friendly interface and an intelligent order management system, GundamShop ensures a fast, convenient, and secure shopping experience.
         </p>
         <div class="text-center btn-view-products">
           <a href="/products" class="btn btn-primary px-4 py-2">
@@ -122,10 +121,9 @@ GundamShop is an e-commerce website specializing in providing products related t
     </div>
 
     <!-- Featured Products Section -->
-    <div class="featured-section">
+    <!-- <div class="featured-section">
       <h3>Featured Products</h3>
       <div class="row justify-content-center">
-        <!-- Product 1 -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm product-card">
             <img src="/client/img/gundam1.jpg" class="card-img-top" alt="Gundam 1">
@@ -135,7 +133,6 @@ GundamShop is an e-commerce website specializing in providing products related t
           </div>
         </div>
 
-        <!-- Product 2 -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm product-card">
             <img src="/client/img/gundam2.jpg" class="card-img-top" alt="Gundam 2">
@@ -145,7 +142,6 @@ GundamShop is an e-commerce website specializing in providing products related t
           </div>
         </div>
 
-        <!-- Product 3 -->
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-sm product-card">
             <img src="/client/img/gundam3.jpg" class="card-img-top" alt="Gundam 3">
@@ -155,7 +151,7 @@ GundamShop is an e-commerce website specializing in providing products related t
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!-- Footer -->

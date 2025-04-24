@@ -124,6 +124,22 @@
                                                             cart
                                                         </button>
                                                     </form>
+                                                    <!-- [SỬA WISHLIST START] -->
+                                                    <!-- Wishlist Form (Cập nhật giống Add to Cart) -->
+                                                    <!-- <form action="/wishlist/add/${product.id}" method="post"
+                                                        class="wishlist-add-ajax-form">
+                                                        <input type="hidden" name="${_csrf.parameterName}"
+                                                            value="${_csrf.token}" />
+                                                        <input class="form-control d-none" type="text"
+                                                            value="${product.id}" name="id" />
+                                                        <button data-product-id="${product.id}"
+                                                            class="btn btn-dark border border-secondary rounded-pill px-4 py-2 mb-4 text-white wishlist-btn">
+                                                            <i
+                                                                class="position-relative me-4 my-auto wishlist-icon">Wishlist</i>
+
+                                                        </button>
+                                                    </form> -->
+                                                    <!-- [SỬA WISHLIST END] -->
                                                 </c:when>
                                                 <c:otherwise>
                                                     <button class="btn btn-secondary rounded-pill px-4 py-2 mb-4"

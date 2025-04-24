@@ -6,7 +6,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Home Page - GunDamshop</title>
+                <title>Home Page - Legoshop</title>
 
                 <!-- Google Web Fonts -->
                 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,6 +85,7 @@
                         height: 100%;
                         /* Chiều cao bằng nhau */
                     }
+
                     /* Căn sát trái phần newsfeed */
                     .newsfeed {
                         text-align: left;
@@ -127,10 +128,12 @@
                         0% {
                             transform: translateX(100%);
                         }
+
                         100% {
                             transform: translateX(-100%);
                         }
                     }
+
                     #chat-icon {
                         position: fixed;
                         bottom: 100px;
@@ -178,7 +181,7 @@
                                     <c:forEach var="news" items="${newsList}">
                                         <li class="d-inline-block me-5">
                                             <a href="/news/${news.id}" class="text-decoration-none text-dark">
-                                                    ${news.title}
+                                                ${news.title}
                                             </a>
                                         </li>
                                     </c:forEach>
@@ -259,7 +262,8 @@
                                                 </c:forEach>
                                                 <c:forEach var="category" items="${categories}">
                                                     <div class="container py-3">
-                                                        <h2 class="text-start">${category.name}</h2> <!-- Hiển thị tên danh mục -->
+                                                        <h2 class="text-start">${category.name}</h2>
+                                                        <!-- Hiển thị tên danh mục -->
 
                                                         <div class="row g-4">
                                                             <c:set var="count" value="0" />
@@ -267,28 +271,45 @@
                                                                 <c:if test="${count < 4}">
                                                                     <c:if test="${product.quantity > 0}">
                                                                         <div class="col-md-6 col-lg-4 col-xl-3">
-                                                                            <div class="rounded position-relative fruite-item">
+                                                                            <div
+                                                                                class="rounded position-relative fruite-item">
                                                                                 <div class="fruite-img">
-                                                                                    <img src="/images/product/${product.image}" class="img-fluid w-100 rounded-top" alt="">
+                                                                                    <img src="/images/product/${product.image}"
+                                                                                        class="img-fluid w-100 rounded-top"
+                                                                                        alt="">
                                                                                 </div>
                                                                                 <div class="text-white bg-secondary px-3 py-1 rounded position-absolute"
-                                                                                     style="top: 10px; left: 10px;">
-                                                                                        ${category.name}
+                                                                                    style="top: 10px; left: 10px;">
+                                                                                    ${category.name}
                                                                                 </div>
-                                                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                                                <div
+                                                                                    class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                                                     <h4 style="font-size: 15px;">
-                                                                                        <a href="/product/${product.id}">${product.name}</a>
+                                                                                        <a
+                                                                                            href="/product/${product.id}">${product.name}</a>
                                                                                     </h4>
-                                                                                    <p class="product-desc">${product.shortDesc}</p>
-                                                                                    <div class="d-flex flex-lg-wrap justify-content-center flex-column">
+                                                                                    <p class="product-desc">
+                                                                                        ${product.shortDesc}</p>
+                                                                                    <div
+                                                                                        class="d-flex flex-lg-wrap justify-content-center flex-column">
                                                                                         <p style="font-size: 15px; text-align: center; width: 100%;"
-                                                                                           class="text-dark fw-bold mb-3">
-                                                                                            <fmt:formatNumber type="number" value="${product.price}" /> đ
+                                                                                            class="text-dark fw-bold mb-3">
+                                                                                            <fmt:formatNumber
+                                                                                                type="number"
+                                                                                                value="${product.price}" />
+                                                                                            đ
                                                                                         </p>
-                                                                                        <form action="/add-product-to-cart/${product.id}" method="post">
-                                                                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                                                                                            <button class="btn btn-primary w-100">
-                                                                                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                                                                        <form
+                                                                                            action="/add-product-to-cart/${product.id}"
+                                                                                            method="post">
+                                                                                            <input type="hidden"
+                                                                                                name="${_csrf.parameterName}"
+                                                                                                value="${_csrf.token}" />
+                                                                                            <button
+                                                                                                class="btn btn-primary w-100">
+                                                                                                <i
+                                                                                                    class="fa fa-shopping-bag me-2 text-primary"></i>
+                                                                                                Add to cart
                                                                                             </button>
                                                                                         </form>
                                                                                     </div>

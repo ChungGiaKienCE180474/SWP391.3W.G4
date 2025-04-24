@@ -48,7 +48,7 @@
                                             <c:if test="${not empty error}">
                                                 <div class="alert alert-danger">${error}</div>
                                             </c:if>
-                                            <form:form method="post" action="/admin/product/create" class="row"
+                                            <form:form method="post" action="/employee/product/create" class="row"
                                                 enctype="multipart/form-data" modelAttribute="newProduct">
                                                 <div class="mb-3 col-12 col-md-6">
                                                     <label class="form-label">Name:</label>
@@ -81,13 +81,13 @@
                                                 <div class="mb-3 col-12 col-md-6">
                                                     <label class="form-label">Factory:</label>
                                                     <form:select class="form-select" path="factory">
-                                                        <form:option value="BANDAINAMCO">BANDAINAMCO</form:option>
-                                                        <form:option value="MR-HOBBY">MR HOBBY</form:option>
-                                                        <form:option value="None">None</form:option>
+                                                        <form:option value="BANDAINAMCO">Lego</form:option>
+                                                        <form:option value="MR-HOBBY">Lego X Adidas</form:option>
+                                                        <form:option value="None">IKEA</form:option>
                                                     </form:select>
                                                 </div>
                                                 <div class="mb-3 col-12 col-md-6">
-                                                    <label class="form-label">Category:</label>
+                                                    <label class="form-label">Themes:</label>
                                                     <form:select class="form-select" path="category.name">
                                                         <c:forEach var="category" items="${categories}">
                                                             <form:option value="${category.name}">${category.name}
@@ -98,14 +98,14 @@
                                                 <div class="mb-3 col-12 col-md-6">
                                                     <label class="form-label">Target:</label>
                                                     <form:select class="form-select" path="target">
-                                                        <form:option value="Gundam">Gundam</form:option>
-                                                        <form:option value="Accessories - Brackets">Accessories -
-                                                            Brackets</form:option>
-                                                        <form:option value="liquid and paint">Liquid and paint
+                                                        <form:option value="Lego">Lego</form:option>
+                                                        <form:option value="LEGO Accessories & Expansion Sets">LEGO
+                                                            Accessories & Expansion Sets</form:option>
+                                                        <form:option value="LEGO Tools & Utilities">LEGO Tools &
+                                                            Utilities</form:option>
+                                                        <form:option value="Instructions & Ideas">Instructions & Ideas
                                                         </form:option>
-                                                        <form:option value="Static model">Static model</form:option>
                                                         <form:option value="Tools">Tools</form:option>
-                                                        <form:option value="Other products">Other products</form:option>
                                                     </form:select>
                                                 </div>
                                                 <div class="mb-3 col-12 col-md-6">

@@ -84,10 +84,10 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="receiverPhone" class="form-label">Phone Number:</label>
-                                                <input type="tel" id="receiverPhone" name="receiverPhone" class="form-control" required 
-                                                       pattern="0[0-9]{9}" 
-                                                       oninvalid="this.setCustomValidity('Phone number must start with 0 and have 10 numbers')" 
-                                                       oninput="this.setCustomValidity('')">
+                                                <input type="tel" id="receiverPhone" name="receiverPhone"
+                                                    class="form-control" required pattern="0[0-9]{9}"
+                                                    oninvalid="this.setCustomValidity('Phone number must start with 0 and have 10 numbers')"
+                                                    oninput="this.setCustomValidity('')">
                                             </div>
                                             <div class="mb-3">
                                                 <label for="receiverAddress" class="form-label">Address:</label>
@@ -96,7 +96,8 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="Note" class="form-label">Note:</label>
-                                                <textarea id="Note" name="Note" class="form-control" rows="3" required></textarea>
+                                                <textarea id="Note" name="Note" class="form-control" rows="3"
+                                                    required></textarea>
                                             </div>
                                         </div>
 
@@ -160,62 +161,58 @@
                                                                                     class="btn btn-primary"
                                                                                     id="checkVoucherBtn">Check</button>
                                                                             </div>
-                                                                            <!-- Hiển thị gợi ý mã voucher -->
-                                                                            <ul id="voucherSuggestions"
+                                                                            
+                                                                             <ul id="voucherSuggestions"
                                                                                 class="list-group position-absolute"
                                                                                 style="z-index: 1000; display: none;">
                                                                             </ul>
-                                                                        </div>
+                                                                        </div> 
 
 
-                                                                        <!-- Kết quả voucher -->
-                                                                        <div class="mb-3" id="voucherResult"
-                                                                            style="display: none;">
-                                                                            <h6>✅ Voucher Found:</h6>
-                                                                            <p id="voucherTitle"></p>
-                                                                            <p><strong>Discount: </strong><span
-                                                                                    id="voucherDiscount"></span></p>
-                                                                        </div>
+                                            <!-- Kết quả voucher -->
+                                            <div class="mb-3" id="voucherResult" style="display: none;">
+                                                <h6>✅ Voucher Found:</h6>
+                                                <p id="voucherTitle"></p>
+                                                <p><strong>Discount: </strong><span id="voucherDiscount"></span></p>
+                                            </div>
 
-                                                                        <!-- Giảm giá -->
-                                                                        <div
-                                                                            class="mb-3 d-flex justify-content-between">
-                                                                            <h6>🎟️ Discount Amount:</h6>
-                                                                            <p id="discountAmount">0 đ</p>
-                                                                        </div>
+                                            <!-- Giảm giá -->
+                                            <div class="mb-3 d-flex justify-content-between">
+                                                <h6>🎟️ Discount Amount:</h6>
+                                                <p id="discountAmount">0 đ</p>
+                                            </div>
 
-                                                                        <!-- Tổng cộng -->
-                                                                        <div
-                                                                            class="mb-3 d-flex justify-content-between">
-                                                                            <h5>💰 Total Price:</h5>
-                                                                            <h5 id="finalTotal">
-                                                                                <fmt:formatNumber type="number"
-                                                                                    value="${totalPrice + 30000}" /> đ
-                                                                            </h5>
-                                                                        </div>
+                                            <!-- Tổng cộng -->
+                                            <div class="mb-3 d-flex justify-content-between">
+                                                <h5>💰 Total Price:</h5>
+                                                <h5 id="finalTotal">
+                                                    <fmt:formatNumber type="number" value="${totalPrice + 30000}" /> đ
+                                                </h5>
+                                            </div> -->
 
-                                                                        <!-- Nút Xác Nhận Thanh Toán -->
-                                                                        <form action="/place-order" method="post" style="display: inline;">
-                                                                            <!-- Các trường ẩn -->
-                                                                            <input type="hidden" name="receiverName" th:value="${receiverName}" />
-                                                                            <input type="hidden" name="receiverAddress" th:value="${receiverAddress}" />
-                                                                            <input type="hidden" name="receiverPhone" th:value="${receiverPhone}" />
-                                                                            <input type="hidden" name="Note" th:value="${orderInfo}"/>
-                                                                            <input type="hidden" name="voucherCode" th:value="${voucherCode}" />
-                                                                            <input type="hidden" name="finalTotal" th:value="${totalPrice}" />
-                                                                        
-                                                                            <!-- Nút thanh toán offline -->
-                                                                            <button type="submit" name="paymentMethod" value="offline"
-                                                                                    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">
-                                                                                Cash on Delivery
-                                                                            </button>
-                                                                        
-                                                                            <!-- Nút thanh toán online -->
-                                                                            <button type="submit" name="paymentMethod" value="online"
-                                                                                    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-5">
-                                                                                Online Payment
-                                                                            </button>
-                                                                        </form>
+                                            <!-- Nút Xác Nhận Thanh Toán -->
+                                            <form action="/place-order" method="post" style="display: inline;">
+                                                <!-- Các trường ẩn -->
+                                                <input type="hidden" name="receiverName" th:value="${receiverName}" />
+                                                <input type="hidden" name="receiverAddress"
+                                                    th:value="${receiverAddress}" />
+                                                <input type="hidden" name="receiverPhone" th:value="${receiverPhone}" />
+                                                <input type="hidden" name="Note" th:value="${orderInfo}" />
+                                                <input type="hidden" name="voucherCode" th:value="${voucherCode}" />
+                                                <input type="hidden" name="finalTotal" th:value="${totalPrice}" />
+
+                                                <!-- Nút thanh toán offline -->
+                                                <button type="submit" name="paymentMethod" value="offline"
+                                                    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4">
+                                                    Cash on Delivery
+                                                </button>
+
+                                                <!-- Nút thanh toán online -->
+                                                <button type="submit" name="paymentMethod" value="online"
+                                                    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-5">
+                                                    Online Payment
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </form:form>
@@ -233,6 +230,7 @@
                     <!-- JavaScript Libraries -->
                     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                     <script src="/client/lib/easing/easing.min.js"></script>
                     <script src="/client/lib/waypoints/waypoints.min.js"></script>
                     <script src="/client/lib/lightbox/js/lightbox.min.js"></script>

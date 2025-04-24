@@ -35,6 +35,19 @@
             <jsp:include page="../layout/header.jsp" />
 
             <style>
+                body {
+                    background-image: url('/client/img/CareService.png');
+                    /* Đường dẫn ảnh */
+                    background-size: cover;
+                    /* Ảnh nền sẽ bao phủ toàn bộ màn hình */
+                    background-position: center;
+                    /* Căn giữa ảnh nền */
+                    background-repeat: no-repeat;
+                    /* Không lặp lại ảnh */
+                    background-attachment: fixed;
+                    /* Giữ ảnh nền cố định khi cuộn */
+                }
+
                 .message {
                     padding: 10px;
                     margin: 5px;

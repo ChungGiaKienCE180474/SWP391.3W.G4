@@ -54,7 +54,7 @@
                                     <h1 class="mt-4">Dashboard</h1>
                                     <ol class="breadcrumb mb-4">
                                         <li class="breadcrumb-item "><a href="/admin">Dashboard</a></li>
-                                        <li class="breadcrumb-item"><a href="/admin/customer">Employees</a></li>
+                                        <li class="breadcrumb-item"><a href="/admin/employee">Employees</a></li>
                                         <li class="breadcrumb-item active">Create</li>
                                     </ol>
                                     <div class="mt-5">

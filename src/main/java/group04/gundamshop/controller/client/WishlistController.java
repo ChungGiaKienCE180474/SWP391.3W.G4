@@ -25,11 +25,13 @@ import group04.gundamshop.service.WishlistService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/wishlist") // Định nghĩa route cơ bản cho tất cả các phương thức trong controller này là /wishlist
+@RequestMapping("/wishlist") // Định nghĩa route cơ bản cho tất cả các phương thức trong controller này là
+                             // /wishlist
 public class WishlistController {
 
     private final UserService userService; // Dịch vụ để tương tác với đối tượng User trong hệ thống
-    private final WishlistService wishlistService; // Dịch vụ để quản lý các hành động với danh sách yêu thích (wishlist)
+    private final WishlistService wishlistService; // Dịch vụ để quản lý các hành động với danh sách yêu thích
+                                                   // (wishlist)
 
     // Constructor để inject các dịch vụ vào controller
     public WishlistController(UserService userService, WishlistService wishlistService) {
@@ -39,6 +41,7 @@ public class WishlistController {
 
     /**
      * Lấy đối tượng User từ session (nếu có).
+     * 
      * @param session Phiên làm việc của người dùng.
      * @return Optional chứa User nếu có, ngược lại trả về Optional rỗng.
      */
@@ -49,7 +52,8 @@ public class WishlistController {
             return Optional.empty(); // Trả về Optional rỗng
         }
 
-        Optional<User> userOptional = userService.getUserByEmail(email); // Lấy thông tin người dùng từ cơ sở dữ liệu bằng email
+        Optional<User> userOptional = userService.getUserByEmail(email); // Lấy thông tin người dùng từ cơ sở dữ liệu
+                                                                         // bằng email
         if (userOptional.isEmpty()) { // Kiểm tra xem người dùng có tồn tại trong hệ thống không
             System.out.println("User not found for email: " + email); // Nếu không, in ra thông báo
         }
@@ -59,8 +63,9 @@ public class WishlistController {
     /**
      * Hiển thị trang Wishlist của người dùng.
      * Nếu người dùng chưa đăng nhập, chuyển hướng về trang đăng nhập.
+     * 
      * @param session Phiên làm việc của người dùng.
-     * @param model Đối tượng Model để truyền dữ liệu sang JSP.
+     * @param model   Đối tượng Model để truyền dữ liệu sang JSP.
      * @return Tên file JSP để hiển thị wishlist hoặc redirect về login.
      */
     @GetMapping("") // Phương thức xử lý GET yêu cầu đến /wishlist
@@ -71,7 +76,8 @@ public class WishlistController {
         }
 
         User user = userOpt.get(); // Lấy đối tượng người dùng
-        List<Product> wishlist = wishlistService.getWishlist(user); // Lấy danh sách các sản phẩm trong wishlist của người dùng
+        List<Product> wishlist = wishlistService.getWishlist(user); // Lấy danh sách các sản phẩm trong wishlist của
+                                                                    // người dùng
         if (wishlist == null) { // Kiểm tra nếu wishlist là null
             wishlist = new ArrayList<>(); // Khởi tạo danh sách trống nếu null
         }
@@ -83,8 +89,10 @@ public class WishlistController {
     /**
      * Lấy danh sách Wishlist dưới dạng JSON.
      * Dùng để gọi từ client-side nếu cần API.
+     * 
      * @param session Phiên làm việc của người dùng.
-     * @return ResponseEntity chứa danh sách sản phẩm trong wishlist hoặc lỗi 401 nếu chưa đăng nhập.
+     * @return ResponseEntity chứa danh sách sản phẩm trong wishlist hoặc lỗi 401
+     *         nếu chưa đăng nhập.
      */
     @GetMapping("/json") // Phương thức xử lý GET yêu cầu đến /wishlist/json
     @ResponseBody // Đảm bảo trả về dữ liệu dạng JSON
@@ -100,8 +108,9 @@ public class WishlistController {
 
     /**
      * Thêm sản phẩm vào wishlist của người dùng.
+     * 
      * @param productId ID của sản phẩm cần thêm.
-     * @param session Phiên làm việc của người dùng.
+     * @param session   Phiên làm việc của người dùng.
      * @return ResponseEntity chứa thông báo thành công hoặc thất bại.
      */
     @PostMapping("/add/{productId}")
@@ -153,20 +162,22 @@ public class WishlistController {
                 .body(responseMap); // Gửi dữ liệu phản hồi
     }
 
-
     /**
      * Xóa sản phẩm khỏi wishlist.
-     * @param productId ID của sản phẩm cần xóa.
-     * @param session Phiên làm việc của người dùng.
+     * 
+     * @param productId          ID của sản phẩm cần xóa.
+     * @param session            Phiên làm việc của người dùng.
      * @param redirectAttributes Dùng để gửi thông báo khi redirect.
      * @return Redirect về trang wishlist.
      */
     @PostMapping("/remove/{productId}") // Phương thức xử lý POST yêu cầu xóa sản phẩm khỏi wishlist
     @Transactional // Đảm bảo việc thay đổi trong cơ sở dữ liệu được thực hiện như một giao dịch
-    public String removeFromWishlist(@PathVariable Long productId, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String removeFromWishlist(@PathVariable Long productId, HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Optional<User> userOpt = getUserFromSession(session); // Lấy người dùng từ session
         if (userOpt.isEmpty()) { // Nếu người dùng không có trong session
-            redirectAttributes.addFlashAttribute("error", "User not logged in"); // Thêm thông báo lỗi vào FlashAttributes
+            redirectAttributes.addFlashAttribute("error", "User not logged in"); // Thêm thông báo lỗi vào
+                                                                                 // FlashAttributes
             return "redirect:/wishlist"; // Chuyển hướng về trang wishlist
         }
 
@@ -174,9 +185,11 @@ public class WishlistController {
         boolean removed = wishlistService.removeFromWishlist(user, productId); // Thực hiện xóa sản phẩm khỏi wishlist
 
         if (!removed) { // Nếu không thể xóa (sản phẩm không có trong wishlist)
-            redirectAttributes.addFlashAttribute("error", "Product not in wishlist!"); // Thêm thông báo lỗi vào FlashAttributes
+            redirectAttributes.addFlashAttribute("error", "Product not in wishlist!"); // Thêm thông báo lỗi vào
+                                                                                       // FlashAttributes
         } else {
-            redirectAttributes.addFlashAttribute("success", "Product removed successfully"); // Thêm thông báo thành công vào FlashAttributes
+            redirectAttributes.addFlashAttribute("success", "Product removed successfully"); // Thêm thông báo thành
+                                                                                             // công vào FlashAttributes
             // Cập nhật lại số lượng sản phẩm trong wishlist vào session
             int wishlistSize = wishlistService.getWishlist(user).size(); // Lấy số lượng sản phẩm trong wishlist
             session.setAttribute("wishlistSize", wishlistSize); // Cập nhật vào session

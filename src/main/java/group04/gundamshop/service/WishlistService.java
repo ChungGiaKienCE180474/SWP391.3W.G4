@@ -24,6 +24,7 @@ public class WishlistService {
 
     /**
      * Lấy danh sách sản phẩm trong wishlist của người dùng
+     * 
      * @param user Đối tượng người dùng
      * @return Danh sách sản phẩm trong wishlist
      */
@@ -35,14 +36,17 @@ public class WishlistService {
 
     /**
      * Thêm sản phẩm vào wishlist của người dùng
-     * @param user Đối tượng người dùng
+     * 
+     * @param user      Đối tượng người dùng
      * @param productId ID của sản phẩm cần thêm
-     * @return true nếu thêm thành công, false nếu sản phẩm đã tồn tại trong wishlist hoặc không tìm thấy sản phẩm
+     * @return true nếu thêm thành công, false nếu sản phẩm đã tồn tại trong
+     *         wishlist hoặc không tìm thấy sản phẩm
      */
     @Transactional
     public boolean addToWishlist(User user, Long productId) {
         return productRepository.findById(productId) // Tìm sản phẩm theo ID
-                .filter(product -> wishlistRepository.findByUserAndProduct(user, product) == null) // Kiểm tra nếu chưa có trong wishlist
+                .filter(product -> wishlistRepository.findByUserAndProduct(user, product) == null) // Kiểm tra nếu chưa
+                                                                                                   // có trong wishlist
                 .map(product -> {
                     wishlistRepository.save(new WishList(user, product)); // Lưu vào wishlist
                     return true;
@@ -51,7 +55,8 @@ public class WishlistService {
 
     /**
      * Xóa sản phẩm khỏi wishlist của người dùng
-     * @param user Đối tượng người dùng
+     * 
+     * @param user      Đối tượng người dùng
      * @param productId ID của sản phẩm cần xóa
      * @return true nếu xóa thành công, false nếu sản phẩm không có trong wishlist
      */
