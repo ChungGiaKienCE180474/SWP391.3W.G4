@@ -7,7 +7,7 @@
                 <html lang="en">
                 <head>
                     <meta charset="utf-8">
-                    <title> Sản Phẩm - Gundamshop</title>
+                    <title> Sản Phẩm - Legoshop</title>
                     <meta content="width=device-width, initial-scale=1.0" name="viewport">
                     <meta content="" name="keywords">
                     <meta content="" name="description">
@@ -175,29 +175,29 @@
                                 <div class="row g-4 fruite">
                                     <div class="col-12 col-md-4">
                                         <div class="row g-4">
-                                            <div class="col-12" id="factoryFilter">
-                                                <div class="mb-2"><b>Brand</b></div>
-                                                <c:forEach var="factory" items="${factories}">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="factory-${factory}" value="${factory}">
-                                                        <label class="form-check-label"
-                                                            for="factory-${factory}">${factory}</label>
-                                                    </div>
-                                                </c:forEach>
-                                            </div>
-                                            <div class="col-12" id="targetFilter">
-                                                <div class="mb-2"><b>
-                                                    Classify</b></div>
-                                                <c:forEach var="target" items="${targets}">
-                                                    <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="checkbox"
-                                                            id="target-${target}" value="${target}">
-                                                        <label class="form-check-label"
-                                                            for="target-${target}">${target}</label>
-                                                    </div>
-                                                </c:forEach>
-                                            </div>
+<div class="col-12" id="factoryFilter">
+    <div class="mb-2"><b>Brand</b></div>
+    <c:forEach var="factory" items="${factories}">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox"
+                name="factory" id="factory-${factory.id}" value="${factory.id}">
+            <label class="form-check-label"
+                for="factory-${factory.id}">${factory.name}</label>
+        </div>
+    </c:forEach>
+</div>
+<div class="col-12" id="targetFilter">
+    <div class="mb-2"><b>
+        Classify</b></div>
+    <c:forEach var="target" items="${targets}">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox"
+                name="target" id="target-${target.id}" value="${target.id}">
+            <label class="form-check-label"
+                for="target-${target.id}">${target.name}</label>
+        </div>
+    </c:forEach>
+</div>
                                             <div class="col-12" id="priceFilter">
                                                 <div class="mb-2"><b>Prices</b></div>
                                                 <div class="form-check form-check-inline">

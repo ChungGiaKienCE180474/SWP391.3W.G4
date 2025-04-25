@@ -16,11 +16,17 @@
 
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="title" name="title" required>
+            <input type="text" class="form-control" id="title" name="title" value="${news.title}" required>
+            <c:if test="${not empty titleError}">
+                <div class="text-danger">${titleError}</div>
+            </c:if>
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">Content</label>
-            <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+            <textarea class="form-control" id="content" name="content" rows="4" required>${news.content}</textarea>
+            <c:if test="${not empty contentError}">
+                <div class="text-danger">${contentError}</div>
+            </c:if>
         </div>
         <div class="mb-3">
             <label for="image" class="form-label">Image</label>

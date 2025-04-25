@@ -28,11 +28,14 @@ public class ProductService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final VoucherRepository voucherRepository;
+    private final FactoryRepository factoryRepository;
+    private final TargetRepository targetRepository;
 
     public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
                           CartRepository cartRepository, CartDetailRepository cartDetailRepository,
                           UserService userService, OrderRepository orderRepository,
-                          OrderDetailRepository orderDetailRepository, VoucherRepository voucherRepository) {
+                          OrderDetailRepository orderDetailRepository, VoucherRepository voucherRepository,
+                          FactoryRepository factoryRepository, TargetRepository targetRepository) {
         this.userService = userService;
         this.cartDetailRepository = cartDetailRepository;
         this.productRepository = productRepository;
@@ -41,6 +44,20 @@ public class ProductService {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.voucherRepository = voucherRepository;
+        this.factoryRepository = factoryRepository;
+        this.targetRepository = targetRepository;
+    }
+
+    public boolean existsByCategoryId(Long categoryId) {
+        return productRepository.existsByCategoryId(categoryId);
+    }
+
+    public boolean existsByNameAndFactoryIdAndTargetId(String name, Long factoryId, Long targetId) {
+        return productRepository.existsByNameAndFactoryIdAndTargetId(name, factoryId, targetId);
+    }
+
+    public List<Product> findAllByNameAndFactoryIdAndTargetId(String name, Long factoryId, Long targetId) {
+        return productRepository.findAllByNameAndFactoryIdAndTargetId(name, factoryId, targetId);
     }
 
     public Optional<OrderDetail> getOrderDetailById(long id) {
@@ -54,34 +71,49 @@ public class ProductService {
             combinedSpec = combinedSpec.and(categorySpec);
         }
         if (productCriteriaDTO.getTarget() != null && productCriteriaDTO.getTarget().isPresent()) {
-            Specification<Product> currentSpecs = ProductSpecs.matchListTarget(productCriteriaDTO.getTarget().get());
+            List<Long> targetIds = productCriteriaDTO.getTarget().get().stream().map(Long::parseLong).toList();
+            Specification<Product> currentSpecs = ProductSpecs.matchListTarget(targetIds);
             combinedSpec = combinedSpec.and(currentSpecs);
         }
         if (productCriteriaDTO.getFactory() != null && productCriteriaDTO.getFactory().isPresent()) {
-            Specification<Product> currentSpecs = ProductSpecs.matchListFactory(productCriteriaDTO.getFactory().get());
+            List<Long> factoryIds = productCriteriaDTO.getFactory().get().stream().map(Long::parseLong).toList();
+            Specification<Product> currentSpecs = ProductSpecs.matchListFactory(factoryIds);
             combinedSpec = combinedSpec.and(currentSpecs);
         }
         if (productCriteriaDTO.getPrice() != null && productCriteriaDTO.getPrice().isPresent()) {
             Specification<Product> currentSpecs = this.buildPriceSpecification(productCriteriaDTO.getPrice().get());
             combinedSpec = combinedSpec.and(currentSpecs);
         }
+        Specification<Product> distinctSpec = (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.conjunction();
+        };
+        combinedSpec = combinedSpec.and(distinctSpec);
         return this.productRepository.findAll(combinedSpec, page);
     }
 
-    public List<String> getAllFactories() {
-        return productRepository.findAll()
+    public List<Long> getAllFactories() {
+        return factoryRepository.findAll()
                 .stream()
-                .map(Product::getFactory)
+                .map(factory -> factory.getId())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    public List<String> getAllTargets() {
-        return productRepository.findAll()
+    public List<Long> getAllTargets() {
+        return targetRepository.findAll()
                 .stream()
-                .map(Product::getTarget)
+                .map(target -> target.getId())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public List<Factory> getAllFactoryObjects() {
+        return factoryRepository.findAll();
+    }
+
+    public List<Target> getAllTargetObjects() {
+        return targetRepository.findAll();
     }
 
     public Specification<Product> buildPriceSpecification(List<String> price) {
@@ -294,17 +326,30 @@ public class ProductService {
             combinedSpec = combinedSpec.and(keywordSpec);
         }
         if (productCriteriaDTO.getTarget() != null && productCriteriaDTO.getTarget().isPresent()) {
-            Specification<Product> targetSpec = ProductSpecs.matchListTarget(productCriteriaDTO.getTarget().get());
+            List<Long> targetIds = productCriteriaDTO.getTarget().get().stream()
+                    .flatMap(s -> java.util.Arrays.stream(s.split(",")))
+                    .map(Long::parseLong)
+                    .toList();
+            Specification<Product> targetSpec = ProductSpecs.matchListTarget(targetIds);
             combinedSpec = combinedSpec.and(targetSpec);
         }
         if (productCriteriaDTO.getFactory() != null && productCriteriaDTO.getFactory().isPresent()) {
-            Specification<Product> factorySpec = ProductSpecs.matchListFactory(productCriteriaDTO.getFactory().get());
+            List<Long> factoryIds = productCriteriaDTO.getFactory().get().stream()
+                    .flatMap(s -> java.util.Arrays.stream(s.split(",")))
+                    .map(Long::parseLong)
+                    .toList();
+            Specification<Product> factorySpec = ProductSpecs.matchListFactory(factoryIds);
             combinedSpec = combinedSpec.and(factorySpec);
         }
         if (productCriteriaDTO.getPrice() != null && productCriteriaDTO.getPrice().isPresent()) {
             Specification<Product> priceSpec = this.buildPriceSpecification(productCriteriaDTO.getPrice().get());
             combinedSpec = combinedSpec.and(priceSpec);
         }
+        Specification<Product> distinctSpec = (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.conjunction();
+        };
+        combinedSpec = combinedSpec.and(distinctSpec);
         return productRepository.findAll(combinedSpec, pageable);
     }
 }

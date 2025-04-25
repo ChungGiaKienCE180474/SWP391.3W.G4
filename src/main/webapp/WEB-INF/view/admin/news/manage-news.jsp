@@ -13,6 +13,51 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/ewstyle.css">
+
+    <style>
+        /* Sliding toggle switch CSS */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
 </head>
 
 <body>
@@ -43,16 +88,34 @@
                             <tr>
                                 <th>Title</th>
                                 <th>Image</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
+                            <c:if test="${not empty message}">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="alert alert-success" role="alert">
+                                            ${message}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </c:if>
                             <c:forEach var="news" items="${newsList}">
                                 <tr>
                                     <td>${news.title}</td>
                                     <td>
 
                                         <img src="${news.imageUrl}" alt="News Image" style="max-width: 100px; max-height: 60px;">
+                                    </td>
+                                    <td>
+                                        <form action="/admin/news/toggle-status/${news.id}" method="get" style="display:inline;">
+                                            <label class="switch">
+                                                <input type="checkbox" name="status" onchange="this.form.submit()" <c:if test="${news.status}">checked</c:if> />
+                                                <span class="slider"></span>
+                                            </label>
+                                        </form>
                                     </td>
                                     <td>
                                         <a href="/admin/news/detail/${news.id}" class="btn btn-success">View</a>

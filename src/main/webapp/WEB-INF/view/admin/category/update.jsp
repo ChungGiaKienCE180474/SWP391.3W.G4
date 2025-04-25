@@ -66,6 +66,12 @@
                                         <div class="col-md-6 col-12 mx-auto">
                                             <h3>Edit Category</h3>
                                             <hr />
+                                            <c:if test="${not empty flash.successMessage}">
+                                                <div class="alert alert-success" role="alert">${flash.successMessage}</div>
+                                            </c:if>
+                                            <c:if test="${not empty flash.errorMessage}">
+                                                <div class="alert alert-danger" role="alert">${flash.errorMessage}</div>
+                                            </c:if>
                                             <form:form method="post" action="/admin/category/update"
                                                 modelAttribute="newCategory" class="row" enctype="multipart/form-data">
                                                 <form:input type="hidden" class="form-control" path="id" />

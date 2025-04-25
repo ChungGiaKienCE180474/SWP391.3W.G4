@@ -64,7 +64,7 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">ID: ${newProduct.id}</li>
                                             <li class="list-group-item">Name: ${newProduct.name}</li>
-                                            <li class="list-group-item">Factory: ${newProduct.factory}</li>
+                                            <li class="list-group-item">Factory: ${newProduct.factory.name}</li>
                                             <li class="list-group-item">Category: ${newProduct.category.name}</li>
                                         </ul>
                                     </div>

@@ -69,7 +69,7 @@ public class HomePageController {
     @GetMapping("/news")
     public String showNewsPage(Model model) {
         // Lấy danh sách tin tức và thêm vào model
-        List<News> newsList = newsService.getAllNews();
+        List<News> newsList = newsService.getActiveNews();
         model.addAttribute("newsList", newsList);
         return "customer/news/list"; // Chỉ dẫn đến view hiển thị danh sách tin tức
     }

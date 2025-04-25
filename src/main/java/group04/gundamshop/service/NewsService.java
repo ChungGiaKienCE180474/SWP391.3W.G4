@@ -23,6 +23,11 @@ public class NewsService {
         return newsRepository.findAll();
     }
 
+    public List<News> getActiveNews() {
+        logger.info("Fetching active news with status = true...");
+        return newsRepository.findByStatusTrue();
+    }
+
     public News getNewsById(Long id) {
         return newsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("News not found with id: " + id));

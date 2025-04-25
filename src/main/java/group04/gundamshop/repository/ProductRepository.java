@@ -28,13 +28,39 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     List<Product> findAllByStatus(boolean status);
 
-
     @Query("SELECT p FROM Product p WHERE " +
            "(LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
            "AND p.status = :status")
     List<Product> findByNameOrCategoryNameAndStatus(@Param("keyword") String keyword, @Param("status") boolean status);
 
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.factory.id = :factoryId")
+    boolean existsByFactoryId(@Param("factoryId") Long factoryId);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.factory.id = :factoryId AND p.status = true")
+    boolean existsByFactoryIdAndStatusTrue(@Param("factoryId") Long factoryId);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.target.id = :targetId")
+    boolean existsByTargetId(@Param("targetId") Long targetId);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.target.id = :targetId AND p.status = true")
+    boolean existsByTargetIdAndStatusTrue(@Param("targetId") Long targetId);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.category.id = :categoryId")
+    boolean existsByCategoryId(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE p.name = :name AND p.factory.id = :factoryId AND p.target.id = :targetId")
+    boolean existsByNameAndFactoryIdAndTargetId(@Param("name") String name, @Param("factoryId") Long factoryId, @Param("targetId") Long targetId);
+
+    @Query("SELECT p FROM Product p WHERE p.name = :name AND p.factory.id = :factoryId AND p.target.id = :targetId")
+    List<Product> findAllByNameAndFactoryIdAndTargetId(@Param("name") String name, @Param("factoryId") Long factoryId, @Param("targetId") Long targetId);
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("UPDATE Product p SET p.target = null WHERE p.target.id = :targetId")
+    void unsetTargetByTargetId(@org.springframework.data.repository.query.Param("targetId") Long targetId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("UPDATE Product p SET p.factory = null WHERE p.factory.id = :factoryId")
+    void unsetFactoryByFactoryId(@org.springframework.data.repository.query.Param("factoryId") Long factoryId);
 }
 
 

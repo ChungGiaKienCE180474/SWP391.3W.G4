@@ -8,7 +8,7 @@
 
                 <head>
                     <meta charset="utf-8">
-                    <title>${product.name} - Gundamshop</title>
+                    <title>${product.name} - Legoshop</title>
                     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
                     <!-- Google Web Fonts -->
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <h4 class="fw-bold mb-3">${product.name}</h4>
-                                            <p class="mb-3">${product.factory}</p>
+                                            <p class="mb-3">${product.factory.name}</p>
                                             <h5 class="fw-bold mb-3">
                                                 <fmt:formatNumber type="number" value="${product.price}" /> đ
                                             </h5>

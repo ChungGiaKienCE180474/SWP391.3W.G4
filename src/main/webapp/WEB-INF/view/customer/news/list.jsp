@@ -108,8 +108,8 @@
         </head>
         <jsp:include page="../layout/header.jsp" />
 
-        <body>
-            <div class="news-container">
+        <body style="display: flex; flex-direction: column; min-height: 100vh;">
+            <div class="news-container" style="flex: 1;">
                 <c:forEach var="news" items="${newsList}">
                     <div class="news-item">
                         <img src="${news.imageUrl}" alt="News Image">

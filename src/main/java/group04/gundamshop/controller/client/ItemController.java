@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,6 +77,36 @@ public class ItemController {
             // page = 1
         }
 
+        // Set factory filter from request parameters
+        String[] factoryParams = request.getParameterValues("factory");
+        if (factoryParams != null && factoryParams.length > 0) {
+            List<String> factoryList = new java.util.ArrayList<>();
+            for (String param : factoryParams) {
+                if (param != null && !param.isEmpty()) {
+                    String[] splitParams = param.split(",");
+                    for (String s : splitParams) {
+                        factoryList.add(s);
+                    }
+                }
+            }
+            productCriteriaDTO.setFactory(java.util.Optional.of(factoryList));
+        }
+
+        // Set target filter from request parameters
+        String[] targetParams = request.getParameterValues("target");
+        if (targetParams != null && targetParams.length > 0) {
+            List<String> targetList = new java.util.ArrayList<>();
+            for (String param : targetParams) {
+                if (param != null && !param.isEmpty()) {
+                    String[] splitParams = param.split(",");
+                    for (String s : splitParams) {
+                        targetList.add(s);
+                    }
+                }
+            }
+            productCriteriaDTO.setTarget(java.util.Optional.of(targetList));
+        }
+
         Pageable pageable;
         if (productCriteriaDTO.getSort() != null && productCriteriaDTO.getSort().isPresent()) {
             String sort = productCriteriaDTO.getSort().get();
@@ -93,13 +124,31 @@ public class ItemController {
         Page<Product> prs = this.productService.fetchProductsWithSpec(pageable, productCriteriaDTO);
         List<Product> products = prs.getContent().size() > 0 ? prs.getContent() : new ArrayList<Product>();
 
-        List<String> factories = productService.getAllFactories();
-        List<String> targets = productService.getAllTargets();
+        List<group04.gundamshop.domain.Factory> factories = productService.getAllFactoryObjects();
+        List<group04.gundamshop.domain.Target> targets = productService.getAllTargetObjects();
 
-        String qs = request.getQueryString();
-        if (qs != null && !qs.isBlank()) {
-            qs = qs.replace("page=" + page, "");
+        java.util.Map<String, String[]> paramMap = request.getParameterMap();
+        StringBuilder qsBuilder = new StringBuilder();
+        for (java.util.Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+            String key = entry.getKey();
+            if ("page".equalsIgnoreCase(key)) {
+                continue;
+            }
+            String[] values = entry.getValue();
+            if (values != null) {
+                for (String value : values) {
+                    if (value != null && !value.isEmpty()) {
+                        if (qsBuilder.length() > 0) {
+                            qsBuilder.append("&");
+                        }
+                        qsBuilder.append(java.net.URLEncoder.encode(key, java.nio.charset.StandardCharsets.UTF_8));
+                        qsBuilder.append("=");
+                        qsBuilder.append(java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8));
+                    }
+                }
+            }
         }
+        String qs = qsBuilder.length() > 0 ? "&" + qsBuilder.toString() : "";
 
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
@@ -127,6 +176,20 @@ public class ItemController {
             // page = 1
         }
 
+        // Set factory filter from request parameters
+        String factoryParam = request.getParameter("factory");
+        if (factoryParam != null && !factoryParam.isEmpty()) {
+            List<String> factoryList = java.util.Arrays.asList(factoryParam.split(","));
+            productCriteriaDTO.setFactory(java.util.Optional.of(factoryList));
+        }
+
+        // Set target filter from request parameters
+        String targetParam = request.getParameter("target");
+        if (targetParam != null && !targetParam.isEmpty()) {
+            List<String> targetList = java.util.Arrays.asList(targetParam.split(","));
+            productCriteriaDTO.setTarget(java.util.Optional.of(targetList));
+        }
+
         Pageable pageable;
         if (productCriteriaDTO.getSort() != null && productCriteriaDTO.getSort().isPresent()) {
             String sort = productCriteriaDTO.getSort().get();
@@ -151,8 +214,8 @@ public class ItemController {
         Page<Product> prs = this.productService.fetchProductsWithSpec(pageable, productCriteriaDTO);
         List<Product> products = prs.getContent().size() > 0 ? prs.getContent() : new ArrayList<Product>();
 
-        List<String> factories = productService.getAllFactories();
-        List<String> targets = productService.getAllTargets();
+        List<group04.gundamshop.domain.Factory> factories = productService.getAllFactoryObjects();
+        List<group04.gundamshop.domain.Target> targets = productService.getAllTargetObjects();
 
         String qs = request.getQueryString();
         if (qs != null && !qs.isBlank()) {
@@ -436,30 +499,80 @@ public class ItemController {
     @GetMapping("/search")
     public String getSearchPage(Model model,
             ProductCriteriaDTO productCriteriaDTO,
-            HttpServletRequest request) {
-        int page = productCriteriaDTO.getPage().map(Integer::parseInt).orElse(1);
-
-        Pageable pageable = PageRequest.of(page - 1, 10);
-        if (productCriteriaDTO.getSort().isPresent()) {
-            String sort = productCriteriaDTO.getSort().get();
-            if ("gia-tang-dan".equals(sort)) {
-                pageable = PageRequest.of(page - 1, 10, org.springframework.data.domain.Sort.by("price").ascending());
-            } else if ("gia-giam-dan".equals(sort)) {
-                pageable = PageRequest.of(page - 1, 10, org.springframework.data.domain.Sort.by("price").descending());
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        int page = 1;
+        try {
+            if (productCriteriaDTO.getPage().isPresent()) {
+                page = Integer.parseInt(productCriteriaDTO.getPage().get());
             }
+        } catch (Exception e) {
+            // page = 1
         }
 
         String keyword = productCriteriaDTO.getSearchKeyword().orElse(request.getParameter("query"));
-        Page<Product> prs = this.productService.searchProducts(keyword, pageable, productCriteriaDTO);
-        List<Product> products = prs.getContent();
-
-        List<String> factories = productService.getAllFactories();
-        List<String> targets = productService.getAllTargets();
-
-        String qs = request.getQueryString();
-        if (qs != null && !qs.isBlank()) {
-            qs = qs.replace("page=" + page, "");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Please enter a search keyword.");
+            String referer = request.getHeader("Referer");
+            if (referer != null) {
+                return "redirect:" + referer;
+            } else {
+                return "redirect:/";
+            }
         }
+        keyword = keyword.trim();
+
+        // Set factory filter from request parameters
+        String[] factoryParams = request.getParameterValues("factory");
+        if (factoryParams != null && factoryParams.length > 0) {
+            productCriteriaDTO.setFactory(java.util.Optional.of(java.util.Arrays.asList(factoryParams)));
+        }
+
+        // Set target filter from request parameters
+        String[] targetParams = request.getParameterValues("target");
+        if (targetParams != null && targetParams.length > 0) {
+            productCriteriaDTO.setTarget(java.util.Optional.of(java.util.Arrays.asList(targetParams)));
+        }
+
+        Pageable pageable;
+        if (productCriteriaDTO.getSort() != null && productCriteriaDTO.getSort().isPresent()) {
+            String sort = productCriteriaDTO.getSort().get();
+            if ("gia-tang-dan".equals(sort)) {
+                pageable = PageRequest.of(page - 1, 9, org.springframework.data.domain.Sort.by("price").ascending());
+            } else if ("gia-giam-dan".equals(sort)) {
+                pageable = PageRequest.of(page - 1, 9, org.springframework.data.domain.Sort.by("price").descending());
+            } else {
+                pageable = PageRequest.of(page - 1, 9);
+            }
+        } else {
+            pageable = PageRequest.of(page - 1, 9);
+        }
+
+        Page<Product> prs = this.productService.searchProducts(keyword, pageable, productCriteriaDTO);
+        List<Product> products = prs.getContent().size() > 0 ? prs.getContent() : new ArrayList<Product>();
+
+        List<group04.gundamshop.domain.Factory> factories = productService.getAllFactoryObjects();
+        List<group04.gundamshop.domain.Target> targets = productService.getAllTargetObjects();
+
+        java.util.Map<String, String[]> paramMap = request.getParameterMap();
+        StringBuilder qsBuilder = new StringBuilder();
+        for (java.util.Map.Entry<String, String[]> entry : paramMap.entrySet()) {
+            String key = entry.getKey();
+            if ("page".equalsIgnoreCase(key)) {
+                continue;
+            }
+            for (String value : entry.getValue()) {
+                if (value != null && !value.isEmpty()) {
+                    if (qsBuilder.length() > 0) {
+                        qsBuilder.append("&");
+                    }
+                    qsBuilder.append(java.net.URLEncoder.encode(key, java.nio.charset.StandardCharsets.UTF_8));
+                    qsBuilder.append("=");
+                    qsBuilder.append(java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8));
+                }
+            }
+        }
+        String qs = qsBuilder.length() > 0 ? "&" + qsBuilder.toString() : "";
 
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);

@@ -54,6 +54,12 @@
                                         <div class="col-md-6 col-12 mx-auto">
                                             <h3>Create A Category</h3>
                                             <hr />
+                                            <c:if test="${not empty flash.successMessage}">
+                                                <div class="alert alert-success" role="alert">${flash.successMessage}</div>
+                                            </c:if>
+                                            <c:if test="${not empty flash.errorMessage}">
+                                                <div class="alert alert-danger" role="alert">${flash.errorMessage}</div>
+                                            </c:if>
                                             <form:form method="post" action="/admin/category/create"
                                                 modelAttribute="newCategory" class="row" enctype="multipart/form-data">
                                                 <div class="mb-3 col-12 col-md-6">

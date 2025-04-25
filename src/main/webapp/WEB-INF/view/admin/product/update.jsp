@@ -9,8 +9,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="Gruop 7 - Dự án gundamshop" />
-    <meta name="author" content="Gruop 7" />
+    <meta name="description" content="Gruop 4 - Dự án Legoshop" />
+    <meta name="author" content="Gruop 4" />
     <title>Update Product</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
@@ -62,9 +62,9 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Name:</label>
                                         <form:input type="text" class="form-control" path="name" 
-                                                    required="true" minlength="4" 
+                                                    required="true" minlength="4" maxlength="255"
                                                     oninvalid="this.setCustomValidity('Product name must be at least 4 characters')" 
-                                                    oninput="this.setCustomValidity('')" />
+                                                    oninput="this.setCustomValidity(''); if(this.value.length > 255) this.value = this.value.slice(0,255);" />
                                         <form:errors path="name" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
@@ -77,22 +77,24 @@
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label class="form-label">Detail description:</label>
-                                        <form:textarea class="form-control" path="detailDesc" />
+                                        <form:textarea class="form-control" path="detailDesc" maxlength="255" 
+                                            oninput="if(this.value.length > 255) this.value = this.value.slice(0,255);" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Short description:</label>
-                                        <form:input type="text" class="form-control" path="shortDesc" />
+                                        <form:input type="text" class="form-control" path="shortDesc" maxlength="255"
+                                            oninput="if(this.value.length > 255) this.value = this.value.slice(0,255);" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Quantity:</label>
-                                        <form:input type="number" class="form-control" path="quantity" />
+                                        <form:input type="number" min="0" class="form-control" path="quantity" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Factory:</label>
-                                        <form:select class="form-select" path="factory">
-                                            <form:option value="Lego">Lego</form:option>
-                                            <form:option value="Lego X Adidas">Lego X Adidas</form:option>
-                                            <form:option value="IKEA">IKEA</form:option>
+                                        <form:select class="form-select" path="factory.id">
+                                            <c:forEach var="factory" items="${factories}">
+                                                <form:option value="${factory.id}">${factory.name}</form:option>
+                                            </c:forEach>
                                         </form:select>
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
@@ -105,12 +107,10 @@
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Target:</label>
-                                        <form:select class="form-select" path="target">
-                                            <form:option value="Lego">Lego</form:option>
-                                            <form:option value="LEGO Accessories & Expansion Sets">LEGO Accessories & Expansion Sets</form:option>
-                                            <form:option value="LEGO Tools & Utilities">LEGO Tools & Utilities</form:option>
-                                            <form:option value="Instructions & Ideas">Instructions & Ideas</form:option>
-                                            <form:option value="Tools">Tools</form:option>
+                                        <form:select class="form-select" path="target.id">
+                                            <c:forEach var="target" items="${targets}">
+                                                <form:option value="${target.id}">${target.name}</form:option>
+                                            </c:forEach>
                                         </form:select>
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">

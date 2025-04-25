@@ -47,6 +47,12 @@
                                 </div>
 
                                 <hr />
+                                <c:if test="${not empty flash.successMessage}">
+                                    <div class="alert alert-success" role="alert">${flash.successMessage}</div>
+                                </c:if>
+                                <c:if test="${not empty flash.errorMessage}">
+                                    <div class="alert alert-danger" role="alert">${flash.errorMessage}</div>
+                                </c:if>
                                 <div class="alert alert-danger">
                                     Are you sure you want to delete this Category?
                                 </div>

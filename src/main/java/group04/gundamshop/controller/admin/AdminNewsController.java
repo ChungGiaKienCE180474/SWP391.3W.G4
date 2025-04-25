@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import group04.gundamshop.domain.News;
 import group04.gundamshop.service.NewsService;
@@ -62,17 +63,34 @@ public class AdminNewsController {
     @PostMapping("/create")
     public String createNews(@RequestParam("title") String title,
                              @RequestParam("content") String content,
-                             @RequestParam("image_url") MultipartFile file) {
-        String imageUrl = null;
+                             @RequestParam("image_url") MultipartFile file,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
+        // Validate title and content
+        boolean hasErrors = false;
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("titleError", "Title cannot be empty or whitespace.");
+            hasErrors = true;
+        }
+        if (content == null || content.trim().isEmpty()) {
+            model.addAttribute("contentError", "Content cannot be empty or whitespace.");
+            hasErrors = true;
+        }
+        if (hasErrors) {
+            // Preserve original input including leading/trailing spaces
+            model.addAttribute("news", new News(title, content, null));
+            return "admin/news/create-news";
+        }
 
-        // Nếu file không rỗng, lưu ảnh vào thư mục 'news'
+        String imageUrl = null;
         if (!file.isEmpty()) {
             imageUrl = uploadNewsService.handleSaveUploadFile(file, "news");
         }
 
-        // Tạo đối tượng News và lưu vào DB
         News news = new News(title, content, imageUrl);
+        news.setStatus(false);
         newsService.saveNews(news);
+        redirectAttributes.addFlashAttribute("message", "News created successfully.");
         return "redirect:/admin/news";
     }
 
@@ -104,23 +122,45 @@ public class AdminNewsController {
     public String updateNews(@PathVariable Long id,
                              @RequestParam("title") String title,
                              @RequestParam("content") String content,
-                             @RequestParam("image") MultipartFile file) {
+                             @RequestParam("image") MultipartFile file,
+                             @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         News news = newsService.getNewsById(id);
         if (news == null) {
             return "redirect:/admin/news";
         }
 
-        // Cập nhật thông tin bài viết
+        // Validate title and content
+        boolean hasErrors = false;
+        if (title == null || title.trim().isEmpty()) {
+            model.addAttribute("titleError", "Title cannot be empty or whitespace.");
+            hasErrors = true;
+        }
+        if (content == null || content.trim().isEmpty()) {
+            model.addAttribute("contentError", "Content cannot be empty or whitespace.");
+            hasErrors = true;
+        }
+        if (hasErrors) {
+            // Preserve original input including leading/trailing spaces
+            news.setTitle(title);
+            news.setContent(content);
+            news.setStatus(status);
+            model.addAttribute("news", news);
+            return "admin/news/update-news";
+        }
+
         news.setTitle(title);
         news.setContent(content);
+        news.setStatus(status);
 
-        // Nếu có file ảnh mới, cập nhật ảnh
         if (!file.isEmpty()) {
             String imageUrl = uploadNewsService.handleSaveUploadFile(file, "news");
             news.setImageUrl(imageUrl);
         }
 
         newsService.saveNews(news);
+        redirectAttributes.addFlashAttribute("message", "News updated successfully.");
         return "redirect:/admin/news";
     }
 
@@ -146,8 +186,9 @@ public class AdminNewsController {
      * @return Chuyển hướng về danh sách tin tức.
      */
     @PostMapping("/delete/{id}")
-    public String deleteNews(@PathVariable Long id) {
+    public String deleteNews(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         newsService.deleteNews(id);
+        redirectAttributes.addFlashAttribute("message", "News deleted successfully.");
         return "redirect:/admin/news";
     }
 
@@ -165,5 +206,16 @@ public class AdminNewsController {
         }
         model.addAttribute("news", news);
         return "admin/news/detail";
+    }
+
+    @GetMapping("/toggle-status/{id}")
+    public String toggleStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        News news = newsService.getNewsById(id);
+        if (news != null) {
+            news.setStatus(!news.isStatus());
+            newsService.saveNews(news);
+            redirectAttributes.addFlashAttribute("message", "News status updated successfully.");
+        }
+        return "redirect:/admin/news";
     }
 }

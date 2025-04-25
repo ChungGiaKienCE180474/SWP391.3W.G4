@@ -28,6 +28,9 @@ public class News {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "status", nullable = false)
+    private boolean status = true;
+
     public News() {}
 
     public News(String title, String content, String imageUrl) {
@@ -35,7 +38,7 @@ public class News {
         this.content = content;
         this.imageUrl = imageUrl;
         this.createdAt = LocalDateTime.now();
-
+        this.status = true;
     }
 
     // Getters và Setters
@@ -53,4 +56,7 @@ public class News {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-}
+
+    public boolean isStatus() { return status; }
+    public void setStatus(boolean status) { this.status = status; }
+} 

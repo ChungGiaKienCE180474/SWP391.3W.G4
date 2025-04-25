@@ -28,6 +28,18 @@
 
                     <div class="p-4">
                         <h1 class="mb-4 mt-4 text-center" style="font-weight: bold;">Manage Category</h1>
+                        <c:if test="${not empty flash.successMessage}">
+                            <div class="alert alert-success" role="alert">${flash.successMessage}</div>
+                        </c:if>
+                        <c:if test="${not empty flash.errorMessage}">
+                            <div class="alert alert-danger" role="alert">${flash.errorMessage}</div>
+                        </c:if>
+                        <c:if test="${not empty param.successMessage}">
+                            <div class="alert alert-success" role="alert">${param.successMessage}</div>
+                        </c:if>
+                        <c:if test="${not empty param.errorMessage}">
+                            <div class="alert alert-danger" role="alert">${param.errorMessage}</div>
+                        </c:if>
                         <table class="table table-bordered table-hover align-middle text-center">
                             <ol class="breadcrumb mb-4">
                                 <li class="breadcrumb-item"><a href="/admin">Home Page</a></li>

@@ -16,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import group04.gundamshop.domain.Category;
 import group04.gundamshop.service.CategoryService;
+import group04.gundamshop.service.ProductService;
 import group04.gundamshop.service.UploadService;
 import jakarta.validation.Valid;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller quản lý danh mục sản phẩm (Category) trong trang Admin.
@@ -28,16 +30,19 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     private final UploadService uploadService;
+    private final ProductService productService;
 
     /**
      * Constructor để inject các service cần thiết.
      *
      * @param categoryService Dịch vụ quản lý danh mục.
      * @param uploadService Dịch vụ xử lý tải lên hình ảnh.
+     * @param productService Dịch vụ quản lý sản phẩm.
      */
-    public CategoryController(CategoryService categoryService, UploadService uploadService) {
+    public CategoryController(CategoryService categoryService, UploadService uploadService, ProductService productService) {
         this.categoryService = categoryService;
         this.uploadService = uploadService;
+        this.productService = productService;
     }
 
     /**
@@ -47,6 +52,11 @@ public class CategoryController {
      * @return Trang hiển thị danh sách danh mục.
      */
     @GetMapping("/admin/category")
+    public String redirectCategory() {
+        return "redirect:/admin/category/list";
+    }
+
+    @GetMapping("/admin/category/list")
     public String getCategory(Model model) {
         List<Category> categories = this.categoryService.getCategoryByStatus(true);
         model.addAttribute("categories", categories);
@@ -79,7 +89,8 @@ public class CategoryController {
     public String createCategoryPage(Model model,
                                      @ModelAttribute("newCategory") @Valid Category category,
                                      BindingResult newCategoryBindingResult,
-                                     @RequestParam("imageFile") MultipartFile file) {
+                                     @RequestParam("imageFile") MultipartFile file,
+                                     RedirectAttributes redirectAttributes) {
 
         // Kiểm tra lỗi validate dữ liệu nhập vào
         if (newCategoryBindingResult.hasErrors()) {
@@ -102,7 +113,8 @@ public class CategoryController {
         // Lưu danh mục vào database
         this.categoryService.handleSaveCategory(category);
 
-        return "redirect:/admin/category";
+        // Fallback: redirect with query parameter for success message
+        return "redirect:/admin/category/list?successMessage=Category+created+successfully";
     }
 
     /**
@@ -139,7 +151,8 @@ public class CategoryController {
     public String postUpdateCategory(Model model,
                                      @ModelAttribute("newCategory") @Valid Category category,
                                      BindingResult newCategoryBindingResult,
-                                     @RequestParam("imageFile") MultipartFile file) {
+                                     @RequestParam("imageFile") MultipartFile file,
+                                     RedirectAttributes redirectAttributes) {
         Category currentCategory = this.categoryService.getCategoryById(category.getId());
 
         // Kiểm tra lỗi validate dữ liệu nhập vào
@@ -167,7 +180,8 @@ public class CategoryController {
         // Lưu cập nhật vào database
         this.categoryService.handleSaveCategory(currentCategory);
 
-        return "redirect:/admin/category";
+        // Fallback: redirect with query parameter for success message
+        return "redirect:/admin/category/list?successMessage=Category+updated+successfully";
     }
 
     /**
@@ -194,16 +208,27 @@ public class CategoryController {
      * @return Điều hướng về trang danh sách danh mục.
      */
     @PostMapping("/admin/category/delete")
-    public String postDeleteCategory(Model model, @ModelAttribute("newCategory") Category category) {
+    public String postDeleteCategory(Model model, @ModelAttribute("newCategory") Category category,
+                                     RedirectAttributes redirectAttributes) {
         Category currentCategory = this.categoryService.getCategoryById(category.getId());
 
-        // Nếu danh mục tồn tại, vô hiệu hóa danh mục
+        // Nếu danh mục tồn tại, kiểm tra xem có sản phẩm nào gán với danh mục không
         if (currentCategory != null) {
+            boolean hasProducts = productService.existsByCategoryId(currentCategory.getId());
+            if (hasProducts) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete category because it has assigned products.");
+                return "redirect:/admin/category";
+            }
             currentCategory.setStatus(false);
             this.categoryService.handleSaveCategory(currentCategory);
-        }
-
-        return "redirect:/admin/category";
+                // Fallback: redirect with query parameter for success message
+                return "redirect:/admin/category/list?successMessage=Category+deleted+successfully";
+            } else {
+                // Fallback: redirect with query parameter for error message
+                return "redirect:/admin/category/list?errorMessage=Category+not+found";
+            }
+    
+            // return "redirect:/admin/category";
     }
 
     /**
