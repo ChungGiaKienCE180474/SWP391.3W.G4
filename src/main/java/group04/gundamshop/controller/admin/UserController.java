@@ -33,7 +33,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService, UploadService uploadService,
-                          PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.passwordEncoder = passwordEncoder;
@@ -55,8 +55,8 @@ public class UserController {
 
     @PostMapping(value = "/admin/user/create")
     public String createUserPage(Model model, @ModelAttribute("newUser") @Valid User user,
-                                 BindingResult newUserBindingResult,
-                                 @RequestParam("hoidanitFile") MultipartFile file) {
+            BindingResult newUserBindingResult,
+            @RequestParam("hoidanitFile") MultipartFile file) {
         if (newUserBindingResult.hasErrors()) {
             return "admin/user/create";
         }
@@ -83,10 +83,11 @@ public class UserController {
         return "redirect:/admin/user";
     }
 
-    // -------------------------------- Customer Ban/Unban ---------------------------------
+    // -------------------------------- Customer Ban/Unban
+    // ---------------------------------
     @PostMapping("/admin/customer/ban/{userId}")
     public String banOrUnbanCustomer(@PathVariable Long userId, @RequestParam boolean status,
-                                     RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             if (!status) {
                 userService.banCustomerAccount(userId);
@@ -119,16 +120,17 @@ public class UserController {
 
     @PostMapping(value = "admin/customer/create")
     public String createCustomerPage(Model model, @ModelAttribute("newCustomer") @Valid User customer,
-                                     BindingResult newUserBindingResult,
-                                     @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
-                                     @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) {
+            BindingResult newUserBindingResult,
+            @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) {
         // Trường hợp nhập tay
         if (excelFile == null || excelFile.isEmpty()) {
             if (newUserBindingResult.hasErrors()) {
                 return "admin/customer/create";
             }
-            String avatar = imageFile != null && !imageFile.isEmpty() ?
-                    this.uploadService.handleSaveUploadFile(imageFile, "avatar") : null;
+            String avatar = imageFile != null && !imageFile.isEmpty()
+                    ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
+                    : null;
             String hashPassword = this.passwordEncoder.encode(customer.getPassword());
             customer.setAvatar(avatar);
             customer.setPassword(hashPassword);
@@ -161,7 +163,7 @@ public class UserController {
 
     @PostMapping("/admin/customer/import")
     public String importCustomersFromExcel(@RequestParam("excelFile") MultipartFile excelFile,
-                                           RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             if (excelFile.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select an Excel file to import.");
@@ -188,14 +190,17 @@ public class UserController {
                 } catch (Exception e) {
                     // Bỏ qua lỗi validation cho bản ghi này và ghi lại chi tiết
                     errorCount++;
-                    errorDetails.append("User with email ").append(user.getEmail()).append(": ").append(e.getMessage()).append("; ");
+                    errorDetails.append("User with email ").append(user.getEmail()).append(": ").append(e.getMessage())
+                            .append("; ");
                 }
             }
             if (successCount > 0) {
-                redirectAttributes.addFlashAttribute("message", "Imported " + successCount + " customers successfully.");
+                redirectAttributes.addFlashAttribute("message",
+                        "Imported " + successCount + " customers successfully.");
             }
             if (errorCount > 0) {
-                redirectAttributes.addFlashAttribute("error", "Failed to import " + errorCount + " customers: " + errorDetails.toString());
+                redirectAttributes.addFlashAttribute("error",
+                        "Failed to import " + errorCount + " customers: " + errorDetails.toString());
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error importing Excel file: " + e.getMessage());
@@ -234,8 +239,8 @@ public class UserController {
 
     @PostMapping("/admin/customer/update")
     public String postUpdateUser(Model model, @ModelAttribute("newCustomer") @Valid User customer,
-                                 BindingResult newProductBindingResult,
-                                 @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newProductBindingResult,
+            @RequestParam("imagesFile") MultipartFile file) {
         Optional<User> customerOptional = this.userService.getUserById(customer.getId());
         User currentCustomer = customerOptional.orElse(null);
         if (currentCustomer != null) {
@@ -276,8 +281,8 @@ public class UserController {
 
     @PostMapping(value = "admin/employee/create")
     public String createEmployeePage(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-                                     BindingResult newUserBindingResult, HttpServletRequest request,
-                                     @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newUserBindingResult, HttpServletRequest request,
+            @RequestParam("imagesFile") MultipartFile file) {
         if (newUserBindingResult.hasErrors()) {
             return "admin/employee/create";
         }
@@ -308,8 +313,8 @@ public class UserController {
 
     @PostMapping("/admin/employee/update")
     public String postUpdateEmployee(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-                                     BindingResult newProductBindingResult,
-                                     @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newProductBindingResult,
+            @RequestParam("imagesFile") MultipartFile file) {
         Optional<User> employeeOptional = this.userService.getUserById(employee.getId());
         User currentEmployee = employeeOptional.orElse(null);
         if (currentEmployee != null) {
@@ -327,8 +332,17 @@ public class UserController {
 
     @GetMapping("/admin/employee/delete/{id}")
     public String getDeleteEmployeePage(Model model, @PathVariable long id) {
-        model.addAttribute("id", id);
-        model.addAttribute("newEmployee", new User());
+        Optional<User> userOptional = this.userService.getUserById(id);
+        if (userOptional.isPresent()) {
+            User employee = userOptional.get();
+            model.addAttribute("fullName", employee.getFullName());
+            model.addAttribute("id", employee.getId());
+            model.addAttribute("newEmployee", employee);
+        } else {
+            // Trường hợp không tìm thấy User -> xử lý phù hợp (redirect hoặc báo lỗi)
+            return "redirect:/admin/employee?error=notfound";
+        }
+
         return "admin/employee/delete";
     }
 

@@ -48,7 +48,7 @@
                                         <div class="row">
                                             <div class="col-12 mx-auto">
                                                 <div class="d-flex justify-content-between">
-                                                    <h3>Delete a Employee with id = ${id}</h3>
+                                                    <h3>Delete a Employee with name is = ${fullName}</h3>
                                                 </div>
 
                                                 <hr />

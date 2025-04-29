@@ -45,44 +45,95 @@ public class User {
     private Role role;
 
     @ManyToMany
-    @JoinTable(
-            name = "user_vouchers",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "voucher_id")
-    )
+    @JoinTable(name = "user_vouchers", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "voucher_id"))
     private List<Voucher> collectedVouchers;
 
     // Getter và Setter
-    public List<Voucher> getCollectedVouchers() { return collectedVouchers; }
-    public void setCollectedVouchers(List<Voucher> collectedVouchers) { this.collectedVouchers = collectedVouchers; }
+    public List<Voucher> getCollectedVouchers() {
+        return collectedVouchers;
+    }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public void setCollectedVouchers(List<Voucher> collectedVouchers) {
+        this.collectedVouchers = collectedVouchers;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public long getId() {
+        return id;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
+    public String getFullName() {
+        return fullName;
+    }
 
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-    public Cart getCart() { return cart; }
-    public void setCart(Cart cart) { this.cart = cart; }
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 }
