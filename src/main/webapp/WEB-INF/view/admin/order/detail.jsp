@@ -29,8 +29,6 @@
                                 <li class="breadcrumb-item"><a href="/admin/order">Order</a></li>
                                 <li class="breadcrumb-item active">View detail</li>
                             </ol>
-
-                            <!-- Bảng 1: Thông tin người mua -->
                             <div class="mb-5">
                                 <h4>Customer Information</h4>
                                 <table class="table table-bordered">
@@ -60,8 +58,6 @@
                                     </tr>
                                 </table>
                             </div>
-
-                            <!-- Bảng 2: Thông tin sản phẩm trong đơn hàng -->
                             <div class="table-responsive">
                                 <h4>Order Items</h4>
                                 <table class="table table-bordered table-hover">
