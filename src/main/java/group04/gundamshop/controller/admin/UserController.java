@@ -279,24 +279,52 @@ public class UserController {
         return "admin/employee/create";
     }
 
-    @PostMapping(value = "admin/employee/create")
-    public String createEmployeePage(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-            BindingResult newUserBindingResult, HttpServletRequest request,
+    @PostMapping(value = "/admin/employee/create")
+    public String createEmployeePage(Model model,
+            @ModelAttribute("newEmployee") @Valid User employee,
+            BindingResult newUserBindingResult,
+            HttpServletRequest request,
             @RequestParam("imagesFile") MultipartFile file) {
+        // Kiểm tra lỗi validation
         if (newUserBindingResult.hasErrors()) {
             return "admin/employee/create";
         }
-        if (userService.checkEmailExist(employee.getEmail())) {
-            request.setAttribute("message", "Email is already registered. Try logging in.");
-            return "redirect:/admin/employee/create?exit";
+
+        try {
+            // Xử lý avatar
+            String avatar = file != null && !file.isEmpty() ? this.uploadService.handleSaveUploadFile(file, "avatar")
+                    : null;
+            employee.setAvatar(avatar);
+
+            // Lưu mật khẩu gốc để gửi email
+            String rawPassword = employee.getPassword();
+
+            // Mã hóa mật khẩu
+            String hashPassword = this.passwordEncoder.encode(rawPassword);
+            employee.setPassword(hashPassword);
+
+            // Thiết lập các thuộc tính khác
+            employee.setStatus(true);
+            employee.setRole(this.userService.getRoleByName("EMPLOYEE"));
+
+            // Lưu employee và gửi email
+            this.userService.saveEmployeeWithEmail(employee, rawPassword);
+
+            return "redirect:/admin/employee";
+        } catch (Exception e) {
+            model.addAttribute("message", "Error creating employee: " + e.getMessage());
+            return "admin/employee/create";
         }
-        String avatar = this.uploadService.handleSaveUploadFile(file, "avatar");
-        String hashPassword = this.passwordEncoder.encode(employee.getPassword());
-        employee.setAvatar(avatar);
-        employee.setPassword(hashPassword);
-        employee.setStatus(true);
-        employee.setRole(this.userService.getRoleByName(employee.getRole().getName()));
-        this.userService.handleSaveUser(employee);
+    }
+
+    @GetMapping("/admin/employee/resend-email/{id}")
+    public String resendEmployeeEmail(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.resendEmployeeEmail(id);
+            redirectAttributes.addFlashAttribute("message", "Account email resent successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Error resending email: " + e.getMessage());
+        }
         return "redirect:/admin/employee";
     }
 
@@ -365,4 +393,5 @@ public class UserController {
         model.addAttribute("id", id);
         return "admin/employee/detail";
     }
+
 }

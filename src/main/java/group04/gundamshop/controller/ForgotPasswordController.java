@@ -75,11 +75,11 @@ public class ForgotPasswordController {
                 message.setSubject("Password Recovery OTP");
                 message.setText("Dear Customer,\n" +
                         "\n" +
-                        "Thank you for using Gundam Shop! Your One-Time Password (OTP) is: " + otpvalue + "\n"
+                        "Thank you for using LEGO Shop! Your One-Time Password (OTP) is: " + otpvalue + "\n"
                         + "Please enter this code to complete your verification.\n"
                         + "If you did not request this, please ignore this message.\n" +
                         "Best regards,\n" +
-                        "Gundam Shop Team");
+                        "LEGO Shop Team");
 
                 // Send the message
                 Transport.send(message);

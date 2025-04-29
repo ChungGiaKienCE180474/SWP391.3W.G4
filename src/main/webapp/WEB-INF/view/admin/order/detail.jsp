@@ -56,6 +56,14 @@
                                         <th>Status</th>
                                         <td>${order.status}</td>
                                     </tr>
+                                    <tr>
+                                        <th>Payment Method</th>
+                                        <td>${order.paymentMethod}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Order Date</th>
+                                        <td>${formattedOrderDate}</td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="table-responsive">

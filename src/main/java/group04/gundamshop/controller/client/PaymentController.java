@@ -111,7 +111,7 @@ public class PaymentController {
     }
 
     // Xử lý phản hồi từ cổng thanh toán VNPay
-    @GetMapping("/vnpay-payment-return") 
+    @GetMapping("/vnpay-payment-return")
     public String paymentCompleted(HttpServletRequest request, Model model, HttpSession session) {
         int paymentStatus = vnPayService.orderReturn(request);
         String orderInfo = request.getParameter("vnp_OrderInfo");
@@ -126,7 +126,7 @@ public class PaymentController {
             Order order = new Order();
             order.setNote(orderInfo + " | Transaction ID: " + transactionId + " | Payment Time: " + paymentTime);
             order.setTotalPrice(totalPrice);
-            order.setStatus("CONFIRM"); // Trạng thái xác nhận sau khi thanh toán
+            order.setStatus("BANKING"); // Trạng thái xác nhận sau khi thanh toán
             order.setOrderDate(LocalDateTime.now());
             order.setPaymentMethod("VNPAY");
             order.setReceiverAddress((String) session.getAttribute("receiverAddress"));
@@ -157,7 +157,8 @@ public class PaymentController {
 
                     // Kiểm tra nếu kho đủ hàng
                     if (currentQuantity < purchasedQuantity) {
-                        throw new RuntimeException("Product " + product.getName() + " Not enough in stock! Left: " + currentQuantity);
+                        throw new RuntimeException(
+                                "Product " + product.getName() + " Not enough in stock! Left: " + currentQuantity);
                     }
 
                     // Giảm quantity và tăng sold

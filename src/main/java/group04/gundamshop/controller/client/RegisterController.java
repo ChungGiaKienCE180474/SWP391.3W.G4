@@ -107,11 +107,11 @@ public class RegisterController {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress("kienchung2107@gmail.com"));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
-            message.setSubject("GUNDAM SHOP - One-Time Password (OTP) Verification");
+            message.setSubject("LEGO SHOP - One-Time Password (OTP) Verification");
             message.setText("Dear Customer,\n\nYour One-Time Password (OTP) for registration is: " + otpValue +
                     "\n\nPlease enter this code to complete your registration. For security reasons, do not share this code with anyone.\n\n" +
                     "Thank you for choosing GUNDAM SHOP!\n\n" +
-                    "Best regards,\nGUNDAM SHOP Team");
+                    "Best regards,\nLEGO SHOP Team");
 
             Transport.send(message);
             logger.info("OTP email sent successfully to: {}", email);

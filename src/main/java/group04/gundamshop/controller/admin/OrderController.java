@@ -1,5 +1,6 @@
 package group04.gundamshop.controller.admin;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 // Import lớp List từ gói java.util, dùng để làm việc với danh sách.
 import java.util.Optional;
@@ -81,20 +82,18 @@ public class OrderController {
      * @return Trang hiển thị chi tiết đơn hàng.
      */
     @GetMapping("/admin/order/{id}")
-    // Ánh xạ các yêu cầu HTTP GET đến địa chỉ "/admin/order/{id}" đến phương thức
-    // này.
     public String getOrderDetailPage(Model model, @PathVariable long id) {
-        // Phương thức xử lý yêu cầu hiển thị chi tiết đơn hàng.
         Order order = this.orderService.fetchOrderById(id).get();
-        // Lấy đơn hàng từ database dựa trên ID.
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedDate = order.getOrderDate().format(formatter);
+
         model.addAttribute("order", order);
-        // Thêm đơn hàng vào model để trang chi tiết đơn hàng có thể sử dụng.
         model.addAttribute("id", id);
-        // Thêm ID đơn hàng vào model.
         model.addAttribute("orderDetails", order.getOrderDetails());
-        // Thêm danh sách chi tiết đơn hàng vào model.
+        model.addAttribute("formattedOrderDate", formattedDate);
+
         return "admin/order/detail";
-        // Trả về tên view để hiển thị trang chi tiết đơn hàng.
     }
 
     /**
@@ -170,4 +169,22 @@ public class OrderController {
         return "admin/customer/purchaseHistory";
         // Trả về tên view để hiển thị trang lịch sử mua hàng.
     }
+
+    /**
+     * Cập nhật trạng thái đơn hàng thành COMPLETE (dùng cho đơn hàng BANKING).
+     *
+     * @param id ID của đơn hàng cần cập nhật.
+     * @return Chuyển hướng đến trang danh sách đơn hàng.
+     */
+    @GetMapping("/admin/order/update-to-complete/{id}")
+    public String updateOrderToComplete(@PathVariable long id) {
+        Optional<Order> optionalOrder = orderService.fetchOrderById(id);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus("COMPLETE");
+            orderService.updateOrder(order);
+        }
+        return "redirect:/admin/order";
+    }
+
 }
