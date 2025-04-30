@@ -3,6 +3,8 @@ package group04.gundamshop.service;
 import group04.gundamshop.domain.dto.RegisterDTO;
 import group04.gundamshop.domain.Role;
 import group04.gundamshop.domain.User;
+import group04.gundamshop.repository.CartRepository;
+import group04.gundamshop.repository.OrderRepository;
 import group04.gundamshop.repository.RoleRepository;
 import group04.gundamshop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private OrderRepository orderRepository; // Repository cho bảng orders
 
     @Autowired
     private EmailService emailService;
@@ -76,8 +84,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<User> getUsersByRoleId(long roleId, boolean status) {
-        return userRepository.findAllByRole_IdAndStatus(roleId, status);
+    public List<User> getUsersByRoleId(long roleId) {
+        return userRepository.findByRoleId(roleId);
     }
 
     public List<User> getUsersRoleId(long roleId) {
@@ -182,6 +190,26 @@ public class UserService {
         return users;
     }
 
+    public void banEmployeeAccount(Long userId) {
+        User employee = getUserById(userId).orElseThrow(() -> new EntityNotFoundException());
+        if (employee.getRole().getName().equals("EMPLOYEE")) {
+            employee.setStatus(false);
+            handleSaveUser(employee);
+        } else {
+            throw new IllegalArgumentException("User is not an employee.");
+        }
+    }
+
+    public void unbanEmployeeAccount(Long userId) {
+        User employee = getUserById(userId).orElseThrow(() -> new EntityNotFoundException());
+        if (employee.getRole().getName().equals("EMPLOYEE")) {
+            employee.setStatus(true);
+            handleSaveUser(employee);
+        } else {
+            throw new IllegalArgumentException("User is not an employee.");
+        }
+    }
+
     private boolean isRowEmpty(Row row) {
         if (row == null)
             return true;
@@ -210,4 +238,26 @@ public class UserService {
                 return "";
         }
     }
+
+    // Xóa hoàn toàn nhân viên khỏi cơ sở dữ liệu
+    public void deleteEmployee(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Employee not found with id: " + id);
+        }
+
+        // Kiểm tra xem nhân viên có liên quan đến carts hoặc orders không
+        if (cartRepository.existsByUserId(id) || orderRepository.existsByUserId(id)) {
+            throw new IllegalStateException("Cannot delete this employee because they have related carts or orders.");
+        }
+
+        // Nếu không có liên quan, xóa nhân viên
+        userRepository.deleteById(id);
+    }
+
+    // Kiểm tra xem nhân viên có liên quan đến carts hoặc orders để quyết định hiển
+    // thị nút Delete
+    public boolean canDeleteEmployee(Long userId) {
+        return !cartRepository.existsByUserId(userId) && !orderRepository.existsByUserId(userId);
+    }
+
 }

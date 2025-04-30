@@ -268,7 +268,7 @@ public class UserController {
     // -------------------------------- Employee ---------------------------------
     @GetMapping("/admin/employee")
     public String getAllEmployee(Model model) {
-        List<User> employees = this.userService.getUsersByRoleId(2, true);
+        List<User> employees = this.userService.getUsersByRoleId(2L);
         model.addAttribute("employees", employees);
         return "admin/employee/show";
     }
@@ -364,23 +364,23 @@ public class UserController {
         if (userOptional.isPresent()) {
             User employee = userOptional.get();
             model.addAttribute("fullName", employee.getFullName());
-            model.addAttribute("id", employee.getId());
-            model.addAttribute("newEmployee", employee);
+            model.addAttribute("email", employee.getEmail());
+            model.addAttribute("id", id);
         } else {
-            // Trường hợp không tìm thấy User -> xử lý phù hợp (redirect hoặc báo lỗi)
             return "redirect:/admin/employee?error=notfound";
         }
-
         return "admin/employee/delete";
     }
 
     @PostMapping("/admin/employee/delete")
-    public String postDeleteEmployee(Model model, @ModelAttribute("newEmployee") User employee) {
-        Optional<User> employeeOptional = this.userService.getUserById(employee.getId());
-        User currentEmployee = employeeOptional.orElse(null);
-        if (currentEmployee != null) {
-            currentEmployee.setStatus(false);
-            this.userService.handleSaveUser(currentEmployee);
+    public String postDeleteEmployee(Model model, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            this.userService.deleteEmployee(id);
+            redirectAttributes.addFlashAttribute("message", "Employee deleted successfully.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/employee";
     }
@@ -392,6 +392,26 @@ public class UserController {
         model.addAttribute("newEmployee", newEmployee);
         model.addAttribute("id", id);
         return "admin/employee/detail";
+    }
+
+    // -------------------------------- Employee Ban/Unban
+    @PostMapping("/admin/employee/ban/{userId}")
+    public String banOrUnbanEmployee(@PathVariable Long userId, @RequestParam boolean status,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (!status) {
+                userService.banEmployeeAccount(userId);
+                redirectAttributes.addFlashAttribute("message", "Employee account was banned.");
+            } else {
+                userService.unbanEmployeeAccount(userId);
+                redirectAttributes.addFlashAttribute("message", "Employee account was unbanned successfully.");
+            }
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "Employee account not found!");
+        }
+        return "redirect:/admin/employee";
     }
 
 }

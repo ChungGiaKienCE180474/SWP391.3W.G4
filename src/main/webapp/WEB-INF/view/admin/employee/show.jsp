@@ -37,10 +37,15 @@
                                         <a href="/admin/employee/create" class="btn btn-primary">Create an Employee</a>
                                     </div>
                                     <hr />
-                                    <!-- Hiển thị thông báo thành công (nếu có) -->
+                                    <!-- Hiển thị thông báo thành công hoặc lỗi -->
                                     <c:if test="${not empty message}">
                                         <div class="alert alert-success" role="alert">
                                             ${message}
+                                        </div>
+                                    </c:if>
+                                    <c:if test="${not empty error}">
+                                        <div class="alert alert-danger" role="alert">
+                                            ${error}
                                         </div>
                                     </c:if>
                                     <table class="table table-bordered table-hover align-middle text-center">
@@ -49,6 +54,7 @@
                                                 <th>Email</th>
                                                 <th>Full Name</th>
                                                 <th>Role</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -59,16 +65,33 @@
                                                     <td>${employee.fullName}</td>
                                                     <td>${employee.role.name}</td>
                                                     <td>
+                                                        <span
+                                                            class="${employee.status ? 'text-success' : 'text-danger'}">
+                                                            ${employee.status ? 'Active' : 'Banned'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
                                                         <a href="/admin/employee/${employee.id}"
                                                             class="btn btn-success">View</a>
                                                         <a href="/admin/employee/update/${employee.id}"
                                                             class="btn btn-warning mx-2">Update</a>
-                                                        <a href="/admin/employee/delete/${employee.id}"
-                                                            class="btn btn-danger mx-2">Delete</a>
                                                         <a href="/admin/employee/resend-email/${employee.id}"
                                                             class="btn btn-info" title="Resend Account Email">
                                                             <i class="bi bi-envelope"></i>
                                                         </a>
+                                                        <a href="/admin/employee/delete/${employee.id}"
+                                                            class="btn btn-danger mx-2">Delete</a>
+                                                        <!-- Ban / Unban Form -->
+                                                        <form action="/admin/employee/ban/${employee.id}" method="post"
+                                                            class="d-inline">
+                                                            <input type="hidden" name="_csrf" value="${_csrf.token}" />
+                                                            <input type="hidden" name="status"
+                                                                value="${employee.status ? 'false' : 'true'}" />
+                                                            <button type="submit"
+                                                                class="btn ${employee.status ? 'btn-danger' : 'btn-warning'} mx-2">
+                                                                ${employee.status ? 'Ban' : 'Unban'}
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             </c:forEach>

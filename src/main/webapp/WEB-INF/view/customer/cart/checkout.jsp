@@ -142,31 +142,28 @@
                                             </div>
 
                                             <!-- Nhập mã voucher -->
-                                            <%-- <div class="mb-3">--%>
-                                                <%-- <label>🎟️ Add Voucher:</label>--%>
-                                                    <%-- <div class="input-group">--%>
-                                                        <%-- <input type="text" class="form-control"
-                                                            id="voucherCodeInput" placeholder="Enter Voucher Code">--%>
-                                                            <%-- <button type="button" class="btn btn-primary"
-                                                                id="checkVoucherBtn">Check</button>--%>
-                                                                <%-- </div>--%>
-                                                                    <%-- </div>--%>
-                                                                        <div class="mb-3">
-                                                                            <label>🎟️ Add Voucher:</label>
-                                                                            <div class="input-group">
-                                                                                <input type="text" class="form-control"
-                                                                                    id="voucherCodeInput"
-                                                                                    placeholder="Enter Voucher Code">
-                                                                                <button type="button"
-                                                                                    class="btn btn-primary"
-                                                                                    id="checkVoucherBtn">Check</button>
-                                                                            </div>
-                                                                            
-                                                                             <ul id="voucherSuggestions"
-                                                                                class="list-group position-absolute"
-                                                                                style="z-index: 1000; display: none;">
-                                                                            </ul>
-                                                                        </div> 
+                                            <div class="mb-3">
+                                                <label>🎟️ Add Voucher:</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="voucherCodeInput"
+                                                        placeholder="Enter Voucher Code">
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="checkVoucherBtn">Check</button>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>🎟️ Add Voucher:</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="voucherCodeInput"
+                                                        placeholder="Enter Voucher Code">
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="checkVoucherBtn">Check</button>
+                                                </div>
+
+                                                <ul id="voucherSuggestions" class="list-group position-absolute"
+                                                    style="z-index: 1000; display: none;">
+                                                </ul>
+                                            </div>
 
 
                                             <!-- Kết quả voucher -->
@@ -188,7 +185,7 @@
                                                 <h5 id="finalTotal">
                                                     <fmt:formatNumber type="number" value="${totalPrice + 30000}" /> đ
                                                 </h5>
-                                            </div> -->
+                                            </div>
 
                                             <!-- Nút Xác Nhận Thanh Toán -->
                                             <form action="/place-order" method="post" style="display: inline;">
