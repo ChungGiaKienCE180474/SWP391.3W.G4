@@ -1,10 +1,12 @@
 package group04.gundamshop.domain;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "vouchers")
+@SoftDelete
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
