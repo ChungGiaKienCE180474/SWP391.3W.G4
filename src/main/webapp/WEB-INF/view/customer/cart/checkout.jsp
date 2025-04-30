@@ -330,7 +330,8 @@
                                     useButton.style.background = "#007bff";
                                     useButton.style.color = "white";
                                     useButton.style.cursor = "pointer";
-                                    useButton.addEventListener("click", function () {
+                                    useButton.addEventListener("click", function (e) {
+                                        e.preventDefault()
                                         voucherCodeInput.value = voucher.code;
                                         voucherSuggestionContainer.style.display = "none";
                                         applyVoucher(voucher.code);
