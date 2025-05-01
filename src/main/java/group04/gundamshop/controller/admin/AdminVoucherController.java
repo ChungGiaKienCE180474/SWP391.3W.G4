@@ -31,8 +31,13 @@ public class AdminVoucherController {
     }
 
     @GetMapping("{id}")
-    public String getById(Model model, @PathVariable Long id) {
+    public String getById(Model model, RedirectAttributes redirectAttributes, @PathVariable Long id) {
         Voucher voucher = voucherService.getById(id);
+        if (voucher == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Voucher with id " + id + " not found");
+            return "redirect:/admin/voucher";
+        }
+
         model.addAttribute("voucher", voucher);
         return "admin/voucher/detail";
     }
@@ -77,7 +82,7 @@ public class AdminVoucherController {
             @PathVariable long id) {
         Voucher voucher = voucherService.getById(id);
         if (voucher == null) {
-            redirectAttributes.addAttribute("errorMessage", "Voucher with id " + id + " not found");
+            redirectAttributes.addFlashAttribute("errorMessage", "Voucher with id " + id + " not found");
             return "redirect:/admin/voucher";
         }
 
