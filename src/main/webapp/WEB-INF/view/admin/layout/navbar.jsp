@@ -33,6 +33,7 @@ bi bi-tags-fill -->
 
             <li><a href="/admin/factory" class="btn btn-light w-100 text-start mb-3"><i class="bi bi-building"></i> Factory Management</a></li>
             <li><a href="/admin/target" class="btn btn-light w-100 text-start mb-3"><i class="bi bi-bullseye"></i> Target Management</a></li>
+            <li><a href="/admin/voucher" class="btn btn-light w-100 text-start mb-3"><i class="bi bi-ticket-perforated"></i> Voucher Management</a></li>
 
             <li>
                 <form method="post" action="/logout">
