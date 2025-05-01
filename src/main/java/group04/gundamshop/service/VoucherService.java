@@ -63,17 +63,23 @@ public class VoucherService {
     }
 
     public Voucher create(Voucher voucher) throws Exception {
-        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCase(voucher.getCode()).orElse(null);
+        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCaseAndIgnoreDeleted(voucher.getCode())
+                .orElse(null);
         if (getVoucherByCode != null)
             throw new Exception("Code has already been exist");
+
+        Voucher.validateVoucher(voucher);
 
         return voucherRepository.save(voucher);
     }
 
     public Voucher update(Long id, Voucher updatedVoucher) throws Exception {
-        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCase(updatedVoucher.getCode()).orElse(null);
-        if (getVoucherByCode != null && getVoucherByCode.getId() == id)
+        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCaseAndIgnoreDeleted(updatedVoucher.getCode())
+                .orElse(null);
+        if (getVoucherByCode != null && getVoucherByCode.getId() != id)
             throw new Exception("Code has already been exist");
+
+        Voucher.validateVoucher(updatedVoucher);
 
         Voucher voucher = voucherRepository.findById(id)
                 .orElseThrow(() -> new Exception("Voucher with id " + id + " not found"));
