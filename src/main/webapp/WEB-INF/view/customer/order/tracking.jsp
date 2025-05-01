@@ -29,7 +29,23 @@
                 <!-- Template Stylesheet -->
                 <link href="/client/css/style.css" rel="stylesheet">
             </head>
+<style>
+    .cancel-disabled-btn {
+  background-color: #6c757d !important; /* Màu xám Bootstrap */
+  color: white !important;
+  pointer-events: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+}
 
+
+</style>
             <body>
                 <!-- Header -->
                 <jsp:include page="../layout/header.jsp" />
@@ -37,7 +53,8 @@
                 <!-- Order History Start -->
                 <div class="container-fluid py-5 mt-5">
                     <div class="container py-5">
-                        <h2 class="mb-4 text-center">Track Shipping</h2>
+                        <jsp:include page="../layout/nav.jsp" />
+                        <h2 class="mb-4">Track Shipping</h2>
 
                         <c:if test="${not empty orders}">
                             <div class="table-responsive">
@@ -79,6 +96,16 @@
                                                     <c:if test="${order.status == 'PENDING'}">
                                                         <a href="/customer/order-delete/${order.id}"
                                                             class="btn btn-danger">Cancel Order</a>
+                                                    </c:if>
+                                                    <c:if test="${order.status == 'CONFIRM'}">
+                                                        <a class="btn btn-secondary disabled cancel-disabled-btn" 
+                                                        tabindex="-1" 
+                                                        aria-disabled="true">Cancel Order</a>
+                                                    </c:if>
+                                                    <c:if test="${order.status == 'SHIPPING'}">
+                                                        <a class="btn btn-secondary disabled cancel-disabled-btn" 
+                                                        tabindex="-1" 
+                                                        aria-disabled="true">Cancel Order</a>
                                                     </c:if>
                                                 </td>
                                             </tr>

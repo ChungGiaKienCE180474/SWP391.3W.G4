@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import group04.gundamshop.domain.User;
 import group04.gundamshop.service.UploadService;
 import group04.gundamshop.service.UserService;
-
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @Controller
@@ -33,7 +31,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService, UploadService uploadService,
-                          PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.uploadService = uploadService;
         this.passwordEncoder = passwordEncoder;
@@ -55,8 +53,8 @@ public class UserController {
 
     @PostMapping(value = "/admin/user/create")
     public String createUserPage(Model model, @ModelAttribute("newUser") @Valid User user,
-                                 BindingResult newUserBindingResult,
-                                 @RequestParam("hoidanitFile") MultipartFile file) {
+            BindingResult newUserBindingResult,
+            @RequestParam("hoidanitFile") MultipartFile file) {
         if (newUserBindingResult.hasErrors()) {
             return "admin/user/create";
         }
@@ -83,10 +81,11 @@ public class UserController {
         return "redirect:/admin/user";
     }
 
-    // -------------------------------- Customer Ban/Unban ---------------------------------
+    // -------------------------------- Customer Ban/Unban
+    // ---------------------------------
     @PostMapping("/admin/customer/ban/{userId}")
     public String banOrUnbanCustomer(@PathVariable Long userId, @RequestParam boolean status,
-                                     RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             if (!status) {
                 userService.banCustomerAccount(userId);
@@ -118,23 +117,87 @@ public class UserController {
     }
 
     @PostMapping(value = "admin/customer/create")
-    public String createCustomerPage(Model model, @ModelAttribute("newCustomer") @Valid User customer,
-                                     BindingResult newUserBindingResult,
-                                     @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
-                                     @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) {
-        // Trường hợp nhập tay
+    public String createCustomerPage(Model model,
+            @ModelAttribute("newCustomer") @Valid User customer,
+            BindingResult newUserBindingResult,
+            @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "excelFile", required = false) MultipartFile excelFile,
+            RedirectAttributes redirectAttributes) {
+
         if (excelFile == null || excelFile.isEmpty()) {
+            boolean hasError = false;
+
+            // Kiểm tra các lỗi từ @Valid
             if (newUserBindingResult.hasErrors()) {
+                hasError = true;
+            }
+
+            // Kiểm tra email: không được trống
+            if (customer.getEmail() == null || customer.getEmail().trim().isEmpty()) {
+                model.addAttribute("emailError", "Email must not be empty.");
+                hasError = true;
+            }
+
+            // Kiểm tra password: không được trống và phải hợp lệ
+            String password = customer.getPassword();
+            if (password == null || password.trim().isEmpty()) {
+                model.addAttribute("passwordError", "Password must not be empty.");
+                hasError = true;
+            } else if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")) {
+                model.addAttribute("passwordError",
+                        "Password must be at least 6 characters and contain letters and numbers.");
+                hasError = true;
+            }
+
+            // Kiểm tra fullName: không được trống
+            if (customer.getFullName() == null || customer.getFullName().trim().isEmpty()) {
+                model.addAttribute("fullNameError", "Full name must not be empty.");
+                hasError = true;
+            }
+
+            // Kiểm tra số điện thoại: không được trống và phải hợp lệ
+            String phone = customer.getPhone();
+            if (phone == null || phone.trim().isEmpty()) {
+                model.addAttribute("phoneError", "Phone number must not be empty.");
+                hasError = true;
+            } else if (!phone.matches("0\\d{9}")) {
+                model.addAttribute("phoneError", "Phone number must start with 0 and have 10 digits.");
+                hasError = true;
+            } else if (this.userService.checkPhoneExist(phone)) {
+                model.addAttribute("phoneError", "Phone number is already registered.");
+                hasError = true;
+            }
+
+            // Kiểm tra địa chỉ: bắt buộc nhập
+            if (customer.getAddress() == null || customer.getAddress().trim().isEmpty()) {
+                model.addAttribute("addressError", "Address must not be empty.");
+                hasError = true;
+            }
+
+            // Kiểm tra email đã tồn tại
+            if (this.userService.checkEmailExist(customer.getEmail())) {
+                model.addAttribute("emailExistError", "Email is already registered.");
+                hasError = true;
+            }
+
+            if (hasError) {
                 return "admin/customer/create";
             }
-            String avatar = imageFile != null && !imageFile.isEmpty() ?
-                    this.uploadService.handleSaveUploadFile(imageFile, "avatar") : null;
+
+            // Không có lỗi thì xử lý lưu
+            String avatar = (imageFile != null && !imageFile.isEmpty())
+                    ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
+                    : null;
+
             String hashPassword = this.passwordEncoder.encode(customer.getPassword());
             customer.setAvatar(avatar);
             customer.setPassword(hashPassword);
             customer.setStatus(true);
             customer.setRole(this.userService.getRoleByName("CUSTOMER"));
             this.userService.handleSaveUser(customer);
+
+            // Thêm thông báo thành công
+            redirectAttributes.addFlashAttribute("successMessage", "Account created successfully.");
         }
         // Trường hợp import từ Excel
         else {
@@ -161,7 +224,7 @@ public class UserController {
 
     @PostMapping("/admin/customer/import")
     public String importCustomersFromExcel(@RequestParam("excelFile") MultipartFile excelFile,
-                                           RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
             if (excelFile.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Please select an Excel file to import.");
@@ -176,33 +239,67 @@ public class UserController {
             int errorCount = 0;
             StringBuilder errorDetails = new StringBuilder();
             for (User user : customers) {
+                StringBuilder userErrors = new StringBuilder();
+            
+                // Kiểm tra email đã tồn tại
                 if (this.userService.checkEmailExist(user.getEmail())) {
-                    errorDetails.append("Email ").append(user.getEmail()).append(" already exists; ");
+                    userErrors.append("Email already exists; ");
+                }
+            
+                // Kiểm tra password
+                if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                    userErrors.append("Password is empty; ");
+                }
+            
+                // Kiểm tra số điện thoại (bắt đầu bằng 0 và đủ 10 số)
+                if (user.getPhone() == null || !user.getPhone().matches("^0\\d{9}$")) {
+                    userErrors.append("Phone number must start with 0 and have 10 digits; ");
+                }
+            
+                // Kiểm tra full name (tùy nếu bạn muốn bắt buộc)
+                if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+                    userErrors.append("Full name is empty; ");
+                }
+
+                //kiểm tra add rỗng
+                if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+                    userErrors.append("Address is empty");
+                }
+                
+            
+                // Nếu có lỗi thì ghi lại và bỏ qua bản ghi này
+                if (userErrors.length() > 0) {
                     errorCount++;
+                    errorDetails.append("User with email ").append(user.getEmail()).append(": ")
+                                .append(userErrors.toString()).append(" ");
                     continue;
                 }
+            
+                // Nếu không có lỗi, thì encode password và lưu
                 try {
                     user.setPassword(this.passwordEncoder.encode(user.getPassword()));
                     this.userService.handleSaveUser(user);
                     successCount++;
                 } catch (Exception e) {
-                    // Bỏ qua lỗi validation cho bản ghi này và ghi lại chi tiết
                     errorCount++;
-                    errorDetails.append("User with email ").append(user.getEmail()).append(": ").append(e.getMessage()).append("; ");
+                    errorDetails.append("User with email ").append(user.getEmail())
+                                .append(": ").append(e.getMessage()).append("; ");
                 }
             }
+            
             if (successCount > 0) {
-                redirectAttributes.addFlashAttribute("message", "Imported " + successCount + " customers successfully.");
+                redirectAttributes.addFlashAttribute("message",
+                        "Imported " + successCount + " customers successfully.");
             }
             if (errorCount > 0) {
-                redirectAttributes.addFlashAttribute("error", "Failed to import " + errorCount + " customers: " + errorDetails.toString());
+                redirectAttributes.addFlashAttribute("error",
+                        "Failed to import " + errorCount + " customers: " + errorDetails.toString());
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error importing Excel file: " + e.getMessage());
         }
         return "redirect:/admin/customer";
     }
-
     @GetMapping("/admin/customer/delete/{id}")
     public String getDeleteCustomerPage(Model model, @PathVariable long id) {
         model.addAttribute("id", id);
@@ -234,8 +331,8 @@ public class UserController {
 
     @PostMapping("/admin/customer/update")
     public String postUpdateUser(Model model, @ModelAttribute("newCustomer") @Valid User customer,
-                                 BindingResult newProductBindingResult,
-                                 @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newProductBindingResult,
+            @RequestParam("imagesFile") MultipartFile file) {
         Optional<User> customerOptional = this.userService.getUserById(customer.getId());
         User currentCustomer = customerOptional.orElse(null);
         if (currentCustomer != null) {
@@ -276,8 +373,8 @@ public class UserController {
 
     @PostMapping(value = "admin/employee/create")
     public String createEmployeePage(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-                                     BindingResult newUserBindingResult, HttpServletRequest request,
-                                     @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newUserBindingResult, HttpServletRequest request,
+            @RequestParam("imagesFile") MultipartFile file) {
         if (newUserBindingResult.hasErrors()) {
             return "admin/employee/create";
         }
@@ -308,8 +405,8 @@ public class UserController {
 
     @PostMapping("/admin/employee/update")
     public String postUpdateEmployee(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-                                     BindingResult newProductBindingResult,
-                                     @RequestParam("imagesFile") MultipartFile file) {
+            BindingResult newProductBindingResult,
+            @RequestParam("imagesFile") MultipartFile file) {
         Optional<User> employeeOptional = this.userService.getUserById(employee.getId());
         User currentEmployee = employeeOptional.orElse(null);
         if (currentEmployee != null) {

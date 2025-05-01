@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 import java.util.List;
-
 
 @Service
 public class ContactService {
@@ -17,29 +15,62 @@ public class ContactService {
     private ContactRepository contactRepository;
 
     public List<Contact> getAllContacts() {
-        return contactRepository.findAll();
+        return contactRepository.findAllByOrderByIdDesc();
     }
 
     public Contact getContactById(Long id) {
         Optional<Contact> contact = contactRepository.findById(id);
-        return contact.orElse(null); // Return null if contact not found
+        return contact.orElse(null);
     }
 
-    // Phương thức xóa contact theo ID
     public boolean deleteContact(Long id) {
-        // Kiểm tra xem contact có tồn tại hay không
         if (contactRepository.existsById(id)) {
-            contactRepository.deleteById(id); // Xóa contact
-            return true; // Trả về true khi xóa thành công
+            contactRepository.deleteById(id);
+            return true;
         }
-        return false; // Trả về false nếu không tìm thấy contact
+        return false;
     }
-
 
     public void saveContact(Contact contact) {
-        // Set status or other properties if needed
-        contact.setStatus(true);  // Set the status to true or whatever is appropriate
-        contactRepository.save(contact);  // Save contact to the database
+        contact.setStatus(true);
+        contactRepository.save(contact);
     }
 
+    public List<Contact> getContactsByUserId(Long userId) {
+        return contactRepository.findByUserId(userId);
+    }
+
+    // Count contacts where replyUpdatedAt is after notificationReadAt or notificationReadAt is null
+    public int countContactsWithRepliesByUserId(Long userId) {
+        List<Contact> contacts = contactRepository.findByUserId(userId);
+        int count = 0;
+        for (Contact contact : contacts) {
+            if (contact.getReplyMessage() != null) {
+                if (contact.getNotificationReadAt() == null || 
+                    (contact.getReplyUpdatedAt() != null && contact.getReplyUpdatedAt().isAfter(contact.getNotificationReadAt()))) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    // Mark notifications as read by setting notificationReadAt to now
+    public void clearReplyNotificationsByUserId(Long userId) {
+        List<Contact> contacts = contactRepository.findByUserId(userId);
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        for (Contact contact : contacts) {
+            if (contact.getReplyMessage() != null) {
+                contact.setNotificationReadAt(now);
+                contactRepository.save(contact);
+            }
+        }
+    }
+
+    // Update replyUpdatedAt and reset notificationReadAt when admin replies or edits
+    public void updateReplyNotification(Contact contact) {
+        contact.setReplyUpdatedAt(java.time.LocalDateTime.now());
+        contact.setNotificationReadAt(null);
+        contactRepository.save(contact);
+    }
 }

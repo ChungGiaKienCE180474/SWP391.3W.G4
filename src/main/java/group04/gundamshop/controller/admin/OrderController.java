@@ -1,29 +1,20 @@
 package group04.gundamshop.controller.admin;
 
 import java.util.List;
-// Import lớp List từ gói java.util, dùng để làm việc với danh sách.
 import java.util.Optional;
-// Import lớp Optional từ gói java.util, dùng để xử lý các giá trị có thể null.
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
-// Import annotation Controller từ Spring Framework, đánh dấu lớp này là một controller.
 import org.springframework.ui.Model;
-// Import interface Model từ Spring Framework, dùng để truyền dữ liệu từ controller đến view.
 import org.springframework.web.bind.annotation.GetMapping;
-// Import annotation GetMapping từ Spring Framework, ánh xạ các yêu cầu HTTP GET đến các phương thức xử lý.
 import org.springframework.web.bind.annotation.ModelAttribute;
-// Import annotation ModelAttribute từ Spring Framework, liên kết một tham số phương thức hoặc giá trị trả về phương thức đến một thuộc tính model.
 import org.springframework.web.bind.annotation.PathVariable;
-// Import annotation PathVariable từ Spring Framework, trích xuất giá trị từ một biến đường dẫn trong URI.
 import org.springframework.web.bind.annotation.PostMapping;
-// Import annotation PostMapping từ Spring Framework, ánh xạ các yêu cầu HTTP POST đến các phương thức xử lý.
-import group04.gundamshop.service.UserService;
-// Import interface UserService từ gói group04.gundamshop.service, định nghĩa các phương thức thao tác với người dùng.
-import group04.gundamshop.domain.User;
-// Import lớp User từ gói group04.gundamshop.domain, đại diện cho một người dùng.
+
 import group04.gundamshop.domain.Order;
-// Import lớp Order từ gói group04.gundamshop.domain, đại diện cho một đơn hàng.
+import group04.gundamshop.domain.User;
 import group04.gundamshop.service.OrderService;
+import group04.gundamshop.service.UserService;
 // Import interface OrderService từ gói group04.gundamshop.service, định nghĩa các phương thức thao tác với đơn hàng.
 
 /**
@@ -169,5 +160,52 @@ public class OrderController {
         // Trả về đường dẫn trang hiển thị lịch sử mua hàng của khách hàng
         return "admin/customer/purchaseHistory";
         // Trả về tên view để hiển thị trang lịch sử mua hàng.
+    }
+
+    @GetMapping("/customer/order/cancelled")
+    public String getCancelledOrders(Model model) {
+        List<Order> cancelledOrders = orderService.getCancelledOrders().stream()
+                .sorted((o1, o2) -> Long.compare(o2.getId(), o1.getId())) // Sort by ID descending
+                .collect(Collectors.toList());
+        model.addAttribute("orders", cancelledOrders);
+        return "customer/order/cancelled";
+    }
+
+    @GetMapping("/customer/order/rated")
+    public String getRatedOrders(Model model) {
+        List<Order> ratedOrders = orderService.getRatedOrders().stream()
+                .sorted((o1, o2) -> Long.compare(o2.getId(), o1.getId())) // Sort by ID descending
+                .collect(Collectors.toList());
+        model.addAttribute("orders", ratedOrders);
+        return "customer/order/rated";
+    }
+
+    @GetMapping("/customer/order/unrated")
+    public String getUnratedOrders(Model model) {
+        List<Order> unratedOrders = orderService.getUnratedOrders().stream()
+                .sorted((o1, o2) -> Long.compare(o2.getId(), o1.getId())) // Sort by ID descending
+                .collect(Collectors.toList());
+        model.addAttribute("orders", unratedOrders);
+        return "customer/order/unrated";
+    }
+
+    @GetMapping("/customer/order/history")
+    public String getOrderHistory(Model model) {
+        List<Order> historyOrders = orderService.fetchAllOrders().stream()
+                .filter(order -> "COMPLETE".equals(order.getStatus()) || "CANCEL".equals(order.getStatus()))
+                .sorted((o1, o2) -> Long.compare(o2.getId(), o1.getId())) // Sort by ID descending
+                .collect(Collectors.toList());
+        model.addAttribute("orders", historyOrders);
+        return "customer/order/history";
+    }
+
+    @GetMapping("/customer/order/tracking")
+    public String getOrderTracking(Model model) {
+        List<Order> trackingOrders = orderService.fetchAllOrders().stream()
+                .filter(order -> !"COMPLETE".equals(order.getStatus()) && !"CANCEL".equals(order.getStatus()))
+                .sorted((o1, o2) -> Long.compare(o2.getId(), o1.getId())) // Sort by ID descending
+                .collect(Collectors.toList());
+        model.addAttribute("orders", trackingOrders);
+        return "customer/order/tracking";
     }
 }

@@ -1,8 +1,11 @@
 package group04.gundamshop.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,8 +31,15 @@ public class News {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @Column(name = "status", nullable = false)
     private boolean status = true;
+
+    @Column(name = "reference_links", columnDefinition = "TEXT")
+    @Convert(converter = group04.gundamshop.domain.StringListConverter.class)
+    private List<String> referenceLinks = new ArrayList<>();
 
     public News() {}
 
@@ -57,6 +67,12 @@ public class News {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
     public boolean isStatus() { return status; }
     public void setStatus(boolean status) { this.status = status; }
+
+    public List<String> getReferenceLinks() { return referenceLinks; }
+    public void setReferenceLinks(List<String> referenceLinks) { this.referenceLinks = referenceLinks; }
 } 

@@ -54,7 +54,7 @@ public class HomePageController {
         // Lấy danh sách sản phẩm, danh mục và tin tức từ service
         List<Product> products = this.productService.fetchProducts();
         List<Category> categories = this.categoryService.getCategoryByStatus(true); // Lấy danh mục đang hoạt động
-        List<News> newsList = this.newsService.getAllNews(); // Lấy tất cả tin tức từ NewsService
+        List<News> newsList = this.newsService.getActiveNews(); // Lấy tin tức đang hoạt động từ NewsService
 
         // Thêm các danh sách vào model để hiển thị trong view
         model.addAttribute("products", products);

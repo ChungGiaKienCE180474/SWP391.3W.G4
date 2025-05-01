@@ -8,8 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "contact")
@@ -19,12 +20,16 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull
-    @Size(min = 10, max = 20)
-    private String phoneNumber;
-
+    @NotBlank(message = "Subject Name is required")
+    @Pattern(regexp = "^\\p{L}.*", message = "Subject Name must start with a letter")
     private String subjectName;
+
+    @NotBlank(message = "Note is required")
+    @Pattern(regexp = "^\\p{L}.*", message = "Note must start with a letter")
     private String note;
+
+    @Column(name = "reply_message")
+    private String replyMessage;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,6 +40,15 @@ public class Contact {
 
     private boolean status;
 
+    @Column(name = "notification_read", nullable = false)
+    private boolean notificationRead = false;
+
+    @Column(name = "reply_updated_at")
+    private java.time.LocalDateTime replyUpdatedAt;
+
+    @Column(name = "notification_read_at")
+    private java.time.LocalDateTime notificationReadAt;
+
     // Getters and setters for all fields
     public long getId() {
         return id;
@@ -42,14 +56,6 @@ public class Contact {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getSubjectName() {
@@ -66,6 +72,14 @@ public class Contact {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getReplyMessage() {
+        return replyMessage;
+    }
+
+    public void setReplyMessage(String replyMessage) {
+        this.replyMessage = replyMessage;
     }
 
     public User getUser() {
@@ -93,9 +107,33 @@ public class Contact {
         this.status = status;
     }
 
+    public boolean isNotificationRead() {
+        return notificationRead;
+    }
+
+    public void setNotificationRead(boolean notificationRead) {
+        this.notificationRead = notificationRead;
+    }
+
+    public java.time.LocalDateTime getReplyUpdatedAt() {
+        return replyUpdatedAt;
+    }
+
+    public void setReplyUpdatedAt(java.time.LocalDateTime replyUpdatedAt) {
+        this.replyUpdatedAt = replyUpdatedAt;
+    }
+
+    public java.time.LocalDateTime getNotificationReadAt() {
+        return notificationReadAt;
+    }
+
+    public void setNotificationReadAt(java.time.LocalDateTime notificationReadAt) {
+        this.notificationReadAt = notificationReadAt;
+    }
+
     @Override
     public String toString() {
-        return "Contact [id=" + id + ", phoneNumber=" + phoneNumber
-                + ", subjectName=" + subjectName + ", note=" + note + ", user=" + user + ", status=" + status + "]";
+        return "Contact [id=" + id
+                + ", subjectName=" + subjectName + ", note=" + note + ", replyMessage=" + replyMessage + ", user=" + user + ", status=" + status + ", notificationRead=" + notificationRead + "]";
     }
 }

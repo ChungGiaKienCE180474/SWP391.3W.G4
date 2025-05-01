@@ -229,20 +229,20 @@
                                     <div class="mb-2"><b>Sorting</b></div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" id="sort-1"
-                                            value="gia-tang-dan" name="radio-sort"
-                                            <c:if test="${param.sort == 'gia-tang-dan'}">checked</c:if>>
+                                            value="priceAsc" name="radio-sort"
+                                            <c:if test="${param.sort == 'priceAsc'}">checked</c:if>>
                                         <label class="form-check-label" for="sort-1">Price increase</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" id="sort-2"
-                                            value="gia-giam-dan" name="radio-sort"
-                                            <c:if test="${param.sort == 'gia-giam-dan'}">checked</c:if>>
+                                            value="priceDesc" name="radio-sort"
+                                            <c:if test="${param.sort == 'priceDesc'}">checked</c:if>>
                                         <label class="form-check-label" for="sort-2">Price decrease</label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" id="sort-3"
-                                            value="gia-nothing" name="radio-sort"
-                                            <c:if test="${param.sort == null || param.sort == 'gia-nothing'}">checked</c:if>>
+                                            value="priceNone" name="radio-sort"
+                                            <c:if test="${param.sort == null || param.sort == 'priceNone'}">checked</c:if>>
                                         <label class="form-check-label" for="sort-3">Non sorting</label>
                                     </div>
                                 </div>
@@ -386,6 +386,40 @@
             const sort = document.querySelector('input[name="radio-sort"]:checked');
             if (sort) {
                 params.set('sort', sort.value);
+            }
+
+            // Add scale filter
+            const scaleElements = document.querySelectorAll('select[name="scale"] option:checked');
+            if (scaleElements.length > 0) {
+                const scaleValues = Array.from(scaleElements).map(el => el.value).join(',');
+                params.set('scale', scaleValues);
+            }
+
+            // Add material filter
+            const materialElements = document.querySelectorAll('select[name="material"] option:checked');
+            if (materialElements.length > 0) {
+                const materialValues = Array.from(materialElements).map(el => el.value).join(',');
+                params.set('material', materialValues);
+            }
+
+            // Add dimensionsMin and dimensionsMax filter
+            const dimensionsMin = document.querySelector('input[name="dimensionsMin"]');
+            const dimensionsMax = document.querySelector('input[name="dimensionsMax"]');
+            if (dimensionsMin && dimensionsMin.value.trim() !== '') {
+                params.set('dimensionsMin', dimensionsMin.value.trim());
+            }
+            if (dimensionsMax && dimensionsMax.value.trim() !== '') {
+                params.set('dimensionsMax', dimensionsMax.value.trim());
+            }
+
+            // Add weightMin and weightMax filter
+            const weightMin = document.querySelector('input[name="weightMin"]');
+            const weightMax = document.querySelector('input[name="weightMax"]');
+            if (weightMin && weightMin.value.trim() !== '') {
+                params.set('weightMin', weightMin.value.trim());
+            }
+            if (weightMax && weightMax.value.trim() !== '') {
+                params.set('weightMax', weightMax.value.trim());
             }
 
             // Reset to first page on filter change

@@ -6,8 +6,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import group04.gundamshop.domain.Category;
 import group04.gundamshop.domain.Product;
-import group04.gundamshop.domain.Product;
-import group04.gundamshop.domain.Order;
 import group04.gundamshop.domain.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -16,19 +14,31 @@ public class ProductSpecs {
 
     // Product Specifications
     public static Specification<Product> nameLike(String name) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("name"), "%" + name + "%");
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.like(root.get("name"), "%" + name + "%");
+        };
     }
 
     public static Specification<Product> minPrice(double price) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.ge(root.get("price"), price);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.ge(root.get("price"), price);
+        };
     }
 
     public static Specification<Product> maxPrice(double price) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.le(root.get("price"), price);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.le(root.get("price"), price);
+        };
     }
 
     public static Specification<Product> matchFactory(Long factoryId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("factory").get("id"), factoryId);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.equal(root.get("factory").get("id"), factoryId);
+        };
     }
 
     public static Specification<Product> matchListFactory(List<Long> factoryIds) {
@@ -54,33 +64,97 @@ public class ProductSpecs {
     }
 
     public static Specification<Product> matchPrice(double min, double max) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.and(
                 criteriaBuilder.gt(root.get("price"), min),
                 criteriaBuilder.le(root.get("price"), max));
+        };
     }
 
     public static Specification<Product> matchMultiplePrice(double min, double max) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.between(
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.between(
                 root.get("price"), min, max);
+        };
     }
 
     public static Specification<Product> matchStatus(boolean status) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
     }
 
     // Thêm specification để lọc theo categoryId
     public static Specification<Product> matchCategoryId(Long categoryId) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("category").get("id"),
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.equal(root.get("category").get("id"),
                 categoryId);
+        };
+    }
+
+    public static Specification<Product> matchScale(String scale) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.like(root.get("scale"), "%" + scale + "%");
+        };
+    }
+
+    public static Specification<Product> matchMaterial(String material) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.like(root.get("material"), "%" + material + "%");
+        };
+    }
+
+    public static Specification<Product> matchDimensions(String dimensions) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.like(root.get("dimensions").as(String.class), "%" + dimensions + "%");
+        };
+    }
+
+    public static Specification<Product> matchDimensionsRange(Double min, Double max) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            String minStr = min.toString();
+            String maxStr = max.toString();
+            return criteriaBuilder.between(root.get("dimensions").as(String.class), minStr, maxStr);
+        };
+    }
+
+    public static Specification<Product> matchWeight(String weight) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.like(root.get("weight").as(String.class), "%" + weight + "%");
+        };
+    }
+
+    public static Specification<Product> matchWeightRange(Double min, Double max) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            String minStr = min.toString();
+            String maxStr = max.toString();
+            return criteriaBuilder.between(root.get("weight").as(String.class), minStr, maxStr);
+        };
     }
 
     // Order Specifications
     public static Specification<Order> matchOrderStatus(String status) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.equal(root.get("status"), status);
+        };
     }
 
     public static Specification<Order> matchAnyOrderStatus() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            return criteriaBuilder.conjunction();
+        };
     }
 
     public static Specification<Product> matchNameOrCategory(String keyword) {

@@ -6,10 +6,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
 
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
@@ -41,6 +43,23 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "target_id")
     private Target target;
+
+    @NotNull(message = "Scale is required")
+    @Pattern(regexp = "^1:\\d+$", message = "Scale must be in format 1:number, e.g. 1:6")
+    private String scale;
+
+    @NotNull(message = "Material is required")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Material must contain only letters")
+    private String material;
+
+    @NotNull(message = "Dimensions is required")
+    @DecimalMin(value = "0", inclusive = true, message = "Dimensions must be non-negative")
+    private Double dimensions;
+
+    @NotNull(message = "Weight is required")
+    @DecimalMin(value = "0", inclusive = true, message = "Weight must be non-negative")
+    private Double weight;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean status;
@@ -133,6 +152,38 @@ public class Product {
         this.target = target;
     }
 
+    public String getScale() {
+        return scale;
+    }
+
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public Double getDimensions() {
+        return dimensions;
+    }
+
+    public void setDimensions(Double dimensions) {
+        this.dimensions = dimensions;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -159,12 +210,26 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product [id=" + id + ", category=" + category + ", name=" + name + ", price=" + price + ", image="
+        return "Product [id=" + id + ", categoryId=" + (category != null ? category.getId() : null) + ", name=" + name + ", price=" + price + ", image="
                 + image + ", detailDesc=" + detailDesc + ", shortDesc=" + shortDesc + ", quantity=" + quantity
 
-                + ", sold=" + sold + ", factory=" + factory + ", target=" + target + ", createdAt=" + createdAt
+                + ", sold=" + sold + ", factory=" + factory + ", target=" + target + ", scale=" + scale + ", material=" + material + ", dimensions=" + dimensions + ", weight=" + weight + ", createdAt=" + createdAt
                 + ", updatedAt=" + updatedAt + ", status=" + status + "]";
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return id == product.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 
 }

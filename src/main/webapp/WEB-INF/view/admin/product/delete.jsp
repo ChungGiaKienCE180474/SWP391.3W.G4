@@ -63,7 +63,7 @@
                                             <!-- Tạo một cột chiếm 12 đơn vị và căn giữa theo chiều ngang. -->
                                             <div class="d-flex justify-content-between">
                                                 <!-- Tạo một div với display flex và căn chỉnh nội dung theo chiều ngang. -->
-                                                <h3>Delete the product with id = ${id}</h3>
+                                                <h3>Delete the product with name = ${productName}</h3>
                                                 <!-- Tiêu đề trang, hiển thị ID của sản phẩm. -->
                                             </div>
 

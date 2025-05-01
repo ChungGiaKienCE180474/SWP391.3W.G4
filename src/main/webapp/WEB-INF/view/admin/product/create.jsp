@@ -25,7 +25,61 @@
                 $("#productPreview").css({ "display": "block" });
             });
         });
+    
+        function isValidText(text) {
+            const trimmed = text.trim();
+    
+            // Phải có ít nhất 1 chữ cái
+            if (!/[a-zA-Z]/.test(trimmed)) return false;
+    
+            // Không được có 2 dấu cách liên tiếp
+            if (/[\s]{2,}/.test(text)) return false;
+    
+            // Không được có 2 ký tự đặc biệt liên tiếp
+            if (/[^a-zA-Z0-9\s]{2,}/.test(text)) return false;
+    
+            return true;
+        }
+    
+        function validateForm() {
+            const name = document.querySelector('[name="name"]').value.trim();
+            const detailDesc = document.querySelector('[name="detailDesc"]').value.trim();
+            const shortDesc = document.querySelector('[name="shortDesc"]').value.trim();
+            const quantity = document.querySelector('[name="quantity"]').value;
+            const image = document.querySelector('#productFile').files.length;
+    
+            let errors = [];
+    
+            if (!isValidText(name)) {
+                errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
+            }
+    
+            if (detailDesc.length < 10 ) {
+                errors.push("Detail description must be at least 10 characters.");
+            }
+
+    
+            if (!quantity || quantity <= 0) {
+                errors.push("Quantity must be greater than 0.");
+            }
+    
+            if (image === 0) {
+                errors.push("Please select a product image.");
+            }
+    
+            if (errors.length > 0) {
+                alert(errors.join("\n"));
+                return false;
+            }
+    
+            return true;
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("form").onsubmit = validateForm;
+        });
     </script>
+    
 </head>
 
 <body class="sb-nav-fixed">
@@ -44,7 +98,6 @@
                             <div class="col-md-6 col-12 mx-auto">
                                 <h3>Create a Product</h3>
                                 <hr />
-                                <!-- Hiển thị thông báo lỗi chung nếu có -->
                                 <c:if test="${not empty error}">
                                     <div class="alert alert-danger">${error}</div>
                                 </c:if>
@@ -53,7 +106,7 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Name:</label>
                                         <form:input type="text" class="form-control" path="name" 
-                                                    required="true" minlength="4" 
+                                                    required="required" minlength="4"
                                                     oninvalid="this.setCustomValidity('Product name must be at least 4 characters')" 
                                                     oninput="this.setCustomValidity('')" />
                                         <form:errors path="name" cssClass="text-danger" />
@@ -61,22 +114,25 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Price:</label>
                                         <form:input type="number" class="form-control" path="price" 
-                                                    required="true" min="1001" 
+                                                    required="required" min="1001"
                                                     oninvalid="this.setCustomValidity('Price must be greater than 1000 VND')" 
                                                     oninput="this.setCustomValidity('')" />
                                         <form:errors path="price" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label class="form-label">Detail description:</label>
-                                        <form:textarea class="form-control" path="detailDesc" />
+                                        <form:textarea class="form-control" path="detailDesc"
+                                                       required="required" minlength="10" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Short description:</label>
-                                        <form:input type="text" class="form-control" path="shortDesc" />
+                                        <form:input type="text" class="form-control" path="shortDesc"
+                                                    required="required" minlength="10" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Quantity:</label>
-                                        <form:input type="number" min="0" class="form-control" path="quantity" />
+                                        <form:input type="number" min="1" class="form-control" path="quantity"
+                                                    required="required" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Factory:</label>
@@ -103,9 +159,29 @@
                                         </form:select>
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Scale:</label>
+                                        <form:input type="text" class="form-control" path="scale" />
+                                        <form:errors path="scale" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Material:</label>
+                                        <form:input type="text" class="form-control" path="material" />
+                                        <form:errors path="material" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Dimensions:</label>
+                                        <form:input type="number" class="form-control" path="dimensions" min="0" step="any" />
+                                        <form:errors path="dimensions" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Weight:</label>
+                                        <form:input type="number" class="form-control" path="weight" min="0" step="any" />
+                                        <form:errors path="weight" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
                                         <label for="productFile" class="form-label">Image:</label>
                                         <input class="form-control" type="file" id="productFile" 
-                                               accept=".png, .jpg, .jpeg" name="productFile" />
+                                               accept=".png, .jpg, .jpeg" name="productFile" required="required" />
                                     </div>
                                     <div class="col-12 mb-3">
                                         <img style="max-height: 250px; display: none;" alt="product preview" 

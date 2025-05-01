@@ -57,8 +57,8 @@
                                         <table class=" table table-bordered table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
                                                     <th>Name</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

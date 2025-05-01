@@ -1,19 +1,21 @@
 package group04.gundamshop.service;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+
 import group04.gundamshop.domain.Order;
 import group04.gundamshop.domain.OrderDetail;
 import group04.gundamshop.domain.User;
 import group04.gundamshop.repository.OrderDetailRepository;
 import group04.gundamshop.repository.OrderRepository;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class OrderService {
@@ -39,8 +41,6 @@ public class OrderService {
     public Optional<Order> fetchOrderById(long id) {
         return this.orderRepository.findById(id);
     }
-    
-    
 
     public void deleteOrderById(long id) {
         Optional<Order> orderOptional = this.fetchOrderById(id);
@@ -58,7 +58,16 @@ public class OrderService {
         Optional<Order> orderOptional = this.fetchOrderById(order.getId());
         if (orderOptional.isPresent()) {
             Order currentOrder = orderOptional.get();
-            currentOrder.setStatus(order.getStatus());
+            String newStatus = order.getStatus();
+            currentOrder.setStatus(newStatus);
+
+            // Thiết lập thời gian hoàn thành hoặc hủy
+            if ("COMPLETE".equals(newStatus)) {
+                currentOrder.setCompleteDate(LocalDateTime.now());
+            } else if ("CANCEL".equals(newStatus)) {
+                currentOrder.setCancelDate(LocalDateTime.now());
+            }
+
             this.orderRepository.save(currentOrder);
         }
     }
@@ -106,7 +115,16 @@ public class OrderService {
     public List<Order> getOrdersByUserAndStatusNot(User user, String excludedStatus) {
         return orderRepository.findByUserAndStatusNot(user, excludedStatus);
     }
-    
-    
-}
 
+    public List<Order> getCancelledOrders() {
+        return orderRepository.findByStatus("CANCEL");
+    }
+
+    public List<Order> getRatedOrders() {
+        return orderRepository.findOrdersWithRatedDetails();
+    }
+
+    public List<Order> getUnratedOrders() {
+        return orderRepository.findOrdersWithUnratedDetails();
+    }
+}

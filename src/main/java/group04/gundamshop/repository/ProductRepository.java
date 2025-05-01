@@ -61,6 +61,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @org.springframework.data.jpa.repository.Modifying
     @org.springframework.data.jpa.repository.Query("UPDATE Product p SET p.factory = null WHERE p.factory.id = :factoryId")
     void unsetFactoryByFactoryId(@org.springframework.data.repository.query.Param("factoryId") Long factoryId);
+
+    @Query("SELECT DISTINCT p.scale FROM Product p WHERE p.scale IS NOT NULL")
+    List<String> findDistinctScales();
+
+    @Query("SELECT DISTINCT p.material FROM Product p WHERE p.material IS NOT NULL")
+    List<String> findDistinctMaterials();
 }
 
 

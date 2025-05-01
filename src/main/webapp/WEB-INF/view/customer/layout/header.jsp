@@ -186,8 +186,8 @@
                                             <li><a class="dropdown-item"
                                                     href="/customer/profile/${sessionScope.id}">Account Management</a>
                                             </li>
-                                            <a href="/order-tracking" class="dropdown-item">Track Shipping</a>
-                                            <li><a class="dropdown-item" href="/order-history">Purchase History</a></li>
+                                            <a href="/customer/order/tracking" class="dropdown-item">Order Management</a>
+                                            <!-- <li><a class="dropdown-item" href="/order-history">Purchase History</a></li> -->
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>

@@ -80,16 +80,77 @@ public class ProductService {
             Specification<Product> currentSpecs = ProductSpecs.matchListFactory(factoryIds);
             combinedSpec = combinedSpec.and(currentSpecs);
         }
-        if (productCriteriaDTO.getPrice() != null && productCriteriaDTO.getPrice().isPresent()) {
+        // Apply price range filter if priceMin or priceMax is present
+        if (productCriteriaDTO.getPriceMin() != null && productCriteriaDTO.getPriceMin().isPresent()
+                && productCriteriaDTO.getPriceMax() != null && productCriteriaDTO.getPriceMax().isPresent()) {
+            Specification<Product> priceRangeSpec = ProductSpecs.matchMultiplePrice(
+                    productCriteriaDTO.getPriceMin().get(), productCriteriaDTO.getPriceMax().get());
+            combinedSpec = combinedSpec.and(priceRangeSpec);
+        } else if (productCriteriaDTO.getPrice() != null && productCriteriaDTO.getPrice().isPresent()) {
             Specification<Product> currentSpecs = this.buildPriceSpecification(productCriteriaDTO.getPrice().get());
             combinedSpec = combinedSpec.and(currentSpecs);
+        }
+        if (productCriteriaDTO.getScale() != null && productCriteriaDTO.getScale().isPresent()) {
+            Specification<Product> scaleSpec = ProductSpecs.matchScale(productCriteriaDTO.getScale().get());
+            combinedSpec = combinedSpec.and(scaleSpec);
+        }
+        if (productCriteriaDTO.getMaterial() != null && productCriteriaDTO.getMaterial().isPresent()) {
+            Specification<Product> materialSpec = ProductSpecs.matchMaterial(productCriteriaDTO.getMaterial().get());
+            combinedSpec = combinedSpec.and(materialSpec);
+        }
+        // Apply dimensions range filter if dimensionsMin or dimensionsMax is present
+        if ((productCriteriaDTO.getDimensionsMin() != null && productCriteriaDTO.getDimensionsMin().isPresent())
+                || (productCriteriaDTO.getDimensionsMax() != null && productCriteriaDTO.getDimensionsMax().isPresent())) {
+            Double min = productCriteriaDTO.getDimensionsMin().orElse(Double.MIN_VALUE);
+            Double max = productCriteriaDTO.getDimensionsMax().orElse(Double.MAX_VALUE);
+            Specification<Product> dimensionsRangeSpec = ProductSpecs.matchDimensionsRange(min, max);
+            combinedSpec = combinedSpec.and(dimensionsRangeSpec);
+        } else if (productCriteriaDTO.getDimensions() != null && productCriteriaDTO.getDimensions().isPresent()) {
+            Specification<Product> dimensionsSpec = ProductSpecs.matchDimensions(productCriteriaDTO.getDimensions().get());
+            combinedSpec = combinedSpec.and(dimensionsSpec);
+        }
+        // Apply weight range filter if weightMin or weightMax is present
+        if ((productCriteriaDTO.getWeightMin() != null && productCriteriaDTO.getWeightMin().isPresent())
+                || (productCriteriaDTO.getWeightMax() != null && productCriteriaDTO.getWeightMax().isPresent())) {
+            Double min = productCriteriaDTO.getWeightMin().orElse(Double.MIN_VALUE);
+            Double max = productCriteriaDTO.getWeightMax().orElse(Double.MAX_VALUE);
+            Specification<Product> weightRangeSpec = ProductSpecs.matchWeightRange(min, max);
+            combinedSpec = combinedSpec.and(weightRangeSpec);
+        } else if (productCriteriaDTO.getWeight() != null && productCriteriaDTO.getWeight().isPresent()) {
+            Specification<Product> weightSpec = ProductSpecs.matchWeight(productCriteriaDTO.getWeight().get());
+            combinedSpec = combinedSpec.and(weightSpec);
         }
         Specification<Product> distinctSpec = (root, query, criteriaBuilder) -> {
             query.distinct(true);
             return criteriaBuilder.conjunction();
         };
         combinedSpec = combinedSpec.and(distinctSpec);
-        return this.productRepository.findAll(combinedSpec, page);
+
+        // Apply sorting if sort parameter is present
+        if (productCriteriaDTO.getSort() != null && productCriteriaDTO.getSort().isPresent()) {
+            String sortField = productCriteriaDTO.getSort().get();
+            org.springframework.data.domain.Sort sort;
+            switch (sortField) {
+                case "priceAsc":
+                    sort = org.springframework.data.domain.Sort.by("price").ascending();
+                    break;
+                case "priceDesc":
+                    sort = org.springframework.data.domain.Sort.by("price").descending();
+                    break;
+                case "nameAsc":
+                    sort = org.springframework.data.domain.Sort.by("name").ascending();
+                    break;
+                case "nameDesc":
+                    sort = org.springframework.data.domain.Sort.by("name").descending();
+                    break;
+                default:
+                    sort = org.springframework.data.domain.Sort.unsorted();
+            }
+            Pageable sortedPageable = org.springframework.data.domain.PageRequest.of(page.getPageNumber(), page.getPageSize(), sort);
+            return productRepository.findAll(combinedSpec, sortedPageable);
+        }
+
+        return productRepository.findAll(combinedSpec, page);
     }
 
     public List<Long> getAllFactories() {
@@ -114,6 +175,14 @@ public class ProductService {
 
     public List<Target> getAllTargetObjects() {
         return targetRepository.findAll();
+    }
+
+    public List<String> getAllScales() {
+        return productRepository.findDistinctScales();
+    }
+
+    public List<String> getAllMaterials() {
+        return productRepository.findDistinctMaterials();
     }
 
     public Specification<Product> buildPriceSpecification(List<String> price) {
@@ -344,6 +413,22 @@ public class ProductService {
         if (productCriteriaDTO.getPrice() != null && productCriteriaDTO.getPrice().isPresent()) {
             Specification<Product> priceSpec = this.buildPriceSpecification(productCriteriaDTO.getPrice().get());
             combinedSpec = combinedSpec.and(priceSpec);
+        }
+        if (productCriteriaDTO.getScale() != null && productCriteriaDTO.getScale().isPresent()) {
+            Specification<Product> scaleSpec = ProductSpecs.matchScale(productCriteriaDTO.getScale().get());
+            combinedSpec = combinedSpec.and(scaleSpec);
+        }
+        if (productCriteriaDTO.getMaterial() != null && productCriteriaDTO.getMaterial().isPresent()) {
+            Specification<Product> materialSpec = ProductSpecs.matchMaterial(productCriteriaDTO.getMaterial().get());
+            combinedSpec = combinedSpec.and(materialSpec);
+        }
+        if (productCriteriaDTO.getDimensions() != null && productCriteriaDTO.getDimensions().isPresent()) {
+            Specification<Product> dimensionsSpec = ProductSpecs.matchDimensions(productCriteriaDTO.getDimensions().get());
+            combinedSpec = combinedSpec.and(dimensionsSpec);
+        }
+        if (productCriteriaDTO.getWeight() != null && productCriteriaDTO.getWeight().isPresent()) {
+            Specification<Product> weightSpec = ProductSpecs.matchWeight(productCriteriaDTO.getWeight().get());
+            combinedSpec = combinedSpec.and(weightSpec);
         }
         Specification<Product> distinctSpec = (root, query, criteriaBuilder) -> {
             query.distinct(true);

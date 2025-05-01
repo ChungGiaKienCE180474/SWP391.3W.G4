@@ -52,6 +52,11 @@ public class TargetController {
     @PostMapping("/admin/target/create")
     public String createTarget(Model model, @ModelAttribute("newTarget") @Valid Target target,
             BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Check for duplicate name
+        Target existingTarget = targetService.getTargetByName(target.getName());
+        if (existingTarget != null) {
+            bindingResult.rejectValue("name", "error.target", "Target name already exists.");
+        }
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
@@ -77,6 +82,11 @@ public class TargetController {
     @PostMapping("/admin/target/update")
     public String postUpdateTarget(Model model, @ModelAttribute("newTarget") @Valid Target target,
             BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Check for duplicate name excluding current target
+        Target existingTarget = targetService.getTargetByName(target.getName());
+        if (existingTarget != null && existingTarget.getId() != target.getId()) {
+            bindingResult.rejectValue("name", "error.target", "Target name already exists.");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("newTarget", target);
             return "admin/target/update";

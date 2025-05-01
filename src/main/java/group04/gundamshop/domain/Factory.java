@@ -48,4 +48,17 @@ public class Factory {
     public String toString() {
         return "Factory [id=" + id + ", name=" + name + "]";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Factory)) return false;
+        Factory other = (Factory) o;
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }

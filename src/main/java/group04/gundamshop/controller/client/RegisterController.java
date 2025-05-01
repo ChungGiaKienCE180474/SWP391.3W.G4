@@ -49,28 +49,46 @@ public class RegisterController {
     public String getRegisterPage(Model model) {
         logger.info("Accessing register page");
         model.addAttribute("registerUser", new RegisterDTO());
+        // Clear any existing messages to prevent displaying stale errors
+        model.addAttribute("message", null);
         return "authentication/register";
     }
 
     @PostMapping("/register")
     public String registerUser(Model model, @ModelAttribute("registerUser") @Valid RegisterDTO registerDTO,
-                               BindingResult bindingResult, HttpServletRequest request) {
+            BindingResult bindingResult, HttpServletRequest request) {
         logger.info("Processing registration for email: {}", registerDTO.getEmail());
         logger.debug("Password: [{}]", registerDTO.getPassword());
         logger.debug("ConfirmPassword: [{}]", registerDTO.getConfirmPassword());
-        logger.debug("isPasswordMatching: {}", registerDTO.isPasswordMatching());
+
+        // Check if passwords match
+        if (!registerDTO.getPassword().equals(registerDTO.getConfirmPassword())) {
+            logger.warn("Passwords do not match for email: {}", registerDTO.getEmail());
+            model.addAttribute("passwordMismatch", true);
+            model.addAttribute("registerUser", registerDTO);
+            return "authentication/register";
+        }
 
         if (bindingResult.hasErrors()) {
             logger.error("Validation errors occurred:");
-            bindingResult.getAllErrors().forEach(error -> 
-                logger.error("Validation error: {}", error.getDefaultMessage()));
+            bindingResult.getAllErrors()
+                    .forEach(error -> logger.error("Validation error: {}", error.getDefaultMessage()));
+            model.addAttribute("registerUser", registerDTO);
             return "authentication/register";
         }
 
         if (userService.checkEmailExist(registerDTO.getEmail())) {
             logger.warn("Email {} is already registered", registerDTO.getEmail());
-            request.setAttribute("message", "Email is already registered. Try logging in.");
-            return "redirect:/register?exist";
+            model.addAttribute("message", "Email is already registered. Try logging in.");
+            model.addAttribute("registerUser", registerDTO);
+            return "authentication/register";
+        }
+
+        if (userService.checkPhoneExist(registerDTO.getPhone())) {
+            logger.warn("Phone number {} is already registered", registerDTO.getPhone());
+            model.addAttribute("message", "Phone number is already registered. Please use a different phone number.");
+            model.addAttribute("registerUser", registerDTO);
+            return "authentication/register";
         }
 
         HttpSession mySession = request.getSession();
@@ -83,7 +101,8 @@ public class RegisterController {
             logger.info("Stored RegisterDTO in session for email: {}", email);
         } catch (JsonProcessingException e) {
             logger.error("Failed to serialize RegisterDTO for email: {}", email, e);
-            request.setAttribute("message", "Error processing registration. Please try again.");
+            model.addAttribute("message", "Error processing registration. Please try again.");
+            model.addAttribute("registerUser", registerDTO);
             return "authentication/register";
         }
 
@@ -109,7 +128,8 @@ public class RegisterController {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
             message.setSubject("GUNDAM SHOP - One-Time Password (OTP) Verification");
             message.setText("Dear Customer,\n\nYour One-Time Password (OTP) for registration is: " + otpValue +
-                    "\n\nPlease enter this code to complete your registration. For security reasons, do not share this code with anyone.\n\n" +
+                    "\n\nPlease enter this code to complete your registration. For security reasons, do not share this code with anyone.\n\n"
+                    +
                     "Thank you for choosing GUNDAM SHOP!\n\n" +
                     "Best regards,\nGUNDAM SHOP Team");
 
@@ -118,7 +138,8 @@ public class RegisterController {
 
         } catch (MessagingException e) {
             logger.error("Failed to send OTP email to: {}", email, e);
-            request.setAttribute("message", "Failed to send OTP. Please try again.");
+            model.addAttribute("message", "Failed to send OTP. Please try again.");
+            model.addAttribute("registerUser", registerDTO);
             return "authentication/register";
         }
 
@@ -132,7 +153,7 @@ public class RegisterController {
 
         if (registerDTOJson == null) {
             logger.warn("Session expired or no RegisterDTO found");
-            request.setAttribute("message", "Session expired. Please register again.");
+            model.addAttribute("message", "Session expired. Please register again.");
             return "redirect:/register";
         }
 

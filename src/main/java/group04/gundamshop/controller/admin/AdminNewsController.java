@@ -38,7 +38,22 @@ public class AdminNewsController {
      */
     @GetMapping
     public String showNewsList(Model model) {
-        model.addAttribute("newsList", newsService.getAllNews());
+        java.util.List<News> newsList = newsService.getAllNews();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd 'at' HH:mm");
+        java.util.List<java.util.Map<String, Object>> formattedNewsList = new java.util.ArrayList<>();
+        for (News news : newsList) {
+            java.util.Map<String, Object> newsMap = new java.util.HashMap<>();
+            newsMap.put("id", news.getId());
+            newsMap.put("title", news.getTitle());
+            newsMap.put("content", news.getContent());
+            newsMap.put("imageUrl", news.getImageUrl());
+            newsMap.put("status", news.isStatus());
+            newsMap.put("referenceLinks", news.getReferenceLinks());
+            newsMap.put("createdAtFormatted", news.getCreatedAt() != null ? news.getCreatedAt().format(formatter) : null);
+            newsMap.put("updatedAtFormatted", news.getUpdatedAt() != null ? news.getUpdatedAt().format(formatter) : null);
+            formattedNewsList.add(newsMap);
+        }
+        model.addAttribute("newsList", formattedNewsList);
         return "admin/news/manage-news";
     }
 
@@ -64,19 +79,53 @@ public class AdminNewsController {
     public String createNews(@RequestParam("title") String title,
                              @RequestParam("content") String content,
                              @RequestParam("image_url") MultipartFile file,
+                             @RequestParam(value = "referenceLinks", required = false) java.util.List<String> referenceLinks,
                              Model model,
                              RedirectAttributes redirectAttributes) {
         // Validate title and content
-        boolean hasErrors = false;
+        final boolean[] hasErrors = {false};
         if (title == null || title.trim().isEmpty()) {
             model.addAttribute("titleError", "Title cannot be empty or whitespace.");
-            hasErrors = true;
+            hasErrors[0] = true;
+        } else {
+            String trimmedTitle = title.trim();
+            // Validate title length > 3
+            if (trimmedTitle.length() <= 3) {
+                model.addAttribute("titleError", "Title must be longer than 3 characters.");
+                hasErrors[0] = true;
+            }
+            // Validate first character is a letter (including Vietnamese accented letters)
+            else if (!trimmedTitle.substring(0, 1).matches("[\\p{L}]")) {
+                model.addAttribute("titleError", "Title must start with a letter.");
+                hasErrors[0] = true;
+            }
+            // Validate no special characters or whitespace at start (already checked first char)
+            // Check for duplicates case-insensitive
+            else {
+                java.util.List<News> existingNewsList = newsService.getNewsByTitleIgnoreCase(trimmedTitle);
+                if (!existingNewsList.isEmpty()) {
+                    model.addAttribute("titleError", "Title already exists. Please choose a different title.");
+                    hasErrors[0] = true;
+                }
+            }
         }
         if (content == null || content.trim().isEmpty()) {
             model.addAttribute("contentError", "Content cannot be empty or whitespace.");
-            hasErrors = true;
+            hasErrors[0] = true;
+        } else {
+            String trimmedContent = content.trim();
+            // Validate content length > 3
+            if (trimmedContent.length() <= 3) {
+                model.addAttribute("contentError", "Content must be longer than 3 characters.");
+                hasErrors[0] = true;
+            }
+            // Validate first character is a letter (including Vietnamese accented letters)
+            else if (!trimmedContent.substring(0, 1).matches("[\\p{L}]")) {
+                model.addAttribute("contentError", "Content must start with a letter.");
+                hasErrors[0] = true;
+            }
         }
-        if (hasErrors) {
+        if (hasErrors[0]) {
             // Preserve original input including leading/trailing spaces
             model.addAttribute("news", new News(title, content, null));
             return "admin/news/create-news";
@@ -88,6 +137,7 @@ public class AdminNewsController {
         }
 
         News news = new News(title, content, imageUrl);
+        news.setReferenceLinks(referenceLinks != null ? referenceLinks : new java.util.ArrayList<>());
         news.setStatus(false);
         newsService.saveNews(news);
         redirectAttributes.addFlashAttribute("message", "News created successfully.");
@@ -123,7 +173,8 @@ public class AdminNewsController {
                              @RequestParam("title") String title,
                              @RequestParam("content") String content,
                              @RequestParam("image") MultipartFile file,
-                             @RequestParam(value = "status", required = false, defaultValue = "true") boolean status,
+                             @RequestParam(value = "status", required = false) Boolean status,
+                             @RequestParam(value = "referenceLinks", required = false) java.util.List<String> referenceLinks,
                              Model model,
                              RedirectAttributes redirectAttributes) {
         News news = newsService.getNewsById(id);
@@ -132,27 +183,99 @@ public class AdminNewsController {
         }
 
         // Validate title and content
-        boolean hasErrors = false;
+        final boolean[] hasErrors = {false};
         if (title == null || title.trim().isEmpty()) {
             model.addAttribute("titleError", "Title cannot be empty or whitespace.");
-            hasErrors = true;
+            hasErrors[0] = true;
         }
         if (content == null || content.trim().isEmpty()) {
             model.addAttribute("contentError", "Content cannot be empty or whitespace.");
-            hasErrors = true;
+            hasErrors[0] = true;
         }
-        if (hasErrors) {
-            // Preserve original input including leading/trailing spaces
+        // Normalize title before checking duplicate excluding current news
+        String trimmedTitle = title.trim();
+        // Validate title length > 3
+        if (trimmedTitle.length() <= 3) {
+            model.addAttribute("titleError", "Title must be longer than 3 characters.");
+            hasErrors[0] = true;
+        }
+        // Validate first character is a letter (including Vietnamese accented letters)
+        else if (!trimmedTitle.substring(0, 1).matches("[\\p{L}]")) {
+            model.addAttribute("titleError", "Title must start with a letter.");
+            hasErrors[0] = true;
+        }
+        // Check for duplicates case-insensitive excluding current news
+        else {
+                java.util.List<News> existingNewsList = newsService.getNewsByTitleIgnoreCase(trimmedTitle);
+            boolean duplicateFound = false;
+            for (News existingNews : existingNewsList) {
+                if (existingNews.getId() != null && !existingNews.getId().equals(id)) {
+                    if (existingNews.getTitle().equalsIgnoreCase(trimmedTitle)) {
+                        duplicateFound = true;
+                        break;
+                    }
+                }
+            }
+            if (duplicateFound) {
+                model.addAttribute("titleError", "Title already exists. Please choose a different title.");
+                hasErrors[0] = true;
+                model.addAttribute("news", news);
+                return "admin/news/update-news";
+            }
+        }
+        if (content == null || content.trim().isEmpty()) {
+            model.addAttribute("contentError", "Content cannot be empty or whitespace.");
+            hasErrors[0] = true;
+        } else {
+            String trimmedContent = content.trim();
+            // Validate content length > 3
+            if (trimmedContent.length() <= 3) {
+                model.addAttribute("contentError", "Content must be longer than 3 characters.");
+                hasErrors[0] = true;
+            }
+            // Validate first character is a letter (including Vietnamese accented letters)
+            else if (!trimmedContent.substring(0, 1).matches("[\\p{L}]")) {
+                model.addAttribute("contentError", "Content must start with a letter.");
+                hasErrors[0] = true;
+            }
+        }
+        if (hasErrors[0]) {
             news.setTitle(title);
-            news.setContent(content);
-            news.setStatus(status);
+            if (status != null) {
+                news.setStatus(status);
+            }
+            if (referenceLinks != null) {
+                java.util.List<String> filteredLinks = new java.util.ArrayList<>();
+                for (String link : referenceLinks) {
+                    if (link != null && !link.trim().isEmpty()) {
+                        filteredLinks.add(link.trim());
+                    }
+                }
+                news.setReferenceLinks(filteredLinks);
+            }
             model.addAttribute("news", news);
             return "admin/news/update-news";
         }
 
         news.setTitle(title);
         news.setContent(content);
-        news.setStatus(status);
+        if (status != null) {
+            news.setStatus(status);
+        }
+        if (referenceLinks != null) {
+            java.util.List<String> filteredLinks = new java.util.ArrayList<>();
+            for (String link : referenceLinks) {
+                if (link != null && !link.trim().isEmpty()) {
+                    filteredLinks.add(link.trim());
+                }
+            }
+            news.setReferenceLinks(filteredLinks);
+        } else {
+            news.setReferenceLinks(new java.util.ArrayList<>());
+        }
+        System.out.println("Reference links on save: " + news.getReferenceLinks());
+
+        news.setUpdatedAt(java.time.LocalDateTime.now());
 
         if (!file.isEmpty()) {
             String imageUrl = uploadNewsService.handleSaveUploadFile(file, "news");

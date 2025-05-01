@@ -49,12 +49,8 @@
     <div class="container-fluid py-5 mt-5">
         <div class="container py-5">
             <div class="mb-3">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Purchase History</li>
-                    </ol>
-                </nav>
+                <jsp:include page="../layout/nav.jsp" />
+                <h2>Order History</h2>
             </div>
 
             <div class="table-responsive">
@@ -67,17 +63,18 @@
                             <th scope="col">Quantity</th>
                             <th scope="col">Total amount</th>
                             <th scope="col">Status</th>
+                            <!-- <th scope="col">Complete Date</th> Thêm cột Complete Date -->
                             <th scope="col">Evaluate</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:if test="${empty orders}">
                             <tr>
-                                <td colspan="7" class="text-center">No orders created</td>
+                                <td colspan="8" class="text-center">No orders created</td>
                             </tr>
                         </c:if>
                         <c:forEach var="order" items="${orders}">
-                            <c:if test="${order.status == 'COMPLETE' || order.status == 'CANCEL'}">
+                            <c:if test="${order.status == 'COMPLETE'}">
                                 <tr>
                                     <td colspan="2" style="background-color: #f2f2f2;">ORDER NO. ${order.id}</td>
                                     <td colspan="1" style="background-color: #f2f2f2;">
@@ -86,6 +83,9 @@
                                     <td colspan="2" style="background-color: #f2f2f2;"></td>
                                     <td colspan="1" style="background-color: #f2f2f2;">
                                         ${order.status}
+                                    </td>
+                                    <td colspan="1" style="background-color: #f2f2f2;">
+                                        ${order.convertedCompleteDate}
                                     </td>
                                     <td style="background-color: #f2f2f2;"></td>
                                 </tr>
@@ -116,19 +116,20 @@
                                                 value="${orderDetail.price * orderDetail.quantity}" /> đ
                                         </td>
                                         <td>${order.status}</td>
+                                        <!-- <td>${order.convertedCompleteDate}</td> -->
                                         <td>
                                             <c:if test="${order.status == 'COMPLETE'}">
-                                            <a href="/customer/product-review/${orderDetail.id}" 
-                                                class="btn btn-primary">Product Reviews</a>
-                                            <c:choose>
-                                                <c:when test="${orderDetail.productReview == null}">
-                                                    <p>Status: <span style="color: red;">Not rated yet</span></p>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <p>Status: <span style="color: blue;">Rated</span></p>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:if>
+                                                <a href="/customer/product-review/${orderDetail.id}" 
+                                                    class="btn btn-primary">Product Reviews</a>
+                                                <c:choose>
+                                                    <c:when test="${orderDetail.productReview == null}">
+                                                        <p>Status: <span style="color: red;">Not rated yet</span></p>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <p>Status: <span style="color: blue;">Rated</span></p>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>

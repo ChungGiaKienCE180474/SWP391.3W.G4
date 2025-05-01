@@ -1,10 +1,13 @@
 package group04.gundamshop.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
 import group04.gundamshop.domain.Order;
 import group04.gundamshop.domain.User;
-import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -24,4 +27,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // Tìm các đơn hàng của người dùng với trạng thái khác "COMPLETE"
     List<Order> findByUserAndStatusNot(User user, String status);
+
+    // Tìm các đơn hàng có ít nhất một chi tiết đơn hàng đã được đánh giá
+    @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NOT NULL")
+    List<Order> findOrdersWithRatedDetails();
+
+    // Tìm các đơn hàng có ít nhất một chi tiết đơn hàng chưa được đánh giá
+    @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NULL AND o.status = 'COMPLETE'")
+    List<Order> findOrdersWithUnratedDetails();
+
 }

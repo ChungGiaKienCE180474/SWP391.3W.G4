@@ -25,7 +25,7 @@
                     <input type="text" name="keyword" placeholder="Search by name or category" class="form-control me-2" value="${keyword}">
                     <button type="submit" class="btn btn-primary">Search</button>
                     <c:if test="${not empty keyword}">
-                        <a href="/admin/product" class="btn btn-secondary btn-sm ms-2">Back</a>
+                        <a href="/admin/product" class="btn btn-secondary btn-sm ms-2">Back to List</a>
                     </c:if>
                 </form>
             </div>

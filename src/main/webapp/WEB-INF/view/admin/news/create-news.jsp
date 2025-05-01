@@ -32,9 +32,47 @@
             <label for="image" class="form-label">Image</label>
             <input type="file" class="form-control" id="image" name="image_url" accept="image/*">
         </div>
+        <div class="mb-3">
+            <label>Nguồn tham khảo:</label>
+            <div id="referenceLinks" class="reference-links">
+                <div class="input-group mb-2">
+                    <input type="url" name="referenceLinks" class="form-control" placeholder="Nhập URL tham khảo" />
+                    <button type="button" class="btn btn-outline-danger" onclick="removeReferenceLink(this)">Xóa</button>
+                </div>
+            </div>
+            <span class="add-link-btn" style="cursor:pointer; color:#0d6efd; font-size:1.5rem; user-select:none;" onclick="addReferenceLink()">&#43; Thêm link</span>
+        </div>
         <button type="submit" class="btn btn-primary">Create</button>
         <a href="/admin/news" class="btn btn-secondary">Cancel</a>
-    </form>
+</form>
 </div>
+
+<script>
+    function addReferenceLink() {
+        const container = document.getElementById('referenceLinks');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        const input = document.createElement('input');
+        input.type = 'url';
+        input.name = 'referenceLinks';
+        input.className = 'form-control';
+        input.placeholder = 'Nhập URL tham khảo';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-outline-danger';
+        button.textContent = 'Xóa';
+        button.onclick = function() {
+            container.removeChild(div);
+        };
+        div.appendChild(input);
+        div.appendChild(button);
+        container.appendChild(div);
+    }
+
+    function removeReferenceLink(button) {
+        const div = button.parentNode;
+        div.parentNode.removeChild(div);
+    }
+</script>
 </body>
 </html>

@@ -1,9 +1,20 @@
 package group04.gundamshop.domain;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "orders")
@@ -31,6 +42,12 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
+    @Column(name = "complete_date")
+    private LocalDateTime completeDate; // Thêm trường hoàn thành
+
+    @Column(name = "cancel_date")
+    private LocalDateTime cancelDate; // Thêm trường hủy
+
     @Column(name = "status")
     private String status;
 
@@ -38,8 +55,9 @@ public class Order {
     private double totalPrice;
 
     @Column(name = "payment_method")
-    private String paymentMethod; // thêm cột cho "VNPAY"
-    @Transient // Không lưu vào database, chỉ dùng để hiển thị
+    private String paymentMethod;
+
+    @Transient
     private String displayStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -106,6 +124,22 @@ public class Order {
         this.orderDate = orderDate;
     }
 
+    public LocalDateTime getCompleteDate() {
+        return completeDate;
+    }
+
+    public void setCompleteDate(LocalDateTime completeDate) {
+        this.completeDate = completeDate;
+    }
+
+    public LocalDateTime getCancelDate() {
+        return cancelDate;
+    }
+
+    public void setCancelDate(LocalDateTime cancelDate) {
+        this.cancelDate = cancelDate;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -120,6 +154,22 @@ public class Order {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getDisplayStatus() {
+        return displayStatus;
+    }
+
+    public void setDisplayStatus(String displayStatus) {
+        this.displayStatus = displayStatus;
     }
 
     public List<OrderDetail> getOrderDetails() {
@@ -138,27 +188,30 @@ public class Order {
         this.voucher = voucher;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public String getDisplayStatus() {
-        return displayStatus;
-    }
-
-    public void setDisplayStatus(String displayStatus) {
-        this.displayStatus = displayStatus;
-    }
-    // Thêm getter cho convertedOrderDate
+    // Getter cho convertedOrderDate
     @Transient
     public String getConvertedOrderDate() {
         if (orderDate == null)
             return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return orderDate.format(formatter);
+    }
+
+    // Getter cho convertedCompleteDate
+    @Transient
+    public String getConvertedCompleteDate() {
+        if (completeDate == null)
+            return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return completeDate.format(formatter);
+    }
+
+    // Getter cho convertedCancelDate
+    @Transient
+    public String getConvertedCancelDate() {
+        if (cancelDate == null)
+            return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return cancelDate.format(formatter);
     }
 }

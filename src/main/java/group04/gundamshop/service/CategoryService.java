@@ -31,5 +31,11 @@ public class CategoryService {
     public List<Category> getCategoryByStatus(boolean status) {
         return categoryRepository.findAllByStatus(status);
     }
-
+// check tên cate không cho trùng
+public boolean existsByName(String name) {
+    return this.categoryRepository.findByName(name) != null;
+}
+public Category getCategoryByName(String name) {
+    return categoryRepository.findByName(name); // Giả sử bạn có repository tương ứng
+}
 }

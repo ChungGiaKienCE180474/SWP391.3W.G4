@@ -82,6 +82,11 @@ uri="http://www.springframework.org/tags/form" %>
         font-size: 16px;
       }
 
+      .form-control:focus {
+        border-color: #2563eb;
+        outline: none;
+      }
+
       .btn-register {
         width: 100%;
         padding: 14px;
@@ -101,6 +106,12 @@ uri="http://www.springframework.org/tags/form" %>
         color: #ff4d4d;
         font-size: 14px;
         margin-top: 4px;
+        margin-left: 12px;
+      }
+
+      .error-container {
+        margin-bottom: 16px;
+        text-align: center;
       }
 
       .form-footer {
@@ -116,6 +127,15 @@ uri="http://www.springframework.org/tags/form" %>
       .form-footer a:hover {
         text-decoration: underline;
       }
+
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+        cursor: pointer;
+      }
     </style>
   </head>
 
@@ -127,14 +147,30 @@ uri="http://www.springframework.org/tags/form" %>
       <div class="right-panel">
         <h3>Create Account</h3>
 
-        <c:if test="${param.exist != null}">
-          <div class="error-message">
-            Email already registered. Please try to login.
-          </div>
-        </c:if>
-        <c:if test="${param.password != null}">
-          <div class="error-message">
-            Password and ConfirmPassword must match.
+        <!-- Only display the error container if there are errors -->
+        <c:if
+          test="${not empty message || param.exist != null || param.invalidphone != null || not empty passwordMismatch}"
+        >
+          <div class="error-container">
+            <c:if test="${not empty message}">
+              <div class="error-message">${message}</div>
+            </c:if>
+            <c:if test="${param.exist != null}">
+              <div class="error-message">
+                Email already registered. Please try to login.
+              </div>
+            </c:if>
+            <c:if test="${param.invalidphone != null}">
+              <div class="error-message">
+                Phone number is already registered. Please use a different phone
+                number.
+              </div>
+            </c:if>
+            <c:if test="${not empty passwordMismatch}">
+              <div class="error-message">
+                Password and Confirm Password must match.
+              </div>
+            </c:if>
           </div>
         </c:if>
 
@@ -178,13 +214,14 @@ uri="http://www.springframework.org/tags/form" %>
             <form:input
               path="password"
               type="password"
+              id="password"
               placeholder="Password"
               cssClass="form-control"
             />
             <i
-              style="position: absolute; left: 340px"
               class="fa fa-eye toggle-password"
-              onclick="togglePassword(this)"
+              onclick="togglePassword('password')"
+              style="position: absolute; left: 340px"
             ></i>
             <form:errors path="password" cssClass="error-message" />
           </div>
@@ -193,13 +230,14 @@ uri="http://www.springframework.org/tags/form" %>
             <form:input
               path="confirmPassword"
               type="password"
+              id="confirmPassword"
               placeholder="Confirm Password"
               cssClass="form-control"
             />
             <i
-              style="position: absolute; left: 340px"
               class="fa fa-eye toggle-password"
-              onclick="togglePassword(this)"
+              onclick="togglePassword('confirmPassword')"
+              style="position: absolute; left: 340px"
             ></i>
             <form:errors path="confirmPassword" cssClass="error-message" />
           </div>
@@ -224,20 +262,28 @@ uri="http://www.springframework.org/tags/form" %>
             <form:errors path="address" cssClass="error-message" />
           </div>
 
+          <input
+            type="hidden"
+            name="${_csrf.parameterName}"
+            value="${_csrf.token}"
+          />
+
           <button class="btn-register">Create Account</button>
         </form:form>
 
         <div class="form-footer">
           <div class="small">
-            <a href="/login">Already have an account? Login here</a>
+            <a href="/login">Already have an account? Login here</a><br /><br />
+            <a href="/">Click here to view HOME PAGE!</a>
           </div>
         </div>
       </div>
     </div>
   </body>
   <script>
-    function togglePassword(icon) {
-      const passwordInput = document.getElementById("password");
+    function togglePassword(inputId) {
+      const passwordInput = document.getElementById(inputId);
+      const icon = passwordInput.nextElementSibling;
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
         icon.classList.remove("fa-eye");

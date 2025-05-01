@@ -50,7 +50,7 @@
                         <div class="p-4">
                             <h1 class="mt-4">Product Details</h1>
                             <ol class="breadcrumb mb-4">
-                                <li class="breadcrumb-item"><a href="/employee/product">Home Page</a></li>
+                                <li class="breadcrumb-item"><a href="/employee">Home Page</a></li>
                                 <li class="breadcrumb-item"><a href="/employee/product">Product</a></li>
                                 <li class="breadcrumb-item active">View Details</li>
                             </ol>
@@ -64,7 +64,8 @@
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">ID: ${newProduct.id}</li>
                                             <li class="list-group-item">Name: ${newProduct.name}</li>
-                                            <li class="list-group-item">Factory: ${newProduct.factory}</li>
+                                            <li class="list-group-item">Description: ${newProduct.detailDesc}</li>
+                                            <li class="list-group-item">Factory: ${newProduct.factory.name}</li>
                                             <li class="list-group-item">Category: ${newProduct.category.name}</li>
                                         </ul>
                                     </div>
@@ -94,3 +95,4 @@
             </body>
 
             </html>
+

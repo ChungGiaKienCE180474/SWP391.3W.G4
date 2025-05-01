@@ -1,6 +1,7 @@
 package group04.gundamshop.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -43,6 +44,14 @@ public class NewsService {
             throw new IllegalArgumentException("News content cannot be empty");
         }
         return newsRepository.save(news);
+    }
+
+    public java.util.List<News> getNewsByTitle(String title) {
+        return newsRepository.findByTitle(title);
+    }
+
+    public java.util.List<News> getNewsByTitleIgnoreCase(String title) {
+        return newsRepository.findByTitleIgnoreCase(title);
     }
 
     public void deleteNews(Long id) {

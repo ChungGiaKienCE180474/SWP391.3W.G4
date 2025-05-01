@@ -32,6 +32,74 @@
                 $("#productPreview").css({ "display": "block" });
             });
         });
+    
+        function isValidText(text) {
+            const trimmed = text.trim();
+    
+            // Phải có ít nhất 1 chữ cái
+            if (!/[a-zA-Z]/.test(trimmed)) return false;
+    
+            // Không được có 2 dấu cách liên tiếp
+            if (/[\s]{2,}/.test(text)) return false;
+    
+            // Không được có 2 ký tự đặc biệt liên tiếp
+            if (/[^a-zA-Z0-9\s]{2,}/.test(text)) return false;
+    
+            return true;
+        }
+    
+        function validateForm() {
+            const name = document.querySelector('[name="name"]').value.trim();
+            const detailDesc = document.querySelector('[name="detailDesc"]').value.trim();
+            const shortDesc = document.querySelector('[name="shortDesc"]').value.trim();
+            const quantity = document.querySelector('[name="quantity"]').value;
+            const price = document.querySelector('[name="price"]').value;
+            const image = document.querySelector('#productFile').files.length;
+            const orgImage = "${newProduct.image}"; // Hình ảnh gốc
+    
+            let errors = [];
+    
+            // Kiểm tra tên sản phẩm
+            if (!isValidText(name)) {
+                errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
+            }
+    
+            // Kiểm tra mô tả chi tiết
+            if (detailDesc.length < 10) {
+                errors.push("Detail description must be at least 10 characters.");
+            }
+    
+    
+            // Kiểm tra số lượng
+            if (!quantity || quantity < 0) {
+                errors.push("Quantity must be greater than or equal to 0.");
+            }
+    
+            // Kiểm tra giá
+            if (!price || price <= 1000) {
+                errors.push("Price must be greater than 1000 VND.");
+            }
+    
+            // Kiểm tra hình ảnh (chỉ nếu người dùng chọn ảnh mới)
+            if (image > 0) {
+                const file = document.querySelector('#productFile').files[0];
+                const validImageTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                if (!validImageTypes.includes(file.type)) {
+                    errors.push("Image must be in PNG, JPG, or JPEG format.");
+                }
+            }
+    
+            if (errors.length > 0) {
+                alert(errors.join("\n"));
+                return false;
+            }
+    
+            return true;
+        }
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("form").onsubmit = validateForm;
+        });
     </script>
 </head>
 
@@ -62,9 +130,9 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Name:</label>
                                         <form:input type="text" class="form-control" path="name" 
-                                                    required="true" minlength="4" maxlength="255"
+                                                    required="true" minlength="4" 
                                                     oninvalid="this.setCustomValidity('Product name must be at least 4 characters')" 
-                                                    oninput="this.setCustomValidity(''); if(this.value.length > 255) this.value = this.value.slice(0,255);" />
+                                                    oninput="this.setCustomValidity('')" />
                                         <form:errors path="name" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
@@ -77,13 +145,11 @@
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label class="form-label">Detail description:</label>
-                                        <form:textarea class="form-control" path="detailDesc" maxlength="255" 
-                                            oninput="if(this.value.length > 255) this.value = this.value.slice(0,255);" />
+                                        <form:textarea class="form-control" path="detailDesc" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Short description:</label>
-                                        <form:input type="text" class="form-control" path="shortDesc" maxlength="255"
-                                            oninput="if(this.value.length > 255) this.value = this.value.slice(0,255);" />
+                                        <form:input type="text" class="form-control" path="shortDesc" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Quantity:</label>
@@ -112,6 +178,26 @@
                                                 <form:option value="${target.id}">${target.name}</form:option>
                                             </c:forEach>
                                         </form:select>
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Scale:</label>
+                                        <form:input type="text" class="form-control" path="scale" />
+                                        <form:errors path="scale" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Material:</label>
+                                        <form:input type="text" class="form-control" path="material" />
+                                        <form:errors path="material" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Dimensions:</label>
+                                        <form:input type="number" class="form-control" path="dimensions" min="0" step="any" />
+                                        <form:errors path="dimensions" cssClass="text-danger" />
+                                    </div>
+                                    <div class="mb-3 col-12 col-md-6">
+                                        <label class="form-label">Weight:</label>
+                                        <form:input type="number" class="form-control" path="weight" min="0" step="any" />
+                                        <form:errors path="weight" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label for="productFile" class="form-label">Image:</label>

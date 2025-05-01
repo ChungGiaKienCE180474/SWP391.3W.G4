@@ -101,6 +101,35 @@ public class ProductController {
             System.out.println(error.getField() + " - " + error.getDefaultMessage());
             // In ra thông tin về trường bị lỗi và thông báo lỗi.
         }
+        // Create new Product entity to avoid transient factory/target issues
+        Product newProduct = new Product();
+        newProduct.setName(product.getName());
+        newProduct.setPrice(product.getPrice());
+        newProduct.setQuantity(product.getQuantity());
+        newProduct.setDetailDesc(product.getDetailDesc());
+        newProduct.setShortDesc(product.getShortDesc());
+        newProduct.setCategory(this.productService.getCategoryByName(product.getCategory().getName()));
+        newProduct.setScale(product.getScale());
+        newProduct.setMaterial(product.getMaterial());
+        newProduct.setDimensions(product.getDimensions());
+        newProduct.setWeight(product.getWeight());
+
+        // Additional manual validation for Scale, Material, Dimensions, Weight
+        /*
+        if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
+            newProductBindingResult.rejectValue("scale", "error.newProduct", "Scale must be in format 1:number, e.g. 1:6");
+        }
+        if (product.getMaterial() == null || !product.getMaterial().matches("^[a-zA-Z]+$")) {
+            newProductBindingResult.rejectValue("material", "error.newProduct", "Material must contain only letters");
+        }
+        */
+        if (product.getDimensions() == null || product.getDimensions() < 0) {
+            newProductBindingResult.rejectValue("dimensions", "error.newProduct", "Dimensions must be non-negative");
+        }
+        if (product.getWeight() == null || product.getWeight() < 0) {
+            newProductBindingResult.rejectValue("weight", "error.newProduct", "Weight must be non-negative");
+        }
+
         if (newProductBindingResult.hasErrors()) {
             // Kiểm tra nếu có lỗi validation.
             List<Category> categories = this.categoryService.getCategoryByStatus(true);
@@ -144,23 +173,60 @@ public class ProductController {
         product.setCategory(this.productService.getCategoryByName(product.getCategory().getName()));
 
         if (factoryId != null) {
+            // Fetch managed Factory entity from DB before setting
             group04.gundamshop.domain.Factory factory = this.factoryService.getFactoryById(factoryId).orElse(null);
-            product.setFactory(factory);
+            if (factory == null) {
+                newProductBindingResult.rejectValue("factory", "error.newProduct", "Selected factory does not exist");
+                List<Category> categories = this.categoryService.getCategoryByStatus(true);
+                model.addAttribute("categories", categories);
+                List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+                model.addAttribute("factories", factories);
+                List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+                model.addAttribute("targets", targets);
+                newProduct.setFactory(null);
+                return "admin/product/create";
+            } else {
+                // Explicitly set the managed factory on the newProduct to replace any transient reference
+                newProduct.setFactory(factory);
+            }
         }
 
         if (targetId != null) {
+            // Fetch managed Target entity from DB before setting
             group04.gundamshop.domain.Target target = this.targetService.getTargetById(targetId).orElse(null);
-            product.setTarget(target);
+            if (target == null) {
+                newProductBindingResult.rejectValue("target", "error.newProduct", "Selected target does not exist");
+                List<Category> categories = this.categoryService.getCategoryByStatus(true);
+                model.addAttribute("categories", categories);
+                List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+                model.addAttribute("factories", factories);
+                List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+                model.addAttribute("targets", targets);
+                return "admin/product/create";
+            }
+            // Explicitly set the managed target on the newProduct to replace any transient reference
+            newProduct.setTarget(target);
         }
+
+        // Set new fields
+        newProduct.setScale(product.getScale());
+        newProduct.setMaterial(product.getMaterial());
+        newProduct.setDimensions(product.getDimensions());
+        newProduct.setWeight(product.getWeight());
 
         String image = this.uploadService.handleSaveUploadFile(file, "product");
         System.out.println(image);
-        product.setImage(image);
-        product.setStatus(true);
-        product.setCreatedAt(LocalDateTime.now());
-        product.setUpdatedAt(LocalDateTime.now());
+        newProduct.setImage(image);
+        newProduct.setStatus(true);
+        newProduct.setCreatedAt(LocalDateTime.now());
+        newProduct.setUpdatedAt(LocalDateTime.now());
 
-        this.productService.handleSaveProduct(product);
+        if (newProduct.getFactory() == null) {
+            System.out.println("Creating product with factory: null");
+        } else {
+            System.out.println("Creating product with factory: id=" + newProduct.getFactory().getId() + ", class=" + newProduct.getFactory().getClass().getName());
+        }
+        this.productService.handleSaveProduct(newProduct);
 
         redirectAttributes.addFlashAttribute("successMessage", "Product created successfully!");
 
@@ -212,6 +278,23 @@ public class ProductController {
             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         // Lấy file tải lên từ request.
         // validate
+
+        // Additional manual validation for Scale, Material, Dimensions, Weight
+        /*
+        if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
+            newProductBindingResult.rejectValue("scale", "error.newProduct", "Scale must be in format 1:number, e.g. 1:6");
+        }
+        if (product.getMaterial() == null || !product.getMaterial().matches("^[a-zA-Z]+$")) {
+            newProductBindingResult.rejectValue("material", "error.newProduct", "Material must contain only letters");
+        }
+        */
+        if (product.getDimensions() == null || product.getDimensions() < 0) {
+            newProductBindingResult.rejectValue("dimensions", "error.newProduct", "Dimensions must be non-negative");
+        }
+        if (product.getWeight() == null || product.getWeight() < 0) {
+            newProductBindingResult.rejectValue("weight", "error.newProduct", "Weight must be non-negative");
+        }
+
         if (newProductBindingResult.hasErrors()) {
             // Kiểm tra nếu có lỗi validation.
 
@@ -257,16 +340,53 @@ public class ProductController {
             currentProduct.setDetailDesc(product.getDetailDesc() != null && product.getDetailDesc().length() > 255 ? product.getDetailDesc().substring(0, 255) : product.getDetailDesc());
             currentProduct.setShortDesc(product.getShortDesc() != null && product.getShortDesc().length() > 255 ? product.getShortDesc().substring(0, 255) : product.getShortDesc());
             if (product.getFactory() != null && product.getFactory().getId() > 0) {
+                // Fetch managed Factory entity from DB before setting
                 group04.gundamshop.domain.Factory factory = this.factoryService.getFactoryById(product.getFactory().getId()).orElse(null);
-                currentProduct.setFactory(factory);
+                if (factory == null) {
+                    newProductBindingResult.rejectValue("factory", "error.newProduct", "Selected factory does not exist");
+                    List<Category> categories = this.categoryService.getCategoryByStatus(true);
+                    model.addAttribute("categories", categories);
+                    List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+                    model.addAttribute("factories", factories);
+                    List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+                    model.addAttribute("targets", targets);
+                    currentProduct.setFactory(null);
+                    return "admin/product/update";
+                } else {
+                    // Explicitly set the managed factory on the currentProduct to replace any transient reference
+                    currentProduct.setFactory(factory);
+                }
             } else {
                 currentProduct.setFactory(null);
             }
             if (product.getTarget() != null && product.getTarget().getId() > 0) {
+                // Fetch managed Target entity from DB before setting
                 group04.gundamshop.domain.Target target = this.targetService.getTargetById(product.getTarget().getId()).orElse(null);
+                if (target == null) {
+                    newProductBindingResult.rejectValue("target", "error.newProduct", "Selected target does not exist");
+                    List<Category> categories = this.categoryService.getCategoryByStatus(true);
+                    model.addAttribute("categories", categories);
+                    List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+                    model.addAttribute("factories", factories);
+                    List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+                    model.addAttribute("targets", targets);
+                    return "admin/product/update";
+                }
+                // Explicitly set the managed target on the currentProduct to replace any transient reference
                 currentProduct.setTarget(target);
             } else {
                 currentProduct.setTarget(null);
+            }
+            // Set new fields
+            currentProduct.setScale(product.getScale());
+            currentProduct.setMaterial(product.getMaterial());
+            currentProduct.setDimensions(product.getDimensions());
+            currentProduct.setWeight(product.getWeight());
+
+            if (currentProduct.getFactory() == null) {
+                System.out.println("Updating product with factory: null");
+            } else {
+                System.out.println("Updating product with factory: id=" + currentProduct.getFactory().getId() + ", class=" + currentProduct.getFactory().getClass().getName());
             }
             this.productService.handleSaveProduct(currentProduct);
         }
@@ -276,17 +396,20 @@ public class ProductController {
     }
 
     @GetMapping("/admin/product/delete/{id}")
-    // Ánh xạ các yêu cầu HTTP GET đến địa chỉ "/admin/product/delete/{id}" đến
-    // phương thức này.
-    public String getDeleteProductPage(Model model, @PathVariable long id) {
-        // Phương thức xử lý yêu cầu hiển thị trang xác nhận xóa sản phẩm.
-        model.addAttribute("id", id);
-        // Thêm ID sản phẩm vào model để trang xác nhận xóa có thể sử dụng.
-
-        model.addAttribute("Product", new Product());
-        return "admin/product/delete";
-        // Trả về tên view để hiển thị trang xác nhận xóa sản phẩm.
+public String getDeleteProductPage(Model model, @PathVariable long id) {
+    Optional<Product> productOptional = this.productService.getProductById(id);
+    if (productOptional.isEmpty()) {
+        return "redirect:/admin/product";
     }
+    Product product = productOptional.get();
+    if (!product.isStatus()) {
+        return "redirect:/admin/product";
+    }
+    model.addAttribute("id", id);
+    model.addAttribute("productName", product.getName()); // Add product name to the model
+    model.addAttribute("Product", new Product());
+    return "admin/product/delete";
+}
 
     @PostMapping("/admin/product/delete")
     // Ánh xạ các yêu cầu HTTP POST đến địa chỉ "/admin/product/delete" đến phương

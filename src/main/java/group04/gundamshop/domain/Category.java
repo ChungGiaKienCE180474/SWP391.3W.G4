@@ -18,8 +18,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotNull(message = "Catagory nname cannot empty")
-    @Size(min = 3, message = "Catogyry name must at least 3 digits")
     private String name;
 
     @OneToMany(mappedBy = "category")
@@ -64,7 +62,7 @@ public class Category {
     @Override
     public String toString() {
 
-        return "Category [id=" + id + ", name=" + name + ", products=" + products + ", image=" + image + ", status="
+        return "Category [id=" + id + ", name=" + name + ", image=" + image + ", status="
                 + status + "]";
 
     }

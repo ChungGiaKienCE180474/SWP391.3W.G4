@@ -1,5 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.time.LocalDateTime" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,6 +59,11 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+        .timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 
@@ -89,13 +96,15 @@
                                 <th>Title</th>
                                 <th>Image</th>
                                 <th>Status</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             <c:if test="${not empty message}">
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="6">
                                         <div class="alert alert-success" role="alert">
                                             ${message}
                                         </div>
@@ -106,7 +115,6 @@
                                 <tr>
                                     <td>${news.title}</td>
                                     <td>
-
                                         <img src="${news.imageUrl}" alt="News Image" style="max-width: 100px; max-height: 60px;">
                                     </td>
                                     <td>
@@ -117,6 +125,8 @@
                                             </label>
                                         </form>
                                     </td>
+                                    <td><span class="timestamp">${news.createdAtFormatted}</span></td>
+                                    <td><span class="timestamp"><c:if test="${not empty news.updatedAtFormatted}">${news.updatedAtFormatted}</c:if></span></td>
                                     <td>
                                         <a href="/admin/news/detail/${news.id}" class="btn btn-success">View</a>
                                         <a href="/admin/news/update/${news.id}" class="btn btn-warning mx-2">Update</a>

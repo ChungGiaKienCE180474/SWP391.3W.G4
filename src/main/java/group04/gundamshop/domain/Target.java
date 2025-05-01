@@ -48,4 +48,17 @@ public class Target {
     public String toString() {
         return "Target [id=" + id + ", name=" + name + "]";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Target)) return false;
+        Target other = (Target) o;
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
+    }
 }

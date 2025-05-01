@@ -52,6 +52,11 @@ public class FactoryController {
     @PostMapping("/admin/factory/create")
     public String createFactory(Model model, @ModelAttribute("newFactory") @Valid Factory factory,
             BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Check for duplicate name
+        Factory existingFactory = factoryService.getFactoryByName(factory.getName());
+        if (existingFactory != null) {
+            bindingResult.rejectValue("name", "error.factory", "Factory name already exists.");
+        }
         if (bindingResult.hasErrors()) {
             List<FieldError> errors = bindingResult.getFieldErrors();
             for (FieldError error : errors) {
@@ -77,6 +82,11 @@ public class FactoryController {
     @PostMapping("/admin/factory/update")
     public String postUpdateFactory(Model model, @ModelAttribute("newFactory") @Valid Factory factory,
             BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // Check for duplicate name excluding current factory
+        Factory existingFactory = factoryService.getFactoryByName(factory.getName());
+        if (existingFactory != null && existingFactory.getId() != factory.getId()) {
+            bindingResult.rejectValue("name", "error.factory", "Factory name already exists.");
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("newFactory", factory);
             return "admin/factory/update";

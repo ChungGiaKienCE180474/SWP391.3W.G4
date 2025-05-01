@@ -17,81 +17,82 @@ public class ADContactController {
     @Autowired
     private ContactService contactService;
 
-    /**
-     * Hiển thị danh sách liên hệ của khách hàng.
-     * @param model Đối tượng Model để truyền dữ liệu sang view.
-     * @return Giao diện danh sách liên hệ (admin/contact/show).
-     */
     @GetMapping("/admin/contact")
     public String showContactList(Model model) {
-        // Lấy danh sách tất cả các liên hệ từ service và gán vào model
         model.addAttribute("contactList", contactService.getAllContacts());
-        return "admin/contact/show"; // Trả về giao diện hiển thị danh sách liên hệ
+        return "admin/contact/show";
     }
 
-    /**
-     * Xem chi tiết một liên hệ cụ thể.
-     * @param id ID của liên hệ cần xem.
-     * @param model Đối tượng Model để truyền dữ liệu sang view.
-     * @return Giao diện chi tiết liên hệ (admin/contact/view).
-     */
     @GetMapping("/admin/contact/view/{id}")
     public String viewContactDetail(@PathVariable("id") Long id, Model model) {
-        // Truy xuất liên hệ theo ID từ service
         Contact contact = contactService.getContactById(id);
-
-        // Kiểm tra nếu liên hệ không tồn tại
         if (contact == null) {
             model.addAttribute("errorMessage", "Contact not found.");
-            return "admin/contact/show"; // Chuyển hướng về danh sách liên hệ
+            return "admin/contact/show";
         }
-
-        // Nếu liên hệ tồn tại, truyền nó vào model để hiển thị trên giao diện
         model.addAttribute("contact", contact);
-        return "admin/contact/view"; // Trả về giao diện chi tiết liên hệ
+        return "admin/contact/view";
     }
 
-    /**
-     * Hiển thị trang xác nhận xóa liên hệ.
-     * @param id ID của liên hệ cần xóa.
-     * @param model Đối tượng Model để truyền dữ liệu sang view.
-     * @return Giao diện xác nhận xóa (admin/contact/delete).
-     */
+/*
     @GetMapping("/admin/contact/confirm-delete/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String confirmDeleteContact(@PathVariable("id") Long id, Model model) {
-        // Truy xuất liên hệ theo ID từ service
         Contact contact = contactService.getContactById(id);
-
-        // Kiểm tra nếu liên hệ không tồn tại
         if (contact == null) {
             model.addAttribute("errorMessage", "Contact not found.");
-            return "redirect:/admin/contact"; // Chuyển hướng về danh sách liên hệ nếu không tìm thấy
+            return "redirect:/admin/contact";
         }
-
-        // Truyền liên hệ vào model để hiển thị trên giao diện xác nhận xóa
         model.addAttribute("contact", contact);
-        return "admin/contact/delete"; // Trả về giao diện xác nhận xóa
+        return "admin/contact/delete";
     }
 
-    /**
-     * Xóa một liên hệ khỏi hệ thống.
-     * @param id ID của liên hệ cần xóa.
-     * @param model Đối tượng Model để truyền dữ liệu sang view.
-     * @return Chuyển hướng về danh sách liên hệ sau khi xóa.
-     */
     @PostMapping("/admin/contact/delete")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteContact(@RequestParam("id") Long id, Model model) {
-        // Gọi service để thực hiện xóa liên hệ theo ID
         boolean isDeleted = contactService.deleteContact(id);
-
-        // Kiểm tra nếu xóa không thành công
         if (!isDeleted) {
             model.addAttribute("errorMessage", "Failed to delete contact.");
-            return "redirect:/admin/contact"; // Chuyển hướng về danh sách liên hệ nếu xóa thất bại
+            return "redirect:/admin/contact";
         }
+        return "redirect:/admin/contact";
+    }
+*/
 
-        return "redirect:/admin/contact"; // Chuyển hướng về danh sách liên hệ sau khi xóa thành công
+    // New: Show reply form
+    @GetMapping("/admin/contact/reply/{id}")
+    public String showReplyForm(@PathVariable("id") Long id, Model model) {
+        Contact contact = contactService.getContactById(id);
+        if (contact == null) {
+            model.addAttribute("errorMessage", "Contact not found.");
+            return "redirect:/admin/contact";
+        }
+        model.addAttribute("contact", contact);
+        return "admin/contact/reply";
+    }
+
+    // New: Handle reply submission
+    @PostMapping("/admin/contact/reply")
+    public String submitReply(@RequestParam("id") Long id, @RequestParam("replyMessage") String replyMessage, Model model) {
+        Contact contact = contactService.getContactById(id);
+        if (contact == null) {
+            model.addAttribute("errorMessage", "Contact not found.");
+            return "redirect:/admin/contact";
+        }
+        contact.setReplyMessage(replyMessage);
+        contactService.saveContact(contact);
+        // Add notification logic: update replyUpdatedAt and reset notificationReadAt
+        contactService.updateReplyNotification(contact);
+        return "redirect:/admin/contact";
+    }
+
+    @PostMapping("/admin/contact/toggle-status")
+    public String toggleStatus(@RequestParam("id") Long id) {
+        Contact contact = contactService.getContactById(id);
+        if (contact != null) {
+            contact.setStatus(!contact.isStatus());
+            contactService.saveContact(contact);
+        }
+        return "redirect:/admin/contact";
     }
 }

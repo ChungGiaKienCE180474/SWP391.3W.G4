@@ -1,9 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.time.LocalDateTime" %>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -68,7 +70,42 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">News Title: ${news.title}</li>
                                 <li class="list-group-item">Content: ${news.content}</li>
+                                <c:if test="${not empty news.referenceLinks}">
+                                    <li class="list-group-item">
+                                        Reference Links:
+                                        <ul>
+                                            <c:forEach var="link" items="${news.referenceLinks}">
+                                                <li>
+                                                    <a href="${link}" target="_blank">
+                                                        <c:choose>
+                                                            <c:when test="${fn:length(link) > 30}">
+                                                                ${fn:substring(link, 0, 30)}...
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                ${link}
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </a>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </li>
+                                </c:if>
                             </ul>
+                            <%
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd 'at' HH:mm");
+                                LocalDateTime createdAt = (LocalDateTime) pageContext.findAttribute("news").getClass().getMethod("getCreatedAt").invoke(pageContext.findAttribute("news"));
+                                String createdAtFormatted = createdAt.format(formatter);
+                                Object updatedAtObj = pageContext.findAttribute("news").getClass().getMethod("getUpdatedAt").invoke(pageContext.findAttribute("news"));
+                                String updatedAtFormatted = null;
+                                if (updatedAtObj != null) {
+                                    updatedAtFormatted = ((LocalDateTime) updatedAtObj).format(formatter);
+                                }
+                            %>
+                            <div class="list-group-item">Created At: <%= createdAtFormatted %></div>
+                            <c:if test="${not empty news.updatedAt}">
+                                <div class="list-group-item">Updated At: <%= updatedAtFormatted %></div>
+                            </c:if>
                             <a href="/admin/news"
                                class="btn btn-success mt-3 justify-content-center col-4">Back to News Management</a>
                         </div>
