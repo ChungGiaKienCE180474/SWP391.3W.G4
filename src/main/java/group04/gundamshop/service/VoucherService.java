@@ -1,13 +1,14 @@
 package group04.gundamshop.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import group04.gundamshop.domain.User;
 import group04.gundamshop.domain.Voucher;
 import group04.gundamshop.repository.UserRepository;
 import group04.gundamshop.repository.VoucherRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VoucherService {
@@ -47,6 +48,10 @@ public class VoucherService {
         return voucherRepository.findAll();
     }
 
+    public Voucher getById(Long id) {
+        return voucherRepository.findById(id).orElse(null);
+    }
+
     // ✅ Lấy voucher theo mã không phân biệt hoa/thường
     public Optional<Voucher> getVoucherByCode(String code) {
         return voucherRepository.findByCodeIgnoreCase(code.trim());
@@ -55,5 +60,41 @@ public class VoucherService {
     // ✅ Lấy danh sách voucher có chứa đoạn mã
     public List<Voucher> findByCode(String code) {
         return voucherRepository.findByCodeContainingIgnoreCase(code.trim());
+    }
+
+    public Voucher create(Voucher voucher) throws Exception {
+        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCaseAndIgnoreDeleted(voucher.getCode())
+                .orElse(null);
+        if (getVoucherByCode != null)
+            throw new Exception("Code has already been exist");
+
+        Voucher.validateVoucher(voucher);
+
+        return voucherRepository.save(voucher);
+    }
+
+    public Voucher update(Long id, Voucher updatedVoucher) throws Exception {
+        Voucher getVoucherByCode = voucherRepository.findByCodeIgnoreCaseAndIgnoreDeleted(updatedVoucher.getCode())
+                .orElse(null);
+        if (getVoucherByCode != null && getVoucherByCode.getId() != id)
+            throw new Exception("Code has already been exist");
+
+        Voucher.validateVoucher(updatedVoucher);
+
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new Exception("Voucher with id " + id + " not found"));
+        voucher.setCode(updatedVoucher.getCode());
+        voucher.setDescription(updatedVoucher.getDescription());
+        voucher.setDiscount(updatedVoucher.getDiscount());
+        voucher.setTitle(updatedVoucher.getTitle());
+
+        return voucherRepository.save(voucher);
+    }
+
+    public void delete(Long id) throws Exception {
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new Exception("Voucher with id " + id + " not found"));
+
+        voucherRepository.delete(voucher);
     }
 }

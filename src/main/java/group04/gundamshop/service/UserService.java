@@ -1,5 +1,24 @@
 package group04.gundamshop.service;
 
+<<<<<<< HEAD
+=======
+import group04.gundamshop.domain.dto.RegisterDTO;
+import group04.gundamshop.domain.Role;
+import group04.gundamshop.domain.User;
+import group04.gundamshop.repository.CartRepository;
+import group04.gundamshop.repository.OrderRepository;
+import group04.gundamshop.repository.RoleRepository;
+import group04.gundamshop.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +46,64 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private OrderRepository orderRepository; // Repository cho bảng orders
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
     public UserService(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+    }
+
+    public void saveEmployeeWithEmail(User employee, String rawPassword) throws Exception {
+        // Kiểm tra email trùng lặp
+        if (checkEmailExist(employee.getEmail())) {
+            throw new Exception("Email is already registered.");
+        }
+
+        // Lưu user (mật khẩu đã được mã hóa ở UserController)
+        handleSaveUser(employee);
+
+        // Gửi email
+        try {
+            emailService.sendRegistrationEmail(
+                    employee.getEmail(),
+                    employee.getFullName(),
+                    employee.getEmail(),
+                    rawPassword);
+        } catch (Exception e) {
+            System.err.println("Failed to send registration email: " + e.getMessage());
+        }
+    }
+
+    public void resendEmployeeEmail(Long id) throws Exception {
+        // Tìm employee
+        User employee = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+
+        // Gửi email (không gửi mật khẩu vì không có mật khẩu gốc)
+        try {
+            emailService.sendRegistrationEmail(
+                    employee.getEmail(),
+                    employee.getFullName(),
+                    employee.getEmail(),
+                    "Your current password (please reset if forgotten)");
+        } catch (Exception e) {
+            throw new Exception("Failed to resend email: " + e.getMessage());
+        }
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public List<User> getUsersByRoleId(long roleId, boolean status) {
-        return userRepository.findAllByRole_IdAndStatus(roleId, status);
+    public List<User> getUsersByRoleId(long roleId) {
+        return userRepository.findByRoleId(roleId);
     }
 
     public List<User> getUsersRoleId(long roleId) {
@@ -116,6 +182,7 @@ public class UserService {
         return user;
     }
 
+<<<<<<< HEAD
   // Phương thức import từ Excel
   public List<User> importFromExcel(MultipartFile excelFile) throws IOException {
     List<User> users = new ArrayList<>();
@@ -137,16 +204,67 @@ public class UserService {
 
             // Dù có lỗi vẫn add vào danh sách users
             users.add(user);
+=======
+    public List<User> importFromExcel(MultipartFile excelFile) throws IOException {
+        List<User> users = new ArrayList<>();
+        try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null || isRowEmpty(row))
+                    continue;
+
+                User user = new User();
+                user.setEmail(getCellValue(row, 0));
+                user.setPassword(getCellValue(row, 1));
+                user.setPhone(getCellValue(row, 2));
+                user.setFullName(getCellValue(row, 3));
+                user.setAddress(getCellValue(row, 4));
+                user.setStatus(true);
+                user.setRole(getRoleByName("CUSTOMER"));
+                user.setAvatar(null);
+
+                if (user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+                        user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+                    continue;
+                }
+
+                users.add(user);
+            }
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         }
     }
     return users;
 }
 
-    // Thêm phương thức kiểm tra dòng trống
+    public void banEmployeeAccount(Long userId) {
+        User employee = getUserById(userId).orElseThrow(() -> new EntityNotFoundException());
+        if (employee.getRole().getName().equals("EMPLOYEE")) {
+            employee.setStatus(false);
+            handleSaveUser(employee);
+        } else {
+            throw new IllegalArgumentException("User is not an employee.");
+        }
+    }
+
+    public void unbanEmployeeAccount(Long userId) {
+        User employee = getUserById(userId).orElseThrow(() -> new EntityNotFoundException());
+        if (employee.getRole().getName().equals("EMPLOYEE")) {
+            employee.setStatus(true);
+            handleSaveUser(employee);
+        } else {
+            throw new IllegalArgumentException("User is not an employee.");
+        }
+    }
+
     private boolean isRowEmpty(Row row) {
         if (row == null)
             return true;
+<<<<<<< HEAD
         for (int i = 0; i < 5; i++) { // Kiểm tra 5 cột (Email, Password, Phone, Full Name, Address)
+=======
+        for (int i = 0; i < 5; i++) {
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
             var cell = row.getCell(i);
             if (cell != null && cell.getCellType() != org.apache.poi.ss.usermodel.CellType.BLANK) {
                 String value = getCellValue(row, i);
@@ -171,4 +289,26 @@ public class UserService {
                 return "";
         }
     }
+
+    // Xóa hoàn toàn nhân viên khỏi cơ sở dữ liệu
+    public void deleteEmployee(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("Employee not found with id: " + id);
+        }
+
+        // Kiểm tra xem nhân viên có liên quan đến carts hoặc orders không
+        if (cartRepository.existsByUserId(id) || orderRepository.existsByUserId(id)) {
+            throw new IllegalStateException("Cannot delete this employee because they have related carts or orders.");
+        }
+
+        // Nếu không có liên quan, xóa nhân viên
+        userRepository.deleteById(id);
+    }
+
+    // Kiểm tra xem nhân viên có liên quan đến carts hoặc orders để quyết định hiển
+    // thị nút Delete
+    public boolean canDeleteEmployee(Long userId) {
+        return !cartRepository.existsByUserId(userId) && !orderRepository.existsByUserId(userId);
+    }
+
 }

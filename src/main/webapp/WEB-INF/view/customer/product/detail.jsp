@@ -8,7 +8,7 @@
 
                 <head>
                     <meta charset="utf-8">
-                    <title>${product.name} - Legoshop</title>
+                    <title>${product.name} - Gundamshop</title>
                     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
                     <!-- Google Web Fonts -->
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <h4 class="fw-bold mb-3">${product.name}</h4>
-                                            <p class="mb-3">${product.factory.name}</p>
+                                            <p class="mb-3">${product.factory}</p>
                                             <h5 class="fw-bold mb-3">
                                                 <fmt:formatNumber type="number" value="${product.price}" /> đ
                                             </h5>
@@ -124,9 +124,10 @@
                                                             cart
                                                         </button>
                                                     </form>
+
                                                     <!-- [SỬA WISHLIST START] -->
                                                     <!-- Wishlist Form (Cập nhật giống Add to Cart) -->
-                                                    <!-- <form action="/wishlist/add/${product.id}" method="post"
+                                                    <form action="/wishlist/add/${product.id}" method="post"
                                                         class="wishlist-add-ajax-form">
                                                         <input type="hidden" name="${_csrf.parameterName}"
                                                             value="${_csrf.token}" />
@@ -138,7 +139,7 @@
                                                                 class="position-relative me-4 my-auto wishlist-icon">Wishlist</i>
 
                                                         </button>
-                                                    </form> -->
+                                                    </form>
                                                     <!-- [SỬA WISHLIST END] -->
                                                 </c:when>
                                                 <c:otherwise>
@@ -164,7 +165,7 @@
                                             <div class="tab-content mb-5">
                                                 <div class="tab-pane active" id="nav-about" role="tabpanel"
                                                     aria-labelledby="nav-about-tab">
-                                                    <p id="product-description">${product.detailDesc}</p>
+                                                    <p>${product.detailDesc}</p>
                                                 </div>
                                             </div>
 
@@ -175,7 +176,8 @@
                                                         alt="${review.user.fullName} Avatar" class="rounded-circle"
                                                         width="50" height="50" style="margin-right: 15px;">
                                                     <div>
-                                                        <p><strong>${review.user.fullName} </strong> rated:
+                                                        <p>
+                                                            <strong>${review.user.fullName} </strong> rated:
                                                             <c:forEach begin="1" end="${review.rating}">
                                                                 <i class="fa fa-star text-secondary"></i>
                                                             </c:forEach>
@@ -215,7 +217,6 @@
                     <!-- JavaScript Libraries -->
                     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                     <script src="/client/lib/easing/easing.min.js"></script>
                     <script src="/client/lib/waypoints/waypoints.min.js"></script>
                     <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
@@ -224,70 +225,78 @@
                     <!-- Template Javascript -->
                     <script src="/client/js/main.js"></script>
 
+
                     <script
                         src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
                     <script>
                         $(document).ready(function () {
-                            var description = document.querySelector("#product-description");
-                            if (description) {
-                                description.innerHTML = description.innerHTML.replace(/\n/g, "<br>");
-                            }
-                        });
-                    </script>
-                    <script>
-                        $(document).ready(function () {
-                            // Chuyển đổi \n thành <br> trong phần mô tả sản phẩm
-                            var description = document.querySelector("#product-description");
-                            if (description) {
-                                description.innerHTML = description.innerHTML.replace(/\n/g, "<br>");
-                            }
-
-                            // Xử lý thêm vào wishlist
-                            $(".add-to-wishlist").on("click", function (e) {
-                                e.preventDefault();
-                                var productId = $(this).data("product-id");
-
-                                // Kiểm tra nếu sản phẩm đã có trong wishlist
+                            // AJAX form submission for wishlist
+                            $('.wishlist-add-ajax-form').submit(function (event) {
+                                event.preventDefault(); // Prevent form from submitting normally
+                                var form = $(this);
+                                var url = form.attr('action');
+                                // Get CSRF token from meta tags
+                                var token = $("meta[name='_csrf']").attr("content");
+                                var header = $("meta[name='_csrf_header']").attr("content");
                                 $.ajax({
-                                    url: "/wishlist/add",
                                     type: "POST",
-                                    data: {
-                                        productId: productId,
-                                        "_csrf": $("meta[name='_csrf']").attr("content")
+                                    url: url,
+                                    beforeSend: function (xhr) {
+                                        xhr.setRequestHeader(header, token);
                                     },
                                     success: function (response) {
-                                        if (response.success) {
+                                        // Hiển thị thông báo thành công
+                                        $.toast({
+                                            heading: 'Success',
+                                            text: response.message || 'Success  add to wishlist successfully',
+                                            showHideTransition: 'slide',
+                                            icon: 'success',
+                                            position: 'top-right',
+                                            hideAfter: 1000,
+                                            afterHidden: function () {
+                                                // Reload the page after the toast notification disappears
+                                                location.reload();
+                                            }
+                                        });
+                                    },
+                                    error: function (xhr) {
+                                        // Xử lý trường hợp sản phẩm đã tồn tại trong wishlist
+                                        if (xhr.status === 400 && xhr.responseText.includes("Already in Wishlist")) {
                                             $.toast({
-                                                heading: 'Success',
-                                                text: 'Product added to your wishlist!',
-                                                icon: 'success',
+                                                heading: 'Alert',
+                                                text: 'This product is already in your wishlis',
+                                                showHideTransition: 'slide',
+                                                icon: 'error',
                                                 position: 'top-right',
-                                                hideAfter: 3000
+                                                hideAfter: 1000
                                             });
-                                        } else if (response.message) {
+                                        } else if (xhr.status === 401) {
+                                            // Người dùng chưa đăng nhập
                                             $.toast({
-                                                heading: 'Info',
-                                                text: response.message,
-                                                icon: 'info',
+                                                heading: 'Warning',
+                                                text: 'Vui lòng đăng nhập để thêm sản phẩm vào wishlist!',
+                                                showHideTransition: 'fade',
+                                                icon: 'warning',
                                                 position: 'top-right',
-                                                hideAfter: 3000
+                                                hideAfter: 1000
+                                            });
+                                        } else {
+                                            // Lỗi khác
+                                            $.toast({
+                                                heading: 'Error',
+                                                text: 'Không thể thêm sản phẩm vào wishlist!',
+                                                showHideTransition: 'fade',
+                                                icon: 'error',
+                                                position: 'top-right',
+                                                hideAfter: 1000
                                             });
                                         }
-                                    },
-                                    error: function () {
-                                        $.toast({
-                                            heading: 'Error',
-                                            text: 'An error occurred. Please try again later.',
-                                            icon: 'error',
-                                            position: 'top-right',
-                                            hideAfter: 3000
-                                        });
                                     }
                                 });
                             });
                         });
                     </script>
-
                 </body>
 
                 </html>
+                >

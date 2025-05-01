@@ -78,14 +78,10 @@
 
                 <!-- Main Content -->
                 <div class="main-content">
-                    <!-- Header -->
                     <div class="header">
                         <div><strong>Lego Shop</strong></div>
                         <div>Hi, ${newUser.email}</div>
                     </div>
-
-                    <!-- Page Content -->
-                    <!-- Page Content -->
                     <div class="content">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3>Admin Profile</h3>
@@ -94,55 +90,39 @@
 
                         <form:form method="post" action="/admin/profile/update" modelAttribute="newUser"
                             enctype="multipart/form-data" class="w-100 d-flex flex-column align-items-center">
-
-                            <!-- Avatar -->
                             <div class="mb-3 text-center">
                                 <img id="avatarPreview" alt="Avatar Preview"
                                     style="max-height: 250px; display: none; border-radius: 10px;" />
                             </div>
-
                             <form:input path="id" type="hidden" />
-
-                            <!-- Email -->
                             <div class="mb-3 w-50">
                                 <label class="form-label">Email</label>
                                 <form:input path="email" class="form-control" disabled="true" />
                             </div>
-
-                            <!-- Phone -->
                             <div class="mb-3 w-50">
                                 <label class="form-label">Phone number</label>
                                 <form:input path="phone" type="text" class="form-control" pattern="^0\d{9}$"
                                     title="Phone must start with 0 and have 10 digits" required="true" />
                             </div>
-
-                            <!-- Full Name -->
                             <div class="mb-3 w-50">
                                 <label class="form-label">Full Name</label>
                                 <form:input path="fullName" class="form-control" pattern=".{3,}"
                                     title="At least 3 characters" required="true" />
                             </div>
-
-                            <!-- Address -->
                             <div class="mb-3 w-50">
                                 <label class="form-label">Address</label>
                                 <form:input path="address" class="form-control" />
                             </div>
-
-                            <!-- Avatar Upload -->
                             <div class="mb-3 w-50">
                                 <label class="form-label">Avatar</label>
                                 <input type="file" id="avatarFile" class="form-control" name="imagesFile"
                                     accept=".png, .jpg, .jpeg" />
                             </div>
-
-                            <!-- Submit -->
                             <div class="mb-3 w-50 d-grid">
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form:form>
                     </div>
-
                 </div>
             </body>
 

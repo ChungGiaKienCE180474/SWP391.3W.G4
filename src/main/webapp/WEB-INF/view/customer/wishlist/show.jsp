@@ -180,7 +180,7 @@
                                 },
                                 error: function (xhr, status, error) {
                                     console.error("Lỗi AJAX:", status, error);
-                                    alert("Lỗi khi cập nhật wishlist!");
+
                                 }
                             });
                         });

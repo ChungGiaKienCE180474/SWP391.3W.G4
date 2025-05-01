@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     void deleteById(long id);
 
+    List<User> findByRoleId(Long roleId);
+
     List<User> findAllByRole_Id(long roleId);
 
     List<User> findAllByRole_IdAndStatus(long roleId, boolean status);
@@ -21,9 +23,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email); // Đây là cách đúng thay vì `findOneByEmail(String email)`
 
+<<<<<<< HEAD
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
 
     Optional<User> findByPhone(String phone);
+=======
+    Optional<User> findByEmail(String email); // Đây là cách đúng thay vì `findOneByEmail(String email)`
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 
+    boolean existsById(Long id);
+
+    void deleteById(Long id);
 }

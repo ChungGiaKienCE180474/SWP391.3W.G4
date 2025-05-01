@@ -1,5 +1,6 @@
 package group04.gundamshop.controller.employee;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,9 +33,15 @@ public class EmOrderController {
     @GetMapping("/employee/order/{id}")
     public String getOrderDetailPage(Model model, @PathVariable long id) {
         Order order = this.orderService.fetchOrderById(id).get();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String formattedDate = order.getOrderDate().format(formatter);
+
         model.addAttribute("order", order);
         model.addAttribute("id", id);
         model.addAttribute("orderDetails", order.getOrderDetails());
+        model.addAttribute("formattedOrderDate", formattedDate);
+
         return "employee/order/detail";
     }
 
@@ -64,4 +71,20 @@ public class EmOrderController {
         return "redirect:/employee/order";
     }
 
+    /**
+     * Cập nhật trạng thái đơn hàng thành COMPLETE (dùng cho đơn hàng BANKING).
+     *
+     * @param id ID của đơn hàng cần cập nhật.
+     * @return Chuyển hướng đến trang danh sách đơn hàng.
+     */
+    @GetMapping("/employee/order/update-to-complete/{id}")
+    public String updateOrderToComplete(@PathVariable long id) {
+        Optional<Order> optionalOrder = orderService.fetchOrderById(id);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.setStatus("COMPLETE");
+            orderService.updateOrder(order);
+        }
+        return "redirect:/employee/order";
+    }
 }

@@ -117,6 +117,7 @@ public class UserController {
     }
 
     @PostMapping(value = "admin/customer/create")
+<<<<<<< HEAD
     public String createCustomerPage(Model model,
             @ModelAttribute("newCustomer") @Valid User customer,
             BindingResult newUserBindingResult,
@@ -124,6 +125,13 @@ public class UserController {
             @RequestParam(value = "excelFile", required = false) MultipartFile excelFile,
             RedirectAttributes redirectAttributes) {
 
+=======
+    public String createCustomerPage(Model model, @ModelAttribute("newCustomer") @Valid User customer,
+            BindingResult newUserBindingResult,
+            @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) {
+        // Trường hợp nhập tay
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         if (excelFile == null || excelFile.isEmpty()) {
             boolean hasError = false;
 
@@ -183,12 +191,18 @@ public class UserController {
             if (hasError) {
                 return "admin/customer/create";
             }
+<<<<<<< HEAD
 
             // Không có lỗi thì xử lý lưu
             String avatar = (imageFile != null && !imageFile.isEmpty())
                     ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
                     : null;
 
+=======
+            String avatar = imageFile != null && !imageFile.isEmpty()
+                    ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
+                    : null;
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
             String hashPassword = this.passwordEncoder.encode(customer.getPassword());
             customer.setAvatar(avatar);
             customer.setPassword(hashPassword);
@@ -282,8 +296,13 @@ public class UserController {
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;
+<<<<<<< HEAD
                     errorDetails.append("User with email ").append(user.getEmail())
                                 .append(": ").append(e.getMessage()).append("; ");
+=======
+                    errorDetails.append("User with email ").append(user.getEmail()).append(": ").append(e.getMessage())
+                            .append("; ");
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
                 }
             }
             
@@ -360,7 +379,7 @@ public class UserController {
     // -------------------------------- Employee ---------------------------------
     @GetMapping("/admin/employee")
     public String getAllEmployee(Model model) {
-        List<User> employees = this.userService.getUsersByRoleId(2, true);
+        List<User> employees = this.userService.getUsersByRoleId(2L);
         model.addAttribute("employees", employees);
         return "admin/employee/show";
     }
@@ -371,24 +390,59 @@ public class UserController {
         return "admin/employee/create";
     }
 
+<<<<<<< HEAD
     @PostMapping(value = "admin/employee/create")
     public String createEmployeePage(Model model, @ModelAttribute("newEmployee") @Valid User employee,
             BindingResult newUserBindingResult, HttpServletRequest request,
             @RequestParam("imagesFile") MultipartFile file) {
+=======
+    @PostMapping(value = "/admin/employee/create")
+    public String createEmployeePage(Model model,
+            @ModelAttribute("newEmployee") @Valid User employee,
+            BindingResult newUserBindingResult,
+            HttpServletRequest request,
+            @RequestParam("imagesFile") MultipartFile file) {
+        // Kiểm tra lỗi validation
+>>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         if (newUserBindingResult.hasErrors()) {
             return "admin/employee/create";
         }
-        if (userService.checkEmailExist(employee.getEmail())) {
-            request.setAttribute("message", "Email is already registered. Try logging in.");
-            return "redirect:/admin/employee/create?exit";
+
+        try {
+            // Xử lý avatar
+            String avatar = file != null && !file.isEmpty() ? this.uploadService.handleSaveUploadFile(file, "avatar")
+                    : null;
+            employee.setAvatar(avatar);
+
+            // Lưu mật khẩu gốc để gửi email
+            String rawPassword = employee.getPassword();
+
+            // Mã hóa mật khẩu
+            String hashPassword = this.passwordEncoder.encode(rawPassword);
+            employee.setPassword(hashPassword);
+
+            // Thiết lập các thuộc tính khác
+            employee.setStatus(true);
+            employee.setRole(this.userService.getRoleByName("EMPLOYEE"));
+
+            // Lưu employee và gửi email
+            this.userService.saveEmployeeWithEmail(employee, rawPassword);
+
+            return "redirect:/admin/employee";
+        } catch (Exception e) {
+            model.addAttribute("message", "Error creating employee: " + e.getMessage());
+            return "admin/employee/create";
         }
-        String avatar = this.uploadService.handleSaveUploadFile(file, "avatar");
-        String hashPassword = this.passwordEncoder.encode(employee.getPassword());
-        employee.setAvatar(avatar);
-        employee.setPassword(hashPassword);
-        employee.setStatus(true);
-        employee.setRole(this.userService.getRoleByName(employee.getRole().getName()));
-        this.userService.handleSaveUser(employee);
+    }
+
+    @GetMapping("/admin/employee/resend-email/{id}")
+    public String resendEmployeeEmail(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.resendEmployeeEmail(id);
+            redirectAttributes.addFlashAttribute("message", "Account email resent successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Error resending email: " + e.getMessage());
+        }
         return "redirect:/admin/employee";
     }
 
@@ -424,18 +478,27 @@ public class UserController {
 
     @GetMapping("/admin/employee/delete/{id}")
     public String getDeleteEmployeePage(Model model, @PathVariable long id) {
-        model.addAttribute("id", id);
-        model.addAttribute("newEmployee", new User());
+        Optional<User> userOptional = this.userService.getUserById(id);
+        if (userOptional.isPresent()) {
+            User employee = userOptional.get();
+            model.addAttribute("fullName", employee.getFullName());
+            model.addAttribute("email", employee.getEmail());
+            model.addAttribute("id", id);
+        } else {
+            return "redirect:/admin/employee?error=notfound";
+        }
         return "admin/employee/delete";
     }
 
     @PostMapping("/admin/employee/delete")
-    public String postDeleteEmployee(Model model, @ModelAttribute("newEmployee") User employee) {
-        Optional<User> employeeOptional = this.userService.getUserById(employee.getId());
-        User currentEmployee = employeeOptional.orElse(null);
-        if (currentEmployee != null) {
-            currentEmployee.setStatus(false);
-            this.userService.handleSaveUser(currentEmployee);
+    public String postDeleteEmployee(Model model, @RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            this.userService.deleteEmployee(id);
+            redirectAttributes.addFlashAttribute("message", "Employee deleted successfully.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/employee";
     }
@@ -448,4 +511,25 @@ public class UserController {
         model.addAttribute("id", id);
         return "admin/employee/detail";
     }
+
+    // -------------------------------- Employee Ban/Unban
+    @PostMapping("/admin/employee/ban/{userId}")
+    public String banOrUnbanEmployee(@PathVariable Long userId, @RequestParam boolean status,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (!status) {
+                userService.banEmployeeAccount(userId);
+                redirectAttributes.addFlashAttribute("message", "Employee account was banned.");
+            } else {
+                userService.unbanEmployeeAccount(userId);
+                redirectAttributes.addFlashAttribute("message", "Employee account was unbanned successfully.");
+            }
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "Employee account not found!");
+        }
+        return "redirect:/admin/employee";
+    }
+
 }

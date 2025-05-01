@@ -41,7 +41,6 @@
                     }
                 </style>
             </head>
-
             <body>
                 <div class="container-fluid d-flex p-0">
                     <jsp:include page="../layout/navbar.jsp" />
