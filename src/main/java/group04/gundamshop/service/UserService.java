@@ -249,7 +249,7 @@ public class UserService {
 
         // Kiểm tra xem nhân viên có liên quan đến carts hoặc orders không
         if (cartRepository.existsByUserId(id) || orderRepository.existsByUserId(id)) {
-            throw new IllegalStateException("Cannot delete this employee because they have related carts or orders.");
+            throw new IllegalStateException("Cannot delete employee due to related records.");
         }
 
         // Nếu không có liên quan, xóa nhân viên
