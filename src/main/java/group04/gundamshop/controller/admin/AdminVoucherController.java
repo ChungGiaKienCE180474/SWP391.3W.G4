@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 
 @RequestMapping("/admin/voucher")
 @Controller
-public class VoucherController {
+public class AdminVoucherController {
 
     @Autowired
     public VoucherService voucherService;
@@ -27,12 +27,20 @@ public class VoucherController {
     public String getAll(Model model) {
         List<Voucher> vouchers = voucherService.getAllVouchers();
         model.addAttribute("vouchers", vouchers);
-        return "/admin/voucher/show";
+        return "admin/voucher/show";
+    }
+
+    @GetMapping("{id}")
+    public String getById(Model model, @PathVariable Long id) {
+        Voucher voucher = voucherService.getById(id);
+        model.addAttribute("voucher", voucher);
+        return "admin/voucher/detail";
     }
 
     @GetMapping("create")
-    public String getCreate() {
-        return "/admin/voucher/create";
+    public String getCreate(Model model) {
+        model.addAttribute("newVoucher", new Voucher());
+        return "admin/voucher/create";
     }
 
     @PostMapping("create")
@@ -45,17 +53,17 @@ public class VoucherController {
             return "redirect:/admin/voucher";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "/admin/voucher/create";
+            return "admin/voucher/create";
         }
     }
 
-    @PostMapping("delete/{id}")
-    public String postDelete(Model model,
+    @GetMapping("delete/{id}")
+    public String getDelete(Model model,
             RedirectAttributes redirectAttributes,
             @PathVariable long id) {
         try {
             voucherService.delete(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Voucher created successfully");
+            redirectAttributes.addFlashAttribute("successMessage", "Voucher deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
@@ -74,21 +82,21 @@ public class VoucherController {
         }
 
         model.addAttribute("voucher", voucher);
-        return "/admin/voucher/update";
+        return "admin/voucher/update";
     }
 
     @PostMapping("update/{id}")
     public String postUpdate(Model model,
             RedirectAttributes redirectAttributes,
             @PathVariable long id,
-            @ModelAttribute("newVoucher") @Valid Voucher voucher) {
+            @ModelAttribute("voucher") @Valid Voucher voucher) {
         try {
             voucherService.update(id, voucher);
-            redirectAttributes.addFlashAttribute("successMessage", "Voucher created successfully");
+            redirectAttributes.addFlashAttribute("successMessage", "Voucher " + id + " updated successfully");
             return "redirect:/admin/voucher";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "/admin/voucher/update";
+            return "admin/voucher/update";
         }
     }
 }
