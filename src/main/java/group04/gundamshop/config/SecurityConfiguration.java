@@ -135,7 +135,6 @@ public class SecurityConfiguration {
                 if (user != null) {
                         if (!user.isStatus()) {
                                 // Nếu tài khoản bị khóa, thông báo cho người dùng
-                                request.getSession().setAttribute("message", "Your Account was BAN");
                                 response.sendRedirect("/login?locked"); // Chuyển hướng tới trang đăng nhập với thông
                                                                         // báo khóa tài khoản
                         } else {

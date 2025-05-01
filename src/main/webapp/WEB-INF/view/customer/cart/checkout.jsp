@@ -340,7 +340,7 @@
                                             return;
                                         }
 
-                                        let voucher = data.vouchers.find(v => v.code.toUpperCase() === code);
+                                        let voucher = data.vouchers.find(v => v.code.toUpperCase() === code.toUpperCase());
                                         if (!voucher) {
                                             alert("❌ This voucher was not found!");
                                             return;
