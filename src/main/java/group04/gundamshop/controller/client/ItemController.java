@@ -352,6 +352,10 @@ public class ItemController {
         currentUser.setId(id);
 
         Cart cart = this.productService.fetchByUser(currentUser);
+        if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
+            return "redirect:/cart";
+        }
+        
         List<CartDetail> cartDetails = cart == null ? new ArrayList<CartDetail>() : cart.getCartDetails();
 
         for (CartDetail cd : cartDetails) {
