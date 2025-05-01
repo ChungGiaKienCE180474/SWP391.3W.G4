@@ -151,21 +151,6 @@
                                                         id="checkVoucherBtn">Check</button>
                                                 </div>
                                             </div>
-                                            <div class="mb-3">
-                                                <label>🎟️ Add Voucher:</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" id="voucherCodeInput"
-                                                        placeholder="Enter Voucher Code">
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="checkVoucherBtn">Check</button>
-                                                </div>
-
-                                                <ul id="voucherSuggestions" class="list-group position-absolute"
-                                                    style="z-index: 1000; display: none;">
-                                                </ul>
-                                            </div>
-
-
                                             <!-- Kết quả voucher -->
                                             <div class="mb-3" id="voucherResult" style="display: none;">
                                                 <h6>✅ Voucher Found:</h6>
@@ -365,36 +350,13 @@
                                         let appliedShippingDiscount = 0;
                                         let currentTotal = originalTotal + originalShippingFee;
 
-                                        switch (voucher.code) {
-                                            case "FREESHIP":
-                                                appliedShippingDiscount = originalShippingFee;
-                                                break;
-                                            case "BIGSALE20":
-                                                if (originalTotal >= 500000) {
-                                                    discountAmount = (originalTotal * 20) / 100;
-                                                } else {
-                                                    alert("⚠️ This voucher only applies for orders over 500,000 VND!");
-                                                    return;
-                                                }
-                                                break;
-                                            case "BIGSALE30":
-                                                if (originalTotal >= 1000000) {
-                                                    discountAmount = (originalTotal * 30) / 100;
-                                                } else {
-                                                    alert("⚠️ This voucher only applies for orders over 1,000,000 VND!");
-                                                    return;
-                                                }
-                                                break;
-                                            default:
-                                                discountAmount = (originalTotal * voucher.discount) / 100;
-                                                break;
-                                        }
+                                        discountAmount = (originalTotal * voucher.discount) / 100;
 
                                         let totalDiscount = discountAmount + appliedShippingDiscount;
                                         currentTotal -= totalDiscount;
 
                                         // 🆕 **Cập nhật giá trị vào giao diện & form**
-                                        voucherTitleElement.innerText = voucher.title;
+                                        voucherTitleElement.innerText = voucher.description;
                                         voucherDiscountElement.innerText = voucher.discount + "%";
                                         voucherResultContainer.style.display = "block";
 
