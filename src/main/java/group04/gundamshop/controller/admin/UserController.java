@@ -117,21 +117,12 @@ public class UserController {
     }
 
     @PostMapping(value = "admin/customer/create")
-<<<<<<< HEAD
     public String createCustomerPage(Model model,
             @ModelAttribute("newCustomer") @Valid User customer,
             BindingResult newUserBindingResult,
             @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
             @RequestParam(value = "excelFile", required = false) MultipartFile excelFile,
             RedirectAttributes redirectAttributes) {
-
-=======
-    public String createCustomerPage(Model model, @ModelAttribute("newCustomer") @Valid User customer,
-            BindingResult newUserBindingResult,
-            @RequestParam(value = "imagesFile", required = false) MultipartFile imageFile,
-            @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) {
-        // Trường hợp nhập tay
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         if (excelFile == null || excelFile.isEmpty()) {
             boolean hasError = false;
 
@@ -191,18 +182,10 @@ public class UserController {
             if (hasError) {
                 return "admin/customer/create";
             }
-<<<<<<< HEAD
-
             // Không có lỗi thì xử lý lưu
             String avatar = (imageFile != null && !imageFile.isEmpty())
                     ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
                     : null;
-
-=======
-            String avatar = imageFile != null && !imageFile.isEmpty()
-                    ? this.uploadService.handleSaveUploadFile(imageFile, "avatar")
-                    : null;
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
             String hashPassword = this.passwordEncoder.encode(customer.getPassword());
             customer.setAvatar(avatar);
             customer.setPassword(hashPassword);
@@ -296,13 +279,8 @@ public class UserController {
                     successCount++;
                 } catch (Exception e) {
                     errorCount++;
-<<<<<<< HEAD
                     errorDetails.append("User with email ").append(user.getEmail())
                                 .append(": ").append(e.getMessage()).append("; ");
-=======
-                    errorDetails.append("User with email ").append(user.getEmail()).append(": ").append(e.getMessage())
-                            .append("; ");
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
                 }
             }
             
@@ -390,12 +368,6 @@ public class UserController {
         return "admin/employee/create";
     }
 
-<<<<<<< HEAD
-    @PostMapping(value = "admin/employee/create")
-    public String createEmployeePage(Model model, @ModelAttribute("newEmployee") @Valid User employee,
-            BindingResult newUserBindingResult, HttpServletRequest request,
-            @RequestParam("imagesFile") MultipartFile file) {
-=======
     @PostMapping(value = "/admin/employee/create")
     public String createEmployeePage(Model model,
             @ModelAttribute("newEmployee") @Valid User employee,
@@ -403,7 +375,6 @@ public class UserController {
             HttpServletRequest request,
             @RequestParam("imagesFile") MultipartFile file) {
         // Kiểm tra lỗi validation
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         if (newUserBindingResult.hasErrors()) {
             return "admin/employee/create";
         }

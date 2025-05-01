@@ -28,7 +28,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Tìm các đơn hàng của người dùng với trạng thái khác "COMPLETE"
     List<Order> findByUserAndStatusNot(User user, String status);
 
-<<<<<<< HEAD
     // Tìm các đơn hàng có ít nhất một chi tiết đơn hàng đã được đánh giá
     @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NOT NULL")
     List<Order> findOrdersWithRatedDetails();
@@ -37,7 +36,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NULL AND o.status = 'COMPLETE'")
     List<Order> findOrdersWithUnratedDetails();
 
-=======
     boolean existsByUserId(Long userId);
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 }

@@ -23,14 +23,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email); // Đây là cách đúng thay vì `findOneByEmail(String email)`
 
-<<<<<<< HEAD
     boolean existsByEmail(String email);
+    
     boolean existsByPhone(String phone);
 
     Optional<User> findByPhone(String phone);
-=======
-    Optional<User> findByEmail(String email); // Đây là cách đúng thay vì `findOneByEmail(String email)`
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 
     boolean existsById(Long id);
 

@@ -1,7 +1,5 @@
 package group04.gundamshop.service;
 
-<<<<<<< HEAD
-=======
 import group04.gundamshop.domain.dto.RegisterDTO;
 import group04.gundamshop.domain.Role;
 import group04.gundamshop.domain.User;
@@ -18,26 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import group04.gundamshop.domain.Role;
-import group04.gundamshop.domain.User;
-import group04.gundamshop.domain.dto.RegisterDTO;
-import group04.gundamshop.repository.RoleRepository;
-import group04.gundamshop.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
@@ -182,60 +164,32 @@ public class UserService {
         return user;
     }
 
-<<<<<<< HEAD
-  // Phương thức import từ Excel
-  public List<User> importFromExcel(MultipartFile excelFile) throws IOException {
-    List<User> users = new ArrayList<>();
-    try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
-        Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên
-        for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Bỏ qua header (dòng 0)
-            Row row = sheet.getRow(i);
-            if (row == null || isRowEmpty(row)) continue; // Bỏ qua dòng trống
-
-            User user = new User();
-            user.setEmail(getCellValue(row, 0));        // Cột 0: email
-            user.setPassword(getCellValue(row, 1));     // Cột 1: password
-            user.setPhone(getCellValue(row, 2));        // Cột 2: phone
-            user.setFullName(getCellValue(row, 3));     // Cột 3: fullName
-            user.setAddress(getCellValue(row, 4));      // Cột 4: address
-            user.setStatus(true);                       // Mặc định status = true
-            user.setRole(getRoleByName("CUSTOMER"));    // Gán role CUSTOMER
-            user.setAvatar(null);                       // Không có avatar từ Excel
-
-            // Dù có lỗi vẫn add vào danh sách users
-            users.add(user);
-=======
+    // Phương thức import từ Excel
     public List<User> importFromExcel(MultipartFile excelFile) throws IOException {
         List<User> users = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Sheet sheet = workbook.getSheetAt(0); // Lấy sheet đầu tiên
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // Bỏ qua header (dòng 0)
                 Row row = sheet.getRow(i);
                 if (row == null || isRowEmpty(row))
-                    continue;
+                    continue; // Bỏ qua dòng trống
 
                 User user = new User();
-                user.setEmail(getCellValue(row, 0));
-                user.setPassword(getCellValue(row, 1));
-                user.setPhone(getCellValue(row, 2));
-                user.setFullName(getCellValue(row, 3));
-                user.setAddress(getCellValue(row, 4));
-                user.setStatus(true);
-                user.setRole(getRoleByName("CUSTOMER"));
-                user.setAvatar(null);
+                user.setEmail(getCellValue(row, 0)); // Cột 0: email
+                user.setPassword(getCellValue(row, 1)); // Cột 1: password
+                user.setPhone(getCellValue(row, 2)); // Cột 2: phone
+                user.setFullName(getCellValue(row, 3)); // Cột 3: fullName
+                user.setAddress(getCellValue(row, 4)); // Cột 4: address
+                user.setStatus(true); // Mặc định status = true
+                user.setRole(getRoleByName("CUSTOMER")); // Gán role CUSTOMER
+                user.setAvatar(null); // Không có avatar từ Excel
 
-                if (user.getEmail() == null || user.getEmail().trim().isEmpty() ||
-                        user.getFullName() == null || user.getFullName().trim().isEmpty()) {
-                    continue;
-                }
-
+                // Dù có lỗi vẫn add vào danh sách users
                 users.add(user);
             }
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
         }
+        return users;
     }
-    return users;
-}
 
     public void banEmployeeAccount(Long userId) {
         User employee = getUserById(userId).orElseThrow(() -> new EntityNotFoundException());
@@ -260,11 +214,8 @@ public class UserService {
     private boolean isRowEmpty(Row row) {
         if (row == null)
             return true;
-<<<<<<< HEAD
+
         for (int i = 0; i < 5; i++) { // Kiểm tra 5 cột (Email, Password, Phone, Full Name, Address)
-=======
-        for (int i = 0; i < 5; i++) {
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
             var cell = row.getCell(i);
             if (cell != null && cell.getCellType() != org.apache.poi.ss.usermodel.CellType.BLANK) {
                 String value = getCellValue(row, i);

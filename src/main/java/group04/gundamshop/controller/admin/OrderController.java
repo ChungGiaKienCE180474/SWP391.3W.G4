@@ -161,7 +161,6 @@ public class OrderController {
         // Trả về tên view để hiển thị trang lịch sử mua hàng.
     }
 
-<<<<<<< HEAD
     @GetMapping("/customer/order/cancelled")
     public String getCancelledOrders(Model model) {
         List<Order> cancelledOrders = orderService.getCancelledOrders().stream()
@@ -208,7 +207,7 @@ public class OrderController {
         model.addAttribute("orders", trackingOrders);
         return "customer/order/tracking";
     }
-=======
+
     /**
      * Cập nhật trạng thái đơn hàng thành COMPLETE (dùng cho đơn hàng BANKING).
      *
@@ -225,6 +224,4 @@ public class OrderController {
         }
         return "redirect:/admin/order";
     }
-
->>>>>>> 1a7df5b08f9f23771aa35ac6ef96afb76deaf4e7
 }
