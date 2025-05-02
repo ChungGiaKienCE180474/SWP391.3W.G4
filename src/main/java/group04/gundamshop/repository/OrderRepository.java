@@ -37,4 +37,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findOrdersWithUnratedDetails();
 
     boolean existsByUserId(Long userId);
+
+    // New methods
+    @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NOT NULL AND o.user = :user")
+    List<Order> findOrdersWithRatedDetailsByUser(User user);
+
+    @Query("SELECT DISTINCT o FROM Order o JOIN o.orderDetails od WHERE od.productReview IS NULL AND o.status = 'COMPLETE' AND o.user = :user")
+    List<Order> findOrdersWithUnratedDetailsByUser(User user);
 }

@@ -99,12 +99,12 @@ public class ProductSearchController {
 
         // Set scale filter
         if (scales != null && !scales.isEmpty()) {
-            criteria.setScale(java.util.Optional.of(String.join(",", scales)));
+            criteria.setScale(java.util.Optional.of(scales));
         }
 
         // Set material filter
         if (materials != null && !materials.isEmpty()) {
-            criteria.setMaterial(java.util.Optional.of(String.join(",", materials)));
+            criteria.setMaterial(java.util.Optional.of(materials));
         }
 
         // Set factory filter

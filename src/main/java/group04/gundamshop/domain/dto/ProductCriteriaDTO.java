@@ -15,8 +15,8 @@ public class ProductCriteriaDTO {
     private Optional<String> searchKeyword = Optional.empty(); // Thêm trường tìm kiếm
     private Optional<String> categoryId = Optional.empty(); // Thêm trường danh mục
 
-    private Optional<String> scale = Optional.empty();
-    private Optional<String> material = Optional.empty();
+    private Optional<List<String>> scale = Optional.empty();
+    private Optional<List<String>> material = Optional.empty();
     private Optional<String> dimensions = Optional.empty();
     private Optional<String> weight = Optional.empty();
 
@@ -105,19 +105,19 @@ public class ProductCriteriaDTO {
         this.categoryId = categoryId; // Setter cho categoryId
     }
 
-    public Optional<String> getScale() {
+    public Optional<List<String>> getScale() {
         return scale;
     }
 
-    public void setScale(Optional<String> scale) {
+    public void setScale(Optional<List<String>> scale) {
         this.scale = scale;
     }
 
-    public Optional<String> getMaterial() {
+    public Optional<List<String>> getMaterial() {
         return material;
     }
 
-    public void setMaterial(Optional<String> material) {
+    public void setMaterial(Optional<List<String>> material) {
         this.material = material;
     }
 

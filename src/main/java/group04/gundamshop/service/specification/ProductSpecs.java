@@ -103,10 +103,32 @@ public class ProductSpecs {
         };
     }
 
+    public static Specification<Product> matchScales(List<String> scales) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("scale"));
+            for (String scale : scales) {
+                inClause.value(scale);
+            }
+            return inClause;
+        };
+    }
+
     public static Specification<Product> matchMaterial(String material) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             return criteriaBuilder.like(root.get("material"), "%" + material + "%");
+        };
+    }
+
+    public static Specification<Product> matchMaterials(List<String> materials) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("material"));
+            for (String material : materials) {
+                inClause.value(material);
+            }
+            return inClause;
         };
     }
 

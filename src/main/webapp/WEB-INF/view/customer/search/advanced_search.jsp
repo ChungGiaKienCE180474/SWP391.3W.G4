@@ -232,7 +232,7 @@
                         <label for="scale">Scale</label>
                         <select name="scale" id="scale" multiple style="width: 100%;">
                             <c:forEach var="scaleOption" items="${scales}">
-                                <option value="${scaleOption}" <c:if test="${fn:contains(param.scale, scaleOption)}">selected</c:if>>${scaleOption}</option>
+                                <option value="${scaleOption}" <c:if test="${selectedScales != null && selectedScales.contains(scaleOption)}">selected</c:if>>${scaleOption}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -240,7 +240,7 @@
                         <label for="material">Material</label>
                         <select name="material" id="material" multiple style="width: 100%;">
                             <c:forEach var="materialOption" items="${materials}">
-                                <option value="${materialOption}" <c:if test="${fn:contains(param.material, materialOption)}">selected</c:if>>${materialOption}</option>
+                                <option value="${materialOption}" <c:if test="${selectedMaterials != null && selectedMaterials.contains(materialOption)}">selected</c:if>>${materialOption}</option>
                             </c:forEach>
                         </select>
                     </div>
