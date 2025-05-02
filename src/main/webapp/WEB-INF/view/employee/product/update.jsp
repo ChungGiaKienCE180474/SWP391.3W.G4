@@ -52,10 +52,7 @@
             if (!isValidText(name)) {
                 errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
             }
-    
-            if (detailDesc.length < 10 ) {
-                errors.push("Detail description must be at least 10 characters.");
-            }
+
     
             if (!quantity || quantity <= 0) {
                 errors.push("Quantity must be greater than 0.");
@@ -122,7 +119,7 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Short description:</label>
                                         <form:input type="text" class="form-control" path="shortDesc"
-                                                    required="required" minlength="10" />
+                                                   />
                                         <form:errors path="shortDesc" cssClass="text-danger" />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">

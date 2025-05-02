@@ -91,11 +91,23 @@ public class ProductService {
             combinedSpec = combinedSpec.and(currentSpecs);
         }
         if (productCriteriaDTO.getScale() != null && productCriteriaDTO.getScale().isPresent()) {
-            Specification<Product> scaleSpec = ProductSpecs.matchScale(productCriteriaDTO.getScale().get());
+            List<String> scales = productCriteriaDTO.getScale().get();
+            Specification<Product> scaleSpec;
+            if (scales.size() == 1) {
+                scaleSpec = ProductSpecs.matchScale(scales.get(0));
+            } else {
+                scaleSpec = ProductSpecs.matchScales(scales);
+            }
             combinedSpec = combinedSpec.and(scaleSpec);
         }
         if (productCriteriaDTO.getMaterial() != null && productCriteriaDTO.getMaterial().isPresent()) {
-            Specification<Product> materialSpec = ProductSpecs.matchMaterial(productCriteriaDTO.getMaterial().get());
+            List<String> materials = productCriteriaDTO.getMaterial().get();
+            Specification<Product> materialSpec;
+            if (materials.size() == 1) {
+                materialSpec = ProductSpecs.matchMaterial(materials.get(0));
+            } else {
+                materialSpec = ProductSpecs.matchMaterials(materials);
+            }
             combinedSpec = combinedSpec.and(materialSpec);
         }
         // Apply dimensions range filter if dimensionsMin or dimensionsMax is present
@@ -415,11 +427,23 @@ public class ProductService {
             combinedSpec = combinedSpec.and(priceSpec);
         }
         if (productCriteriaDTO.getScale() != null && productCriteriaDTO.getScale().isPresent()) {
-            Specification<Product> scaleSpec = ProductSpecs.matchScale(productCriteriaDTO.getScale().get());
+            List<String> scales = productCriteriaDTO.getScale().get();
+            Specification<Product> scaleSpec;
+            if (scales.size() == 1) {
+                scaleSpec = ProductSpecs.matchScale(scales.get(0));
+            } else {
+                scaleSpec = ProductSpecs.matchScales(scales);
+            }
             combinedSpec = combinedSpec.and(scaleSpec);
         }
         if (productCriteriaDTO.getMaterial() != null && productCriteriaDTO.getMaterial().isPresent()) {
-            Specification<Product> materialSpec = ProductSpecs.matchMaterial(productCriteriaDTO.getMaterial().get());
+            List<String> materials = productCriteriaDTO.getMaterial().get();
+            Specification<Product> materialSpec;
+            if (materials.size() == 1) {
+                materialSpec = ProductSpecs.matchMaterial(materials.get(0));
+            } else {
+                materialSpec = ProductSpecs.matchMaterials(materials);
+            }
             combinedSpec = combinedSpec.and(materialSpec);
         }
         if (productCriteriaDTO.getDimensions() != null && productCriteriaDTO.getDimensions().isPresent()) {

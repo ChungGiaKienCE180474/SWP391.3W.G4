@@ -127,4 +127,12 @@ public class OrderService {
     public List<Order> getUnratedOrders() {
         return orderRepository.findOrdersWithUnratedDetails();
     }
+
+    public List<Order> getRatedOrdersByUser(User user) {
+        return orderRepository.findOrdersWithRatedDetailsByUser(user);
+    }
+
+    public List<Order> getUnratedOrdersByUser(User user) {
+        return orderRepository.findOrdersWithUnratedDetailsByUser(user);
+    }
 }

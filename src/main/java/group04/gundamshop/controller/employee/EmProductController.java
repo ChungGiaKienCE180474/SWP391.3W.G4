@@ -65,14 +65,17 @@ public class EmProductController {
         return "employee/product/show";
         // Trả về tên view để hiển thị danh sách sản phẩm.
     }
- 
     
     @GetMapping("/employee/product/create") // GET
     // Ánh xạ các yêu cầu HTTP GET đến địa chỉ "/employee/product/create" đến phương
     // thức này.
     public String getCreateUserPage(Model model) {
         // Phương thức xử lý yêu cầu hiển thị trang tạo sản phẩm mới.
-        model.addAttribute("newProduct", new Product());
+        Product product = new Product();
+        if (product.getCategory() == null) {
+            product.setCategory(new Category());
+        }
+        model.addAttribute("newProduct", product);
         // Thêm một đối tượng Product mới vào model để form tạo sản phẩm có thể sử dụng.
         List<Category> categories = this.categoryService.getCategoryByStatus(true);
         // Lấy danh sách danh mục sản phẩm có trạng thái là true (đang hoạt động) từ
@@ -109,6 +112,32 @@ public class EmProductController {
             System.out.println(error.getField() + " - " + error.getDefaultMessage());
             // In ra thông tin về trường bị lỗi và thông báo lỗi.
         }
+        // Create new Product entity to avoid transient factory/target issues
+        Product newProduct = new Product();
+        newProduct.setName(product.getName());
+        newProduct.setPrice(product.getPrice());
+        newProduct.setQuantity(product.getQuantity());
+        newProduct.setDetailDesc(product.getDetailDesc());
+        newProduct.setShortDesc(product.getShortDesc());
+        String categoryName = product.getCategory().getName() != null ? product.getCategory().getName().trim() : null;
+        System.out.println("Received category name: '" + categoryName + "'");
+        Category category = this.productService.getCategoryByName(categoryName);
+        if (category == null) {
+            newProductBindingResult.rejectValue("category", "error.newProduct", "Selected category does not exist");
+            List<Category> categories = this.categoryService.getCategoryByStatus(true);
+            model.addAttribute("categories", categories);
+            List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+            model.addAttribute("factories", factories);
+            List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+            model.addAttribute("targets", targets);
+            return "employee/product/create";
+        }
+        newProduct.setCategory(category);
+        newProduct.setScale(product.getScale());
+        newProduct.setMaterial(product.getMaterial());
+        newProduct.setDimensions(product.getDimensions());
+        newProduct.setWeight(product.getWeight());
+
         // Additional manual validation for Scale, Material, Dimensions, Weight
         /*
         if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
@@ -124,15 +153,7 @@ public class EmProductController {
         if (product.getWeight() == null || product.getWeight() < 0) {
             newProductBindingResult.rejectValue("weight", "error.newProduct", "Weight must be non-negative");
         }
-        // Additional manual validation for Scale, Material, Dimensions, Weight
-        /*
-        if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
-            newProductBindingResult.rejectValue("scale", "error.newProduct", "Scale must be in format 1:number, e.g. 1:6");
-        }
-        if (product.getMaterial() == null || !product.getMaterial().matches("^[a-zA-Z]+$")) {
-            newProductBindingResult.rejectValue("material", "error.newProduct", "Material must contain only letters");
-        }
-        */
+
         if (newProductBindingResult.hasErrors()) {
             // Kiểm tra nếu có lỗi validation.
             List<Category> categories = this.categoryService.getCategoryByStatus(true);
@@ -176,6 +197,7 @@ public class EmProductController {
         product.setCategory(this.productService.getCategoryByName(product.getCategory().getName()));
 
         if (factoryId != null) {
+            // Fetch managed Factory entity from DB before setting
             group04.gundamshop.domain.Factory factory = this.factoryService.getFactoryById(factoryId).orElse(null);
             if (factory == null) {
                 newProductBindingResult.rejectValue("factory", "error.newProduct", "Selected factory does not exist");
@@ -185,14 +207,16 @@ public class EmProductController {
                 model.addAttribute("factories", factories);
                 List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
                 model.addAttribute("targets", targets);
-                product.setFactory(null);
+                newProduct.setFactory(null);
                 return "employee/product/create";
             } else {
-                product.setFactory(factory);
+                // Explicitly set the managed factory on the newProduct to replace any transient reference
+                newProduct.setFactory(factory);
             }
         }
 
         if (targetId != null) {
+            // Fetch managed Target entity from DB before setting
             group04.gundamshop.domain.Target target = this.targetService.getTargetById(targetId).orElse(null);
             if (target == null) {
                 newProductBindingResult.rejectValue("target", "error.newProduct", "Selected target does not exist");
@@ -204,17 +228,29 @@ public class EmProductController {
                 model.addAttribute("targets", targets);
                 return "employee/product/create";
             }
-            product.setTarget(target);
+            // Explicitly set the managed target on the newProduct to replace any transient reference
+            newProduct.setTarget(target);
         }
+
+        // Set new fields
+        newProduct.setScale(product.getScale());
+        newProduct.setMaterial(product.getMaterial());
+        newProduct.setDimensions(product.getDimensions());
+        newProduct.setWeight(product.getWeight());
 
         String image = this.uploadService.handleSaveUploadFile(file, "product");
         System.out.println(image);
-        product.setImage(image);
-        product.setStatus(true);
-        product.setCreatedAt(LocalDateTime.now());
-        product.setUpdatedAt(LocalDateTime.now());
+        newProduct.setImage(image);
+        newProduct.setStatus(true);
+        newProduct.setCreatedAt(LocalDateTime.now());
+        newProduct.setUpdatedAt(LocalDateTime.now());
 
-        this.productService.handleSaveProduct(product);
+        if (newProduct.getFactory() == null) {
+            System.out.println("Creating product with factory: null");
+        } else {
+            System.out.println("Creating product with factory: id=" + newProduct.getFactory().getId() + ", class=" + newProduct.getFactory().getClass().getName());
+        }
+        this.productService.handleSaveProduct(newProduct);
 
         redirectAttributes.addFlashAttribute("successMessage", "Product created successfully!");
 
@@ -235,6 +271,9 @@ public class EmProductController {
         Product currentProduct = productOptional.get();
         if (!currentProduct.isStatus()) {
             return "redirect:/employee/product";
+        }
+        if (currentProduct.getCategory() == null) {
+            currentProduct.setCategory(new Category());
         }
         model.addAttribute("newProduct", currentProduct);
         // Thêm sản phẩm vào model để form cập nhật có thể sử dụng.
@@ -266,6 +305,7 @@ public class EmProductController {
             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         // Lấy file tải lên từ request.
         // validate
+
         // Additional manual validation for Scale, Material, Dimensions, Weight
         /*
         if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
@@ -281,6 +321,7 @@ public class EmProductController {
         if (product.getWeight() == null || product.getWeight() < 0) {
             newProductBindingResult.rejectValue("weight", "error.newProduct", "Weight must be non-negative");
         }
+
         if (newProductBindingResult.hasErrors()) {
             // Kiểm tra nếu có lỗi validation.
 
@@ -317,18 +358,31 @@ public class EmProductController {
                 String img = this.uploadService.handleSaveUploadFile(file, "product");
                 currentProduct.setImage(img);
             }
-            currentProduct.setCategory(this.productService.getCategoryByName(product.getCategory().getName()));
+            Long categoryId = product.getCategory() != null ? product.getCategory().getId() : null;
+            Category category = null;
+            if (categoryId != null) {
+                category = this.categoryService.getCategoryById(categoryId);
+            }
+            if (category == null) {
+                newProductBindingResult.rejectValue("category", "error.newProduct", "Selected category does not exist");
+                List<Category> categories = this.categoryService.getCategoryByStatus(true);
+                model.addAttribute("categories", categories);
+                List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+                model.addAttribute("factories", factories);
+                List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+                model.addAttribute("targets", targets);
+                return "employee/product/update";
+            }
+            currentProduct.setCategory(category);
             currentProduct.setUpdatedAt(LocalDateTime.now());
-            currentProduct.setName(product.getName());
+            // Truncate fields to prevent DB length errors
+            currentProduct.setName(product.getName() != null && product.getName().length() > 255 ? product.getName().substring(0, 255) : product.getName());
             currentProduct.setPrice(product.getPrice());
             currentProduct.setQuantity(product.getQuantity());
-            currentProduct.setDetailDesc(product.getDetailDesc());
-            currentProduct.setShortDesc(product.getShortDesc());
-            currentProduct.setScale(product.getScale());
-            currentProduct.setMaterial(product.getMaterial());
-            currentProduct.setDimensions(product.getDimensions());
-            currentProduct.setWeight(product.getWeight());
+            currentProduct.setDetailDesc(product.getDetailDesc() != null && product.getDetailDesc().length() > 255 ? product.getDetailDesc().substring(0, 255) : product.getDetailDesc());
+            currentProduct.setShortDesc(product.getShortDesc() != null && product.getShortDesc().length() > 255 ? product.getShortDesc().substring(0, 255) : product.getShortDesc());
             if (product.getFactory() != null && product.getFactory().getId() > 0) {
+                // Fetch managed Factory entity from DB before setting
                 group04.gundamshop.domain.Factory factory = this.factoryService.getFactoryById(product.getFactory().getId()).orElse(null);
                 if (factory == null) {
                     newProductBindingResult.rejectValue("factory", "error.newProduct", "Selected factory does not exist");
@@ -341,12 +395,14 @@ public class EmProductController {
                     currentProduct.setFactory(null);
                     return "employee/product/update";
                 } else {
+                    // Explicitly set the managed factory on the currentProduct to replace any transient reference
                     currentProduct.setFactory(factory);
                 }
             } else {
                 currentProduct.setFactory(null);
             }
             if (product.getTarget() != null && product.getTarget().getId() > 0) {
+                // Fetch managed Target entity from DB before setting
                 group04.gundamshop.domain.Target target = this.targetService.getTargetById(product.getTarget().getId()).orElse(null);
                 if (target == null) {
                     newProductBindingResult.rejectValue("target", "error.newProduct", "Selected target does not exist");
@@ -358,9 +414,21 @@ public class EmProductController {
                     model.addAttribute("targets", targets);
                     return "employee/product/update";
                 }
+                // Explicitly set the managed target on the currentProduct to replace any transient reference
                 currentProduct.setTarget(target);
             } else {
                 currentProduct.setTarget(null);
+            }
+            // Set new fields
+            currentProduct.setScale(product.getScale());
+            currentProduct.setMaterial(product.getMaterial());
+            currentProduct.setDimensions(product.getDimensions());
+            currentProduct.setWeight(product.getWeight());
+
+            if (currentProduct.getFactory() == null) {
+                System.out.println("Updating product with factory: null");
+            } else {
+                System.out.println("Updating product with factory: id=" + currentProduct.getFactory().getId() + ", class=" + currentProduct.getFactory().getClass().getName());
             }
             this.productService.handleSaveProduct(currentProduct);
         }

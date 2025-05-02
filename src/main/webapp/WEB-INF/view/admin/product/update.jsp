@@ -64,11 +64,6 @@
                 errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
             }
     
-            // Kiểm tra mô tả chi tiết
-            if (detailDesc.length < 10) {
-                errors.push("Detail description must be at least 10 characters.");
-            }
-    
     
             // Kiểm tra số lượng
             if (!quantity || quantity < 0) {

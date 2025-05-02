@@ -1,13 +1,10 @@
 package group04.gundamshop.service;
 
-import group04.gundamshop.domain.dto.RegisterDTO;
-import group04.gundamshop.domain.Role;
-import group04.gundamshop.domain.User;
-import group04.gundamshop.repository.CartRepository;
-import group04.gundamshop.repository.OrderRepository;
-import group04.gundamshop.repository.RoleRepository;
-import group04.gundamshop.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import group04.gundamshop.domain.Role;
+import group04.gundamshop.domain.User;
+import group04.gundamshop.domain.dto.RegisterDTO;
+import group04.gundamshop.repository.CartRepository;
+import group04.gundamshop.repository.OrderRepository;
+import group04.gundamshop.repository.RoleRepository;
+import group04.gundamshop.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
@@ -262,4 +263,7 @@ public class UserService {
         return !cartRepository.existsByUserId(userId) && !orderRepository.existsByUserId(userId);
     }
 
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

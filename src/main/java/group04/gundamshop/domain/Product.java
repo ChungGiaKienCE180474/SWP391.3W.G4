@@ -23,7 +23,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne
+    @ManyToOne(cascade = jakarta.persistence.CascadeType.MERGE)
     @JoinColumn(name = "category_id")
     private Category category;
     @NotNull
@@ -36,7 +36,7 @@ public class Product {
     private String shortDesc;
     private long quantity;
     private long sold;
-    @ManyToOne
+    @ManyToOne(cascade = jakarta.persistence.CascadeType.MERGE)
     @JoinColumn(name = "factory_id")
     private Factory factory;
 
