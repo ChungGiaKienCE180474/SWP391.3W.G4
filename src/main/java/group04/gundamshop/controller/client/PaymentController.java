@@ -1,30 +1,33 @@
 package group04.gundamshop.controller.client;
 
-import group04.gundamshop.domain.Order;
-import group04.gundamshop.domain.OrderDetail;
-import group04.gundamshop.domain.Product;
-import group04.gundamshop.domain.User;
-import group04.gundamshop.domain.Cart;
-import group04.gundamshop.domain.CartDetail;
-import group04.gundamshop.service.OrderService;
-import group04.gundamshop.service.ProductService;
-import group04.gundamshop.service.VNPayService;
-import group04.gundamshop.repository.CartRepository;
-import group04.gundamshop.repository.CartDetailRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import group04.gundamshop.domain.Cart;
+import group04.gundamshop.domain.CartDetail;
+import group04.gundamshop.domain.Order;
+import group04.gundamshop.domain.OrderDetail;
+import group04.gundamshop.domain.Product;
+import group04.gundamshop.domain.User;
+import group04.gundamshop.domain.Voucher;
+import group04.gundamshop.repository.CartDetailRepository;
+import group04.gundamshop.repository.CartRepository;
+import group04.gundamshop.service.OrderService;
+import group04.gundamshop.service.ProductService;
+import group04.gundamshop.service.VNPayService;
+import group04.gundamshop.service.VoucherService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PaymentController {
@@ -37,6 +40,9 @@ public class PaymentController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private VoucherService voucherService;
 
     @Autowired
     private CartRepository cartRepository;
@@ -52,6 +58,7 @@ public class PaymentController {
             @RequestParam(value = "receiverAddress", required = false) String receiverAddress, // Địa chỉ giao hàng
             @RequestParam(value = "receiverName", required = false) String receiverName, // Tên người nhận
             @RequestParam(value = "phone", required = false) String receiverPhone, // Số điện thoại người nhận
+            @RequestParam(value = "voucherCode", required = false) String voucherCode,
             Model model, HttpSession session) { // Model của Spring và phiên HTTP
 
         // Kiểm tra số tiền phải lớn hơn 0
@@ -69,6 +76,7 @@ public class PaymentController {
         session.setAttribute("receiverName", receiverName);
         session.setAttribute("receiverPhone", receiverPhone);
         session.setAttribute("orderInfo", orderInfo);
+        session.setAttribute("voucherCode", voucherCode);
         session.setAttribute("amount", totalAmount);
 
         // Ghi log chi tiết chuẩn bị thanh toán
@@ -84,6 +92,7 @@ public class PaymentController {
             @RequestParam("address") String address, // Địa chỉ giao hàng
             @RequestParam("name") String name, // Tên người nhận
             @RequestParam("phone") String phone, // Số điện thoại người nhận
+            @RequestParam(value = "voucherCode", required = false) String voucherCode,
             HttpServletRequest request, // Đối tượng yêu cầu HTTP
             HttpSession session) { // Phiên HTTP
 
@@ -101,6 +110,7 @@ public class PaymentController {
         session.setAttribute("receiverName", name);
         session.setAttribute("receiverPhone", phone);
         session.setAttribute("orderInfo", orderInfo);
+        session.setAttribute("voucherCode", voucherCode);
         session.setAttribute("amount", orderTotal);
 
         // Tạo URL cơ sở cho việc trả về sau thanh toán
@@ -132,6 +142,14 @@ public class PaymentController {
             order.setReceiverAddress((String) session.getAttribute("receiverAddress"));
             order.setReceiverName((String) session.getAttribute("receiverName"));
             order.setReceiverPhone((String) session.getAttribute("receiverPhone"));
+            String voucherCode = (String) session.getAttribute("voucherCode");
+            if (voucherCode != null && !voucherCode.isBlank()) {
+                Voucher voucher = voucherService.getByCode(voucherCode);
+                if (voucher.getQuantity() > 0) {
+                    order.setVoucher(voucher);
+                    voucherService.updateAfterCheckout(voucher);
+                }
+            }
 
             User currentUser = new User();
             long id = (long) session.getAttribute("id");
@@ -190,6 +208,7 @@ public class PaymentController {
             session.removeAttribute("orderInfo");
             session.removeAttribute("amount");
             session.removeAttribute("cart");
+            session.removeAttribute("voucherCode");
             session.removeAttribute("paymentInfo");
         }
 

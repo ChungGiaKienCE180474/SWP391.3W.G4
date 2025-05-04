@@ -18,4 +18,11 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long> {
     Optional<Voucher> findByCodeIgnoreCaseAndIgnoreDeleted(@Param("code") String code);
 
     List<Voucher> findByCodeContainingIgnoreCase(String code); // Lấy danh sách voucher chứa mã
+
+    @Query(value = "SELECT * FROM vouchers WHERE quantity > 0 AND NOW() BETWEEN valid_from AND valid_to", nativeQuery = true)
+    List<Voucher> findAllValidVouchers();
+
+    @Query(value = "SELECT * FROM vouchers WHERE code ILIKE concat('%', :code, '%') AND quantity > 0 AND NOW() BETWEEN valid_from AND valid_to", nativeQuery = true)
+    List<Voucher> findAllValidVouchersByContainingCode(@Param("code") String code);
+
 }
