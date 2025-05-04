@@ -169,16 +169,16 @@ public class OrderController {
         return "customer/order/tracking";
     }
 
-    @GetMapping("/admin/order/update-to-complete/{id}")
-    public String updateOrderToComplete(@PathVariable long id) {
-        Optional<Order> optionalOrder = orderService.fetchOrderById(id);
-        if (optionalOrder.isPresent()) {
-            Order order = optionalOrder.get();
-            order.setStatus("COMPLETE");
-            orderService.updateOrder(order);
-        }
-        return "redirect:/admin/order";
-    }
+    // @GetMapping("/admin/order/update-to-complete/{id}")
+    // public String updateOrderToComplete(@PathVariable long id) {
+    // Optional<Order> optionalOrder = orderService.fetchOrderById(id);
+    // if (optionalOrder.isPresent()) {
+    // Order order = optionalOrder.get();
+    // order.setStatus("COMPLETE");
+    // orderService.updateOrder(order);
+    // }
+    // return "redirect:/admin/order";
+    // }
 
     // New helper methods
     private User getAuthenticatedUser() {
