@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import group04.gundamshop.domain.Voucher;
+import group04.gundamshop.domain.dto.UpsertVoucherDTO;
 import group04.gundamshop.service.VoucherService;
 import jakarta.validation.Valid;
 
@@ -25,7 +26,7 @@ public class AdminVoucherController {
 
     @GetMapping
     public String getAll(Model model) {
-        List<Voucher> vouchers = voucherService.getAllVouchers();
+        List<Voucher> vouchers = voucherService.getAllVouchersOrderByIdDesc();
         model.addAttribute("vouchers", vouchers);
         return "admin/voucher/show";
     }
@@ -51,9 +52,9 @@ public class AdminVoucherController {
     @PostMapping("create")
     public String postCreate(Model model,
             RedirectAttributes redirectAttributes,
-            @ModelAttribute("newVoucher") @Valid Voucher voucher) {
+            @ModelAttribute("newVoucher") @Valid UpsertVoucherDTO upsertVoucherDTO) {
         try {
-            voucherService.create(voucher);
+            voucherService.create(upsertVoucherDTO.mapToVoucher());
             redirectAttributes.addFlashAttribute("successMessage", "Voucher created successfully");
             return "redirect:/admin/voucher";
         } catch (Exception e) {
@@ -94,14 +95,14 @@ public class AdminVoucherController {
     public String postUpdate(Model model,
             RedirectAttributes redirectAttributes,
             @PathVariable long id,
-            @ModelAttribute("voucher") @Valid Voucher voucher) {
+            @ModelAttribute("voucher") @Valid UpsertVoucherDTO upsertVoucherDTO) {
         try {
-            voucherService.update(id, voucher);
+            voucherService.update(id, upsertVoucherDTO.mapToVoucher());
             redirectAttributes.addFlashAttribute("successMessage", "Voucher " + id + " updated successfully");
             return "redirect:/admin/voucher";
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "admin/voucher/update";
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/voucher/update/" + id;
         }
     }
 }

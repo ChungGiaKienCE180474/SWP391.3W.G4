@@ -44,22 +44,27 @@ public class VoucherService {
     }
 
     // ✅ Lấy tất cả voucher có sẵn
-    public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll();
+    public List<Voucher> getAllValidVouchers() {
+        return voucherRepository.findAllValidVouchers();
+    }
+
+    public List<Voucher> getAllVouchersOrderByIdDesc() {
+        return voucherRepository.findAll().stream()
+                .sorted((Voucher v1, Voucher v2) -> Long.compare(v2.getId(), v1.getId()))
+                .toList();
+    }
+
+    // ✅ Lấy danh sách voucher có chứa đoạn mã
+    public List<Voucher> searchAllValidVouchersByCode(String code) {
+        return voucherRepository.findAllValidVouchersByContainingCode(code.trim());
     }
 
     public Voucher getById(Long id) {
         return voucherRepository.findById(id).orElse(null);
     }
 
-    // ✅ Lấy voucher theo mã không phân biệt hoa/thường
-    public Optional<Voucher> getVoucherByCode(String code) {
-        return voucherRepository.findByCodeIgnoreCase(code.trim());
-    }
-
-    // ✅ Lấy danh sách voucher có chứa đoạn mã
-    public List<Voucher> findByCode(String code) {
-        return voucherRepository.findByCodeContainingIgnoreCase(code.trim());
+    public Voucher getByCode(String code) {
+        return voucherRepository.findByCodeIgnoreCase(code).orElse(null);
     }
 
     public Voucher create(Voucher voucher) throws Exception {
@@ -87,8 +92,16 @@ public class VoucherService {
         voucher.setDescription(updatedVoucher.getDescription());
         voucher.setDiscount(updatedVoucher.getDiscount());
         voucher.setTitle(updatedVoucher.getTitle());
+        voucher.setQuantity(updatedVoucher.getQuantity());
+        voucher.setValidFrom(updatedVoucher.getValidFrom());
+        voucher.setValidTo(updatedVoucher.getValidTo());
 
         return voucherRepository.save(voucher);
+    }
+
+    public void updateAfterCheckout(Voucher voucher) {
+        voucher.setQuantity(voucher.getQuantity() - 1);
+        voucherRepository.save(voucher);
     }
 
     public void delete(Long id) throws Exception {

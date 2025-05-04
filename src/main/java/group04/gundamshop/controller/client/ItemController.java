@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import group04.gundamshop.domain.Cart;
 import group04.gundamshop.domain.CartDetail;
 import group04.gundamshop.domain.Order;
@@ -27,16 +28,18 @@ import group04.gundamshop.domain.OrderDetail;
 import group04.gundamshop.domain.Product;
 import group04.gundamshop.domain.ProductReview;
 import group04.gundamshop.domain.User;
+import group04.gundamshop.domain.Voucher;
 import group04.gundamshop.domain.dto.ProductCriteriaDTO;
 import group04.gundamshop.repository.CartDetailRepository;
 import group04.gundamshop.repository.CartRepository;
-import group04.gundamshop.service.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import group04.gundamshop.service.CartService;
 import group04.gundamshop.service.CategoryService;
 import group04.gundamshop.service.OrderService;
 import group04.gundamshop.service.ProductReviewService;
+import group04.gundamshop.service.ProductService;
+import group04.gundamshop.service.VoucherService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ItemController {
@@ -50,6 +53,9 @@ public class ItemController {
     private OrderService orderService;
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private VoucherService voucherService;
 
     public ItemController(ProductService productService, ProductReviewService productReviewService,
             CartDetailRepository cartDetailRepository, CartRepository cartRepository,
@@ -355,7 +361,7 @@ public class ItemController {
         if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
             return "redirect:/cart";
         }
-        
+
         List<CartDetail> cartDetails = cart == null ? new ArrayList<CartDetail>() : cart.getCartDetails();
 
         for (CartDetail cd : cartDetails) {
@@ -407,6 +413,9 @@ public class ItemController {
         receiverAddress = receiverAddress.replaceAll(",$", "").trim();
         receiverPhone = receiverPhone.replaceAll(",$", "").trim();
         Note = Note.replaceAll(",\\s*$", "").trim();
+        voucherCode = voucherCode != null && !voucherCode.isBlank()
+                ? voucherCode.replaceAll(",$", "").trim()
+                : voucherCode;
 
         if ("offline".equalsIgnoreCase(paymentMethod)) { // Thanh toán offline (COD)
             // Tạo đơn hàng cho phương thức offline
@@ -420,6 +429,13 @@ public class ItemController {
             order.setReceiverPhone(receiverPhone);
             order.setUser(currentUser);
             order.setPaymentMethod("COD");
+            if (voucherCode != null && !voucherCode.isBlank()) {
+                Voucher voucher = voucherService.getByCode(voucherCode);
+                if (voucher.getQuantity() > 0) {
+                    order.setVoucher(voucher);
+                    voucherService.updateAfterCheckout(voucher);
+                }
+            }
 
             // Lấy giỏ hàng của người dùng
             Cart cart = productService.fetchByUser(currentUser);
@@ -471,6 +487,7 @@ public class ItemController {
             session.setAttribute("receiverAddress", receiverAddress);
             session.setAttribute("receiverPhone", receiverPhone);
             session.setAttribute("orderInfo", Note);
+            session.setAttribute("voucherCode", voucherCode);
             session.setAttribute("amount", finalTotal); // Lưu finalTotal để dùng trong /createOrder
 
             // Chuyển hướng đến /createOrder với các tham số được mã hóa
@@ -478,7 +495,8 @@ public class ItemController {
                     + "&orderInfo=" + URLEncoder.encode(Note, StandardCharsets.UTF_8)
                     + "&receiverAddress=" + URLEncoder.encode(receiverAddress, StandardCharsets.UTF_8)
                     + "&receiverName=" + URLEncoder.encode(receiverName, StandardCharsets.UTF_8)
-                    + "&phone=" + URLEncoder.encode(receiverPhone, StandardCharsets.UTF_8);
+                    + "&phone=" + URLEncoder.encode(receiverPhone, StandardCharsets.UTF_8)
+                    + "&voucherCode=" + URLEncoder.encode(voucherCode, StandardCharsets.UTF_8);
         }
 
         // Nếu phương thức thanh toán không hợp lệ
