@@ -48,6 +48,12 @@ public class VoucherService {
         return voucherRepository.findAll();
     }
 
+    public List<Voucher> getAllVouchersOrderByIdDesc() {
+        return voucherRepository.findAll().stream()
+                .sorted((Voucher v1, Voucher v2) -> Long.compare(v2.getId(), v1.getId()))
+                .toList();
+    }
+
     public Voucher getById(Long id) {
         return voucherRepository.findById(id).orElse(null);
     }
@@ -87,6 +93,8 @@ public class VoucherService {
         voucher.setDescription(updatedVoucher.getDescription());
         voucher.setDiscount(updatedVoucher.getDiscount());
         voucher.setTitle(updatedVoucher.getTitle());
+        voucher.setValidFrom(updatedVoucher.getValidFrom());
+        voucher.setValidTo(updatedVoucher.getValidTo());
 
         return voucherRepository.save(voucher);
     }

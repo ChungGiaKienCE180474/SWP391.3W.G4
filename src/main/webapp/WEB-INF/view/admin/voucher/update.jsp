@@ -1,6 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %> <%@ taglib prefix="c"
 uri="http://java.sun.com/jsp/jstl/core" %> <%@taglib uri="http://www.springframework.org/tags/form"
-prefix="form" %>
+prefix="form" %> <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,6 +81,16 @@ prefix="form" %>
 											/>
 										</div>
 										<div class="mb-3 col-12 col-md-6">
+											<label class="form-label">Voucher Title:</label>
+											<form:input
+												type="text"
+												class="form-control"
+												path="title"
+												required="required"
+												value="${voucher.title}"
+											/>
+										</div>
+										<div class="mb-3 col-12 col-md-6">
 											<label class="form-label">Voucher Description:</label>
 											<form:input
 												type="text"
@@ -108,13 +118,35 @@ prefix="form" %>
 											</div>
 										</div>
 										<div class="mb-3 col-12 col-md-6">
-											<label class="form-label">Voucher Title:</label>
+											<label class="form-label">Voucher Quantity:</label>
 											<form:input
-												type="text"
+												type="number"
+												min="0"
 												class="form-control"
-												path="title"
+												path="quantity"
 												required="required"
-												value="${voucher.title}"
+												value="${voucher.quantity}"
+											/>
+										</div>
+										<div class="mb-3 col-12 col-md-6">
+											<label class="form-label">Voucher Start Date:</label>
+											<form:input
+												type="date"
+												class="form-control"
+												path="validFrom"
+												required="required"
+												value="${fn:split(voucher.validFrom, ' ')[0]}"
+											/>
+										</div>
+
+										<div class="mb-3 col-12 col-md-6">
+											<label class="form-label">Voucher End Date:</label>
+											<form:input
+												type="date"
+												class="form-control"
+												path="validTo"
+												required="required"
+												value="${fn:split(voucher.validTo, ' ')[0]}"
 											/>
 										</div>
 

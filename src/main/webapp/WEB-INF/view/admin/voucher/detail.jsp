@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %> <%@ taglib prefix="c"
 uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="form"
-uri="http://www.springframework.org/tags/form" %>
+uri="http://www.springframework.org/tags/form" %> <%@ taglib
+uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -72,6 +73,8 @@ uri="http://www.springframework.org/tags/form" %>
 									<li class="list-group-item">Description: ${voucher.description}</li>
 									<li class="list-group-item">Discount: ${voucher.discount}%</li>
 									<li class="list-group-item">Title: ${voucher.title}</li>
+									<li class="list-group-item">Valid From: ${fn:split(voucher.validFrom, ' ')[0]}	</li>
+									<li class="list-group-item">Valid To: ${fn:split(voucher.validTo, ' ')[0]}</li>
 								</ul>
 							</div>
 							<a href="/admin/voucher" class="btn btn-success mt-3">Back</a>
