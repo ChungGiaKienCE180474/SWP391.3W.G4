@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -6,10 +6,9 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
-    <title>Product - Legoshop</title>
+    <title> Sản Phẩm - Legoshop</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -20,7 +19,7 @@
         href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap"
         rel="stylesheet">
     <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"
         rel="stylesheet">
     <!-- Libraries Stylesheet -->
@@ -30,77 +29,93 @@
     <link href="/client/css/bootstrap.min.css" rel="stylesheet">
     <!-- Template Stylesheet -->
     <link href="/client/css/style.css" rel="stylesheet">
+    <!-- CSRF Security Tokens -->
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
+    <!-- Toast Notification Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css"
+        rel="stylesheet">
     <style>
         .page-link.disabled {
             color: var(--bs-pagination-disabled-color);
             pointer-events: none;
             background-color: var(--bs-pagination-disabled-bg);
         }
-
+        /* Container sản phẩm */
         .custom-product-blog {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            /* Tăng khoảng cách giữa các sản phẩm */
+            gap: 24px;
+            /* Increased gap between products */
             justify-content: center;
-            padding: 20px;
-            /* Tạo khoảng cách giữa sản phẩm với viền ngoài */
+            padding: 24px;
+            /* Increased padding around products */
+            background-color: #f9f9f9;
+            border-radius: 12px;
         }
-
+        /* Cấu trúc sản phẩm */
         .custom-product-blog .product-item {
-            flex: 0 0 calc(33.333% - 20px);
+            flex: 0 0 calc(33.333% - 24px);
             /* 3 sản phẩm trên mỗi hàng */
-            max-width: calc(33.333% - 20px);
+            max-width: calc(33.333% - 24px);
             box-sizing: border-box;
-            margin-bottom: 24px;
-            padding: 15px;
+            margin-bottom: 28px;
+            padding: 20px;
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
             /* Hiệu ứng bóng */
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
-
+        /* Hiệu ứng hover cho sản phẩm */
         .custom-product-blog .product-item:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
         }
-
+        /* Điều chỉnh khi màn hình nhỏ hơn */
         @media (max-width: 1024px) {
             .custom-product-blog .product-item {
-                flex: 0 0 calc(50% - 20px);
+                flex: 0 0 calc(50% - 24px);
                 /* 2 sản phẩm trên mỗi hàng */
-                max-width: calc(50% - 20px);
+                max-width: calc(50% - 24px);
             }
         }
-
         @media (max-width: 768px) {
             .custom-product-blog .product-item {
-                flex: 0 0 calc(100% - 20px);
+                flex: 0 0 calc(100% - 24px);
                 /* 1 sản phẩm trên mỗi hàng */
-                max-width: calc(100% - 20px);
+                max-width: calc(100% - 24px);
             }
         }
-
         /* Hình ảnh sản phẩm */
         .custom-product-blog .product-item img {
             width: 100%;
-            height: 220px;
+            height: 240px;
             /* Cao hơn để đồng đều */
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
-
+        .custom-product-blog .product-item img:hover {
+            transform: scale(1.05);
+        }
         /* Mô tả sản phẩm */
         .custom-product-blog .product-item .product-desc {
-            font-size: 14px;
-            color: #555;
-            margin-top: 8px;
-            text-align: center;
+            font-size: 15px;
+            color: #444;
+            margin-top: 10px;
+            margin-bottom: 12px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            font-weight: 500;
         }
-
         /* Nút bấm */
         .custom-product-blog .product-item .btn {
             margin-top: 10px;
@@ -113,12 +128,11 @@
             font-weight: bold;
             transition: background 0.3s;
         }
-
         /* Hiệu ứng hover cho nút */
         .custom-product-blog .product-item .btn:hover {
-            background: #1e600b;
+            background: #1e7e34;
+            box-shadow: 0 6px 14px rgba(30, 126, 52, 0.6);
         }
-
         #chat-icon {
             position: fixed;
             bottom: 100px;
@@ -137,7 +151,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Spinner Start -->
     <div id="spinner"
@@ -177,8 +190,8 @@
                                 <c:forEach var="factory" items="${factories}">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox"
-                                            id="factory-${factory.id}" value="${factory.id}"
-                                            name="factory" <c:if test="${fn:contains(param.factory, factory.id)}">checked</c:if>>
+                                            name="factory" id="factory-${factory.id}" value="${factory.id}"
+                                            <c:if test="${fn:contains(param.factory, factory.id)}">checked</c:if>>
                                         <label class="form-check-label"
                                             for="factory-${factory.id}">${factory.name}</label>
                                     </div>
@@ -189,8 +202,8 @@
                                 <c:forEach var="target" items="${targets}">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox"
-                                            id="target-${target.id}" value="${target.id}"
-                                            name="target" <c:if test="${fn:contains(param.target, target.id)}">checked</c:if>>
+                                            name="target" id="target-${target.id}" value="${target.id}"
+                                            <c:if test="${fn:contains(param.target, target.id)}">checked</c:if>>
                                         <label class="form-check-label"
                                             for="target-${target.id}">${target.name}</label>
                                     </div>
@@ -198,7 +211,6 @@
                             </div>
                             <div class="col-12" id="priceFilter">
                                 <div class="mb-2"><b>Prices</b></div>
-
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="price-2"
                                         value="duoi-10-trieu" name="price"
@@ -215,56 +227,58 @@
                                     <input class="form-check-input" type="checkbox" id="price-4"
                                         value="15-20-trieu" name="price"
                                         <c:if test="${fn:contains(param.price, '15-20-trieu')}">checked</c:if>>
-                                    <label class="form-check-label" for="price-4">Between 15 - 20 million</label>
+                                    <label class="form-check-label" for="price-4">From 15 - 20 Million</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="price-5"
                                         value="tren-20-trieu" name="price"
                                         <c:if test="${fn:contains(param.price, 'tren-20-trieu')}">checked</c:if>>
-                                    <label class="form-check-label" for="price-5">Above 20 million</label>
+                                    <label class="form-check-label" for="price-5">Above 20 Million</label>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="col-12">
                                     <div class="mb-2"><b>Sorting</b></div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="sort-1"
-                                            value="priceAsc" name="radio-sort"
-                                            <c:if test="${param.sort == 'priceAsc'}">checked</c:if>>
-                                        <label class="form-check-label" for="sort-1">Price increase</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="sort-2"
-                                            value="priceDesc" name="radio-sort"
-                                            <c:if test="${param.sort == 'priceDesc'}">checked</c:if>>
-                                        <label class="form-check-label" for="sort-2">Price decrease</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" id="sort-3"
-                                            value="priceNone" name="radio-sort"
-                                            <c:if test="${param.sort == null || param.sort == 'priceNone'}">checked</c:if>>
-                                        <label class="form-check-label" for="sort-3">Non sorting</label>
-                                    </div>
+                                    <input class="form-check-input" type="radio" id="sort-1"
+                                        value="gia-tang-dan" name="sort"
+                                        <c:if test="${param.sort == 'gia-tang-dan'}">checked</c:if>>
+                                    <label class="form-check-label" for="sort-1">Price increase</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="sort-2"
+                                        value="gia-giam-dan" name="sort"
+                                        <c:if test="${param.sort == 'gia-giam-dan'}">checked</c:if>>
+                                    <label class="form-check-label" for="sort-2">Price decrease</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="sort-3"
+                                        value="priceNone" name="sort"
+                                        <c:if test="${param.sort == null || param.sort == 'priceNone'}">checked</c:if>>
+                                    <label class="form-check-label" for="sort-3">Non sorting</label>
+                                </div>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button
-                                    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4"
-                                    id="btnFilter" onclick="applyFilters()">
-                                    PRODUCTS SORTING
-                                </button>
+<button
+    class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4"
+    id="btnFilter">
+    Products sorting
+</button>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-8 text-center">
                         <div class="row g-4">
                             <c:if test="${totalPages ==  0}">
-                                <div>No products found</div>
+                                <div>Products not found !!! </div>
                             </c:if>
                             <div class="custom-product-blog">
                                 <c:forEach var="product" items="${products}">
                                     <c:if test="${product.status == true}">
-                                        <div class="product-item" style="flex: 0 0 calc(33.333% - 20px); max-width: calc(33.333% - 20px); box-sizing: border-box; margin-bottom: 24px; padding: 15px; background: #fff; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease-in-out;">
+                                        <div class="product-item">
                                             <div class="rounded position-relative">
                                                 <div class="fruite-img">
                                                     <img src="/images/product/${product.image}"
@@ -301,7 +315,7 @@
                                                         </c:when>
                                                         <c:otherwise>
                                                             <button class="btn btn-secondary"
-                                                                disabled>Out of stock</button>
+                                                                disabled>Sold Out</button>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -312,33 +326,28 @@
                             </div>
                             <c:if test="${totalPages > 0}">
                                 <div class="pagination d-flex justify-content-center mt-5">
-                                    <ul class="pagination">
+                                    <li class="page-item">
+                                        <a class="${1 eq currentPage ? 'disabled page-link' : 'page-link'}"
+                                            href="/products?page=${currentPage - 1}${queryString}"
+                                            aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <c:forEach begin="0" end="${totalPages - 1}" varStatus="loop">
                                         <li class="page-item">
-                                            <a class="${1 eq currentPage ? 'disabled page-link' : 'page-link'}"
-                                                href="/search?page=${currentPage - 1}${queryString}"
-                                                aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
+                                            <a class="${(loop.index + 1) eq currentPage ? 'active page-link' : 'page-link'}"
+                                                href="/products?page=${loop.index + 1}${queryString}">
+                                                ${loop.index + 1}
                                             </a>
                                         </li>
-                                        <c:forEach begin="0" end="${totalPages - 1}" varStatus="loop">
-                                            <li class="page-item">
-                                                <a class="${(loop.index + 1) eq currentPage ? 'active page-link' : 'page-link'}"
-                                                    href="/search?page=${loop.index + 1}${queryString}">
-                                                    ${loop.index + 1}
-                                                </a>
-                                            </li>
-                                        </c:forEach>
-                                        <li class="page-item">
-                                            <a class="${totalPages eq currentPage ? 'disabled page-link' : 'page-link'}"
-                                                href="/search?page=${currentPage + 1}${queryString}"
-                                                aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="text-center mt-3">
-                                    <a href="/products" class="btn btn-secondary">Back</a>
+                                    </c:forEach>
+                                    <li class="page-item">
+                                        <a class="${totalPages eq currentPage ? 'disabled page-link' : 'page-link'}"
+                                            href="/products?page=${currentPage + 1}${queryString}"
+                                            aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
                                 </div>
                             </c:if>
                         </div>
@@ -362,73 +371,21 @@
     <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
     <!-- Template Javascript -->
     <script src="/client/js/main.js"></script>
+<script>
+    document.querySelectorAll('.product-desc').forEach(function (desc) {
+        const words = desc.textContent.trim().split(/\s+/);
+        if (words.length > 4) {
+            desc.textContent = words.slice(0, 4).join(' ') + '...';
+        }
+    });
+</script>
+    <div id="chat-icon" onclick="redirectToCareService()">
+        <i class="fas fa-comment-alt"></i>
+    </div>
     <script>
-        function applyFilters() {
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams();
-
-            // Add selected factory filters
-            document.querySelectorAll('input[name="factory"]:checked').forEach(el => {
-                params.append('factory', el.value);
-            });
-
-            // Add selected target filters
-            document.querySelectorAll('input[name="target"]:checked').forEach(el => {
-                params.append('target', el.value);
-            });
-
-            // Add selected price filters
-            document.querySelectorAll('input[name="price"]:checked').forEach(el => {
-                params.append('price', el.value);
-            });
-
-            // Add selected sort filter
-            const sort = document.querySelector('input[name="radio-sort"]:checked');
-            if (sort) {
-                params.set('sort', sort.value);
-            }
-
-            // Add scale filter
-            const scaleElements = document.querySelectorAll('select[name="scale"] option:checked');
-            if (scaleElements.length > 0) {
-                const scaleValues = Array.from(scaleElements).map(el => el.value).join(',');
-                params.set('scale', scaleValues);
-            }
-
-            // Add material filter
-            const materialElements = document.querySelectorAll('select[name="material"] option:checked');
-            if (materialElements.length > 0) {
-                const materialValues = Array.from(materialElements).map(el => el.value).join(',');
-                params.set('material', materialValues);
-            }
-
-            // Add dimensionsMin and dimensionsMax filter
-            const dimensionsMin = document.querySelector('input[name="dimensionsMin"]');
-            const dimensionsMax = document.querySelector('input[name="dimensionsMax"]');
-            if (dimensionsMin && dimensionsMin.value.trim() !== '') {
-                params.set('dimensionsMin', dimensionsMin.value.trim());
-            }
-            if (dimensionsMax && dimensionsMax.value.trim() !== '') {
-                params.set('dimensionsMax', dimensionsMax.value.trim());
-            }
-
-            // Add weightMin and weightMax filter
-            const weightMin = document.querySelector('input[name="weightMin"]');
-            const weightMax = document.querySelector('input[name="weightMax"]');
-            if (weightMin && weightMin.value.trim() !== '') {
-                params.set('weightMin', weightMin.value.trim());
-            }
-            if (weightMax && weightMax.value.trim() !== '') {
-                params.set('weightMax', weightMax.value.trim());
-            }
-
-            // Reset to first page on filter change
-            params.set('page', '1');
-
-            // Redirect with updated query params
-            window.location.href = url.pathname + '?' + params.toString();
+        function redirectToCareService() {
+            window.location.href = "/careservice";
         }
     </script>
 </body>
-
 </html>

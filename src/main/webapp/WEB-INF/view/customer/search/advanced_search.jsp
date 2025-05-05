@@ -224,15 +224,15 @@
                     <div class="filter-group">
                         <label>Prices</label>
                         <div class="range-inputs">
-                            <input type="number" step="0.01" name="priceMin" placeholder="Min" value="${param.priceMin != null ? param.priceMin : ''}" />
-                            <input type="number" step="0.01" name="priceMax" placeholder="Max" value="${param.priceMax != null ? param.priceMax : ''}" />
+                            <input type="number" step="0.01" min="1000" name="priceMin" placeholder="Min" value="${param.priceMin != null ? param.priceMin : ''}" />
+                            <input type="number" step="0.01" min="1000" name="priceMax" placeholder="Max" value="${param.priceMax != null ? param.priceMax : ''}" />
                         </div>
                     </div>
                     <div class="filter-group">
                         <label for="scale">Scale</label>
                         <select name="scale" id="scale" multiple style="width: 100%;">
                             <c:forEach var="scaleOption" items="${scales}">
-                                <option value="${scaleOption}" <c:if test="${fn:contains(param.scale, scaleOption)}">selected</c:if>>${scaleOption}</option>
+                                <option value="${scaleOption}" <c:if test="${selectedScales != null && selectedScales.contains(scaleOption)}">selected</c:if>>${scaleOption}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -240,24 +240,34 @@
                         <label for="material">Material</label>
                         <select name="material" id="material" multiple style="width: 100%;">
                             <c:forEach var="materialOption" items="${materials}">
-                                <option value="${materialOption}" <c:if test="${fn:contains(param.material, materialOption)}">selected</c:if>>${materialOption}</option>
+                                <option value="${materialOption}" <c:if test="${selectedMaterials != null && selectedMaterials.contains(materialOption)}">selected</c:if>>${materialOption}</option>
                             </c:forEach>
                         </select>
                     </div>
                     <div class="filter-group">
                         <label>Dimensions</label>
                         <div class="range-inputs">
-                            <input type="number" step="0.01" name="dimensionsMin" placeholder="Min" value="${param.dimensionsMin != null ? param.dimensionsMin : ''}" />
-                            <input type="number" step="0.01" name="dimensionsMax" placeholder="Max" value="${param.dimensionsMax != null ? param.dimensionsMax : ''}" />
+                            <input type="number" step="0.01" min="0" name="dimensionsMin" placeholder="Min" value="${param.dimensionsMin != null ? param.dimensionsMin : ''}" />
+                            <input type="number" step="0.01" min="0" name="dimensionsMax" placeholder="Max" value="${param.dimensionsMax != null ? param.dimensionsMax : ''}" />
                         </div>
                     </div>
                     <div class="filter-group">
                         <label>Weight</label>
                         <div class="range-inputs">
-                            <input type="number" step="0.01" name="weightMin" placeholder="Min" value="${param.weightMin != null ? param.weightMin : ''}" />
-                            <input type="number" step="0.01" name="weightMax" placeholder="Max" value="${param.weightMax != null ? param.weightMax : ''}" />
+                            <input type="number" step="0.01" min="0" name="weightMin" placeholder="Min" value="${param.weightMin != null ? param.weightMin : ''}" />
+                            <input type="number" step="0.01" min="0" name="weightMax" placeholder="Max" value="${param.weightMax != null ? param.weightMax : ''}" />
                         </div>
                     </div>
+                    <c:forEach var="factory" items="${selectedFactories}">
+                        <input type="hidden" name="factory" value="${factory}" />
+                    </c:forEach>
+                    <c:forEach var="target" items="${selectedTargets}">
+                        <input type="hidden" name="target" value="${target}" />
+                    </c:forEach>
+                    <c:forEach var="price" items="${selectedPrices}">
+                        <input type="hidden" name="price" value="${price}" />
+                    </c:forEach>
+                    <input type="hidden" name="sort" value="${sort != null ? sort : 'priceNone'}" />
                     <button type="submit" class="search-button">Search</button>
                 </form>
             </div>
@@ -398,113 +408,15 @@
             params.append('price', el.value);
         });
 
-        // Add selected sort filter
-        const sort = document.querySelector('input[name="sort"]:checked');
-        if (sort) {
-            params.set('sort', sort.value);
+        // Add priceMin and priceMax from advanced search form
+        const priceMin = document.querySelector('input[name="priceMin"]');
+        const priceMax = document.querySelector('input[name="priceMax"]');
+        if (priceMin && priceMin.value.trim() !== '') {
+            params.set('priceMin', priceMin.value.trim());
         }
-
-        // Add scale filter
-        const scaleElements = document.querySelectorAll('select[name="scale"] option:checked');
-        if (scaleElements.length > 0) {
-            const scaleValues = Array.from(scaleElements).map(el => el.value).join(',');
-            params.set('scale', scaleValues);
+        if (priceMax && priceMax.value.trim() !== '') {
+            params.set('priceMax', priceMax.value.trim());
         }
-
-        // Add material filter
-        const materialElements = document.querySelectorAll('select[name="material"] option:checked');
-        if (materialElements.length > 0) {
-            const materialValues = Array.from(materialElements).map(el => el.value).join(',');
-            params.set('material', materialValues);
-        }
-
-        // Add dimensionsMin and dimensionsMax filter
-        const dimensionsMin = document.querySelector('input[name="dimensionsMin"]');
-        const dimensionsMax = document.querySelector('input[name="dimensionsMax"]');
-        if (dimensionsMin && dimensionsMin.value.trim() !== '') {
-            params.set('dimensionsMin', dimensionsMin.value.trim());
-        }
-        if (dimensionsMax && dimensionsMax.value.trim() !== '') {
-            params.set('dimensionsMax', dimensionsMax.value.trim());
-        }
-
-        // Add weightMin and weightMax filter
-        const weightMin = document.querySelector('input[name="weightMin"]');
-        const weightMax = document.querySelector('input[name="weightMax"]');
-        if (weightMin && weightMin.value.trim() !== '') {
-            params.set('weightMin', weightMin.value.trim());
-        }
-        if (weightMax && weightMax.value.trim() !== '') {
-            params.set('weightMax', weightMax.value.trim());
-        }
-
-        // Reset to first page on filter change
-        params.set('page', '0');
-
-        // Redirect with updated query params
-        window.location.href = url.pathname + '?' + params.toString();
-    }
-</script>
-</html>
-    <jsp:include page="../layout/footer.jsp" />
-</body>
-<!-- Include jQuery and Select2 JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Initialize Select2 on scale and material selects with allowClear to enable deselect
-        $('#scale').select2({
-            placeholder: "Select scales",
-            allowClear: true,
-            width: '100%'
-        }).on('select2:selecting', function(e) {
-            var selectedValues = $(this).val() || [];
-            var selectedValue = e.params.args.data.id;
-            if (selectedValues.indexOf(selectedValue) !== -1) {
-                e.preventDefault();
-                var newValues = selectedValues.filter(function(value) {
-                    return value !== selectedValue;
-                });
-                $(this).val(newValues).trigger('change');
-            }
-        });
-
-        $('#material').select2({
-            placeholder: "Select materials",
-            allowClear: true,
-            width: '100%'
-        }).on('select2:selecting', function(e) {
-            var selectedValues = $(this).val() || [];
-            var selectedValue = e.params.args.data.id;
-            if (selectedValues.indexOf(selectedValue) !== -1) {
-                e.preventDefault();
-                var newValues = selectedValues.filter(function(value) {
-                    return value !== selectedValue;
-                });
-                $(this).val(newValues).trigger('change');
-            }
-        });
-    });
-
-    function applyFilters() {
-        const url = new URL(window.location.href);
-        const params = new URLSearchParams();
-
-        // Add selected factory filters
-        document.querySelectorAll('input[name="factory"]:checked').forEach(el => {
-            params.append('factory', el.value);
-        });
-
-        // Add selected target filters
-        document.querySelectorAll('input[name="target"]:checked').forEach(el => {
-            params.append('target', el.value);
-        });
-
-        // Add selected price filters
-        document.querySelectorAll('input[name="price"]:checked').forEach(el => {
-            params.append('price', el.value);
-        });
 
         // Add selected sort filter
         const sort = document.querySelector('input[name="sort"]:checked');

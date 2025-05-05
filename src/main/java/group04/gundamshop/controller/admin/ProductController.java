@@ -115,14 +115,12 @@ public class ProductController {
         newProduct.setWeight(product.getWeight());
 
         // Additional manual validation for Scale, Material, Dimensions, Weight
-        /*
-        if (product.getScale() == null || !product.getScale().matches("^1:\\d+$")) {
-            newProductBindingResult.rejectValue("scale", "error.newProduct", "Scale must be in format 1:number, e.g. 1:6");
+        String trimmedMaterial = product.getMaterial() != null ? product.getMaterial().trim() : "";
+        // Update product material to trimmed value
+        product.setMaterial(trimmedMaterial);
+        if (!trimmedMaterial.matches("^[\\p{L}\\p{M}\\s]{3,}$")) {
+            newProductBindingResult.rejectValue("material", "error.newProduct", "Material must start with a letter, be at least 3 characters, and contain only letters and spaces");
         }
-        if (product.getMaterial() == null || !product.getMaterial().matches("^[a-zA-Z]+$")) {
-            newProductBindingResult.rejectValue("material", "error.newProduct", "Material must contain only letters");
-        }
-        */
         if (product.getDimensions() == null || product.getDimensions() < 0) {
             newProductBindingResult.rejectValue("dimensions", "error.newProduct", "Dimensions must be non-negative");
         }
@@ -156,8 +154,9 @@ public class ProductController {
         // Validate unique product name with same factory and target
         Long factoryId = product.getFactory() != null ? product.getFactory().getId() : null;
         Long targetId = product.getTarget() != null ? product.getTarget().getId() : null;
+        String trimmedName = product.getName() != null ? product.getName().trim() : "";
         if (factoryId != null && targetId != null) {
-            boolean exists = this.productService.existsByNameAndFactoryIdAndTargetId(product.getName(), factoryId, targetId);
+            boolean exists = this.productService.existsByNameAndFactoryIdAndTargetId(trimmedName, factoryId, targetId);
             if (exists) {
                 newProductBindingResult.rejectValue("name", "error.newProduct", "Product with the same name, factory, and target already exists");
                 List<Category> categories = this.categoryService.getCategoryByStatus(true);
@@ -297,6 +296,12 @@ public class ProductController {
 
         if (newProductBindingResult.hasErrors()) {
             // Kiểm tra nếu có lỗi validation.
+            List<Category> categories = this.categoryService.getCategoryByStatus(true);
+            model.addAttribute("categories", categories);
+            List<group04.gundamshop.domain.Factory> factories = this.productService.getAllFactoryObjects();
+            model.addAttribute("factories", factories);
+            List<group04.gundamshop.domain.Target> targets = this.productService.getAllTargetObjects();
+            model.addAttribute("targets", targets);
 
             return "admin/product/update";
             // Trả về trang cập nhật sản phẩm để hiển thị lỗi.
@@ -305,10 +310,11 @@ public class ProductController {
         // Validate unique product name with same factory and target (excluding current product)
         Long factoryId = product.getFactory() != null ? product.getFactory().getId() : null;
         Long targetId = product.getTarget() != null ? product.getTarget().getId() : null;
+        String trimmedName = product.getName() != null ? product.getName().trim() : "";
         if (factoryId != null && targetId != null) {
-            boolean exists = this.productService.existsByNameAndFactoryIdAndTargetId(product.getName(), factoryId, targetId);
+            boolean exists = this.productService.existsByNameAndFactoryIdAndTargetId(trimmedName, factoryId, targetId);
             if (exists) {
-                List<Product> existingProducts = this.productService.findAllByNameAndFactoryIdAndTargetId(product.getName(), factoryId, targetId);
+                List<Product> existingProducts = this.productService.findAllByNameAndFactoryIdAndTargetId(trimmedName, factoryId, targetId);
                 boolean duplicateExists = existingProducts.stream()
                         .anyMatch(p -> p.getId() != product.getId());
                 if (duplicateExists) {
@@ -341,8 +347,10 @@ public class ProductController {
             currentProduct.setShortDesc(product.getShortDesc() != null && product.getShortDesc().length() > 255 ? product.getShortDesc().substring(0, 255) : product.getShortDesc());
             if (product.getFactory() != null && product.getFactory().getId() > 0) {
                 // Fetch managed Factory entity from DB before setting
+                System.out.println("Factory ID from form: " + product.getFactory().getId());
                 group04.gundamshop.domain.Factory factory = this.factoryService.getFactoryById(product.getFactory().getId()).orElse(null);
                 if (factory == null) {
+                    System.out.println("Factory not found for ID: " + product.getFactory().getId());
                     newProductBindingResult.rejectValue("factory", "error.newProduct", "Selected factory does not exist");
                     List<Category> categories = this.categoryService.getCategoryByStatus(true);
                     model.addAttribute("categories", categories);
@@ -353,10 +361,12 @@ public class ProductController {
                     currentProduct.setFactory(null);
                     return "admin/product/update";
                 } else {
+                    System.out.println("Factory found: " + factory + ", class: " + factory.getClass().getName());
                     // Explicitly set the managed factory on the currentProduct to replace any transient reference
                     currentProduct.setFactory(factory);
                 }
             } else {
+                System.out.println("Factory is null or ID <= 0");
                 currentProduct.setFactory(null);
             }
             if (product.getTarget() != null && product.getTarget().getId() > 0) {

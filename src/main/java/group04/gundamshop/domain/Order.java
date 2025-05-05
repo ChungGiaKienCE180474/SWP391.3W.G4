@@ -197,21 +197,33 @@ public class Order {
         return orderDate.format(formatter);
     }
 
-    // Getter cho convertedCompleteDate
     @Transient
+    private String convertedCompleteDate;
+
     public String getConvertedCompleteDate() {
-        if (completeDate == null)
-            return "";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        return completeDate.format(formatter);
+        if (convertedCompleteDate == null && "COMPLETE".equals(status)) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            convertedCompleteDate = (completeDate != null ? completeDate : orderDate).format(formatter);
+        }
+        return convertedCompleteDate;
     }
 
-    // Getter cho convertedCancelDate
+    public void setConvertedCompleteDate(String convertedCompleteDate) {
+        this.convertedCompleteDate = convertedCompleteDate;
+    }
+
     @Transient
+    private String convertedCancelDate;
+
     public String getConvertedCancelDate() {
-        if (cancelDate == null)
-            return "";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        return cancelDate.format(formatter);
+        if (convertedCancelDate == null && ("CANCEL".equals(status))) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            convertedCancelDate = (cancelDate != null ? cancelDate : orderDate).format(formatter);
+        }
+        return convertedCancelDate;
+    }
+
+    public void setConvertedCancelDate(String convertedCancelDate) {
+        this.convertedCancelDate = convertedCancelDate;
     }
 }

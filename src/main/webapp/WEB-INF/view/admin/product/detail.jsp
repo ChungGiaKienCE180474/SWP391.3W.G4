@@ -66,7 +66,10 @@
                                             <li class="list-group-item">Description: ${newProduct.detailDesc}</li>
                                             <li class="list-group-item">Factory: ${newProduct.factory.name}</li>
                                             <li class="list-group-item">Category: ${newProduct.category.name}</li>
-                                        </ul>
+                                            <li class="list-group-item">Scale: ${newProduct.scale}</li>
+                                            <li class="list-group-item">Material: ${newProduct.material}</li>
+                                            <li class="list-group-item">Weight: ${newProduct.weight}</li>
+                                            <li class="list-group-item">Demension: ${newProduct.dimensions}</li>
                                     </div>
                                     <a href="/admin/product" class="btn btn-success mt-3">Back</a>
                                 </div>

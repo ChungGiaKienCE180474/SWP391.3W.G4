@@ -8,7 +8,7 @@
 
                 <head>
                     <meta charset="utf-8">
-                    <title>${product.name} - Gundamshop</title>
+                    <title>${product.name} - Legoshop</title>
                     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
                     <!-- Google Web Fonts -->
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="col-lg-6">
                                             <h4 class="fw-bold mb-3">${product.name}</h4>
-                                            <p class="mb-3">${product.factory}</p>
+                                            <p class="mb-3">${product.factory.name}</p>
                                             <h5 class="fw-bold mb-3">
                                                 <fmt:formatNumber type="number" value="${product.price}" /> đ
                                             </h5>
@@ -166,6 +166,10 @@
                                                 <div class="tab-pane active" id="nav-about" role="tabpanel"
                                                     aria-labelledby="nav-about-tab">
                                                     <p>${product.detailDesc}</p>
+                                                    <p>Scale: ${product.scale}</p>
+                                                    <p>Material: ${product.material}</p>
+                                                    <p>Weight: ${product.weight}</p>
+                                                    <p>Demension: ${product.dimensions}</p>
                                                 </div>
                                             </div>
 
@@ -217,6 +221,7 @@
                     <!-- JavaScript Libraries -->
                     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                     <script src="/client/lib/easing/easing.min.js"></script>
                     <script src="/client/lib/waypoints/waypoints.min.js"></script>
                     <script src="/client/lib/lightbox/js/lightbox.min.js"></script>

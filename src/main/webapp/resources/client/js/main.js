@@ -304,7 +304,7 @@
         });
 
         //sort order
-        let sortValue = $('input[name="radio-sort"]:checked').val();
+        let sortValue = $('input[name="sort"]:checked').val();
 
         const currentUrl = new URL(window.location.href);
         const searchParams = currentUrl.searchParams;
@@ -365,7 +365,7 @@
     // Set radio buttons for 'sort'
     if (params.has('sort')) {
         const sort = params.get('sort');
-        $(`input[type="radio"][name="radio-sort"][value="${sort}"]`).prop('checked', true);
+        $(`input[type="radio"][name="sort"][value="${sort}"]`).prop('checked', true);
     }
 
 

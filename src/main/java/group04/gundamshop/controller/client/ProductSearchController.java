@@ -41,6 +41,26 @@ public class ProductSearchController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             Model model) {
 
+        // Validate inputs: no negative numbers, priceMin and priceMax >= 1000
+        if (dimensionsMin != null && dimensionsMin < 0) {
+            dimensionsMin = 0.0;
+        }
+        if (dimensionsMax != null && dimensionsMax < 0) {
+            dimensionsMax = 0.0;
+        }
+        if (weightMin != null && weightMin < 0) {
+            weightMin = 0.0;
+        }
+        if (weightMax != null && weightMax < 0) {
+            weightMax = 0.0;
+        }
+        if (priceMin != null && priceMin < 1000) {
+            priceMin = 1000.0;
+        }
+        if (priceMax != null && priceMax < 1000) {
+            priceMax = 1000.0;
+        }
+
         Pageable pageable = PageRequest.of(page, 9);
 
         boolean noFilters = (scales == null || scales.isEmpty()) &&
@@ -99,12 +119,12 @@ public class ProductSearchController {
 
         // Set scale filter
         if (scales != null && !scales.isEmpty()) {
-            criteria.setScale(java.util.Optional.of(String.join(",", scales)));
+            criteria.setScale(java.util.Optional.of(scales));
         }
 
         // Set material filter
         if (materials != null && !materials.isEmpty()) {
-            criteria.setMaterial(java.util.Optional.of(String.join(",", materials)));
+            criteria.setMaterial(java.util.Optional.of(materials));
         }
 
         // Set factory filter

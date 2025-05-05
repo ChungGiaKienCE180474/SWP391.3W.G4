@@ -9,8 +9,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="Gruop 7 - Dự án gundamshop" />
-    <meta name="author" content="Gruop 7" />
+    <meta name="description" content="Group 4 - Dự án Legoshop" />
+    <meta name="author" content="Group 4" />
     <title>Create Product</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
@@ -53,11 +53,6 @@
             if (!isValidText(name)) {
                 errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
             }
-    
-            if (detailDesc.length < 10 ) {
-                errors.push("Detail description must be at least 10 characters.");
-            }
-
     
             if (!quantity || quantity <= 0) {
                 errors.push("Quantity must be greater than 0.");
@@ -127,7 +122,7 @@
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Short description:</label>
                                         <form:input type="text" class="form-control" path="shortDesc"
-                                                    required="required" minlength="10" />
+                                                     />
                                     </div>
                                     <div class="mb-3 col-12 col-md-6">
                                         <label class="form-label">Quantity:</label>

@@ -67,7 +67,7 @@ public class ProductSpecs {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             return criteriaBuilder.and(
-                criteriaBuilder.gt(root.get("price"), min),
+                criteriaBuilder.ge(root.get("price"), min),
                 criteriaBuilder.le(root.get("price"), max));
         };
     }
@@ -103,10 +103,32 @@ public class ProductSpecs {
         };
     }
 
+    public static Specification<Product> matchScales(List<String> scales) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("scale"));
+            for (String scale : scales) {
+                inClause.value(scale);
+            }
+            return inClause;
+        };
+    }
+
     public static Specification<Product> matchMaterial(String material) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             return criteriaBuilder.like(root.get("material"), "%" + material + "%");
+        };
+    }
+
+    public static Specification<Product> matchMaterials(List<String> materials) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("material"));
+            for (String material : materials) {
+                inClause.value(material);
+            }
+            return inClause;
         };
     }
 
@@ -120,9 +142,9 @@ public class ProductSpecs {
     public static Specification<Product> matchDimensionsRange(Double min, Double max) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
-            String minStr = min.toString();
-            String maxStr = max.toString();
-            return criteriaBuilder.between(root.get("dimensions").as(String.class), minStr, maxStr);
+            return criteriaBuilder.and(
+                criteriaBuilder.ge(root.get("dimensions").as(Double.class), min),
+                criteriaBuilder.le(root.get("dimensions").as(Double.class), max));
         };
     }
 
@@ -136,9 +158,9 @@ public class ProductSpecs {
     public static Specification<Product> matchWeightRange(Double min, Double max) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
-            String minStr = min.toString();
-            String maxStr = max.toString();
-            return criteriaBuilder.between(root.get("weight").as(String.class), minStr, maxStr);
+            return criteriaBuilder.and(
+                criteriaBuilder.ge(root.get("weight").as(Double.class), min),
+                criteriaBuilder.le(root.get("weight").as(Double.class), max));
         };
     }
 
