@@ -58,7 +58,6 @@ public class PaymentController {
             @RequestParam(value = "receiverAddress", required = false) String receiverAddress, // Địa chỉ giao hàng
             @RequestParam(value = "receiverName", required = false) String receiverName, // Tên người nhận
             @RequestParam(value = "phone", required = false) String receiverPhone, // Số điện thoại người nhận
-            @RequestParam(value = "voucherCode", required = false) String voucherCode,
             Model model, HttpSession session) { // Model của Spring và phiên HTTP
 
         // Kiểm tra số tiền phải lớn hơn 0
@@ -76,7 +75,6 @@ public class PaymentController {
         session.setAttribute("receiverName", receiverName);
         session.setAttribute("receiverPhone", receiverPhone);
         session.setAttribute("orderInfo", orderInfo);
-        session.setAttribute("voucherCode", voucherCode);
         session.setAttribute("amount", totalAmount);
 
         // Ghi log chi tiết chuẩn bị thanh toán
@@ -92,7 +90,6 @@ public class PaymentController {
             @RequestParam("address") String address, // Địa chỉ giao hàng
             @RequestParam("name") String name, // Tên người nhận
             @RequestParam("phone") String phone, // Số điện thoại người nhận
-            @RequestParam(value = "voucherCode", required = false) String voucherCode,
             HttpServletRequest request, // Đối tượng yêu cầu HTTP
             HttpSession session) { // Phiên HTTP
 
@@ -110,7 +107,6 @@ public class PaymentController {
         session.setAttribute("receiverName", name);
         session.setAttribute("receiverPhone", phone);
         session.setAttribute("orderInfo", orderInfo);
-        session.setAttribute("voucherCode", voucherCode);
         session.setAttribute("amount", orderTotal);
 
         // Tạo URL cơ sở cho việc trả về sau thanh toán
