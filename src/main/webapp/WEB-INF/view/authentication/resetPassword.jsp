@@ -1,116 +1,132 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" %>
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-        <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-            <!DOCTYPE html>
-            <html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> <%@ taglib
+prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="form"
+uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reset Password</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", sans-serif;
+      }
 
-            <head>
-                <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet"
-                    id="bootstrap-css">
-                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-                <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-                <link rel="stylesheet"
-                    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      .card {
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
 
-                <style>
-                    /* Make the form container fill the screen and center content */
-                    html,
-                    body {
-                        height: 100%;
-                        margin: 0;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background-color: #f8f9fa;
-                        /* Light background for better contrast */
-                    }
+      .form-control {
+        padding-left: 40px;
+      }
 
-                    .panel {
-                        width: 100%;
-                        /* Adjust the form width */
-                        max-width: 600px;
-                        /* Set a max width for responsiveness */
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                        /* Add some shadow for better appearance */
-                        border-radius: 8px;
-                        /* Rounded corners for a modern look */
-                        padding: 120px;
-                    }
+      .password-toggle {
+        position: relative;
+      }
 
-                    .form-group i {
-                        position: absolute;
-                        right: 15px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        cursor: pointer;
-                        font-size: 1.1em;
-                    }
+      .password-toggle .fa-eye,
+      .password-toggle .fa-eye-slash {
+        position: absolute;
+        top: 75%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #aaa;
+        cursor: pointer;
+      }
 
-                    .password-toggle {
-                        position: relative;
-                    }
+      .form-label {
+        font-weight: 500;
+      }
+    </style>
+  </head>
 
-                    .btn-primary {
-                        width: 100%;
-                        /* Make the button full width */
-                        padding: 10px;
-                        font-size: 1.2em;
-                    }
+  <body>
+    <div class="card p-5" style="width: 100%; max-width: 500px">
+      <h3 class="text-center mb-4">🔒 Reset Your Password</h3>
 
-                    .text-center h2 {
-                        margin-bottom: 20px;
-                    }
-                </style>
-            </head>
+      <c:if test="${param.invalidpassword != null}">
+        <div class="alert alert-danger">
+          Password and Confirm Password must match.
+        </div>
+      </c:if>
+      <c:if test="${param.shortpassword != null}">
+        <div class="alert alert-warning">
+          Password must be at least 6 characters long.
+        </div>
+      </c:if>
+      <c:if test="${param.invalidspace != null}">
+        <div class="alert alert-danger">
+          Password cannot contain only spaces or repeated spaces.
+        </div>
+      </c:if>
 
-            <body>
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="text-center">
-                            <h2><strong>Recover Password</strong></h2>
-                            <c:if test="${param.invalidpassword != null}">
-                                <div class="my-2" style="color: red;">Password and ConfirmPassword must match</div>
-                            </c:if>
-                            <form:form method="post" action="/authentication/resetPassword"
-                                modelAttribute="resetPasswordForm">
-                                <div class="form-group password-toggle">
-                                    <form:input path="password" id="password" type="password" placeholder="New Password"
-                                        required="required" autocomplete="off" class="form-control" />
-                                    <i class="fa fa-eye" id="togglePassword"
-                                        onclick="togglePasswordVisibility('password')"></i>
-                                </div>
-                                <div class="form-group password-toggle">
-                                    <form:input path="confPassword" id="confPassword" type="password"
-                                        placeholder="Confirm Password" autocomplete="off" required="required"
-                                        class="form-control" />
-                                    <i class="fa fa-eye" id="toggleConfPassword"
-                                        onclick="togglePasswordVisibility('confPassword')"></i>
-                                </div>
+      <form:form
+        method="post"
+        action="/authentication/resetPassword"
+        modelAttribute="resetPasswordForm"
+      >
+        <div class="mb-3 password-toggle">
+          <label for="password" class="form-label">New Password</label>
+          <i class="fa fa-eye" onclick="togglePassword('password')"></i>
+          <form:input
+            path="password"
+            id="password"
+            type="password"
+            class="form-control"
+            placeholder="Enter new password"
+            required="required"
+            autocomplete="off"
+          />
+        </div>
 
-                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <div class="mb-3 password-toggle">
+          <label for="confPassword" class="form-label">Confirm Password</label>
+          <i class="fa fa-eye" onclick="togglePassword('confPassword')"></i>
+          <form:input
+            path="confPassword"
+            id="confPassword"
+            type="password"
+            class="form-control"
+            placeholder="Confirm new password"
+            required="required"
+            autocomplete="off"
+          />
+        </div>
 
-                                <button type="submit" class="btn btn-primary">Recover Password</button>
-                            </form:form>
-                        </div>
-                    </div>
-                </div>
+        <input
+          type="hidden"
+          name="${_csrf.parameterName}"
+          value="${_csrf.token}"
+        />
 
-                <script>
-                    function togglePasswordVisibility(fieldId) {
-                        const inputField = document.getElementById(fieldId);
-                        const toggleIcon = inputField.nextElementSibling;
+        <button type="submit" class="btn btn-success w-100">
+          Update Password
+        </button>
+      </form:form>
+    </div>
 
-                        if (inputField.type === 'password') {
-                            inputField.type = 'text';
-                            toggleIcon.classList.remove('fa-eye');
-                            toggleIcon.classList.add('fa-eye-slash');
-                        } else {
-                            inputField.type = 'password';
-                            toggleIcon.classList.remove('fa-eye-slash');
-                            toggleIcon.classList.add('fa-eye');
-                        }
-                    }
-                </script>
-            </body>
+    <script>
+      function togglePassword(id) {
+        const input = document.getElementById(id);
+        const icon = input.previousElementSibling;
+        const isPassword = input.type === "password";
 
-            </html>
+        input.type = isPassword ? "text" : "password";
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
+      }
+    </script>
+  </body>
+</html>

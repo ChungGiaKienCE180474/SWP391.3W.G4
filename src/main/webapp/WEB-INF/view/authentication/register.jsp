@@ -294,5 +294,26 @@ uri="http://www.springframework.org/tags/form" %>
         icon.classList.add("fa-eye");
       }
     }
+
+    // Validate password and confirmPassword before form submission
+    document.querySelector("form").addEventListener("submit", function (e) {
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      const errorMessage =
+        "Passwords must not contain spaces or consist of 6 spaces.";
+
+      // Check for spaces or 6 consecutive spaces
+      if (
+        password.includes(" ") ||
+        confirmPassword.includes(" ") ||
+        password === "      " ||
+        confirmPassword === "      "
+      ) {
+        alert(errorMessage);
+        e.preventDefault(); // Prevent form submission
+        return;
+      }
+    });
   </script>
 </html>
