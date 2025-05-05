@@ -186,7 +186,7 @@
                                             href="/customer/profile/${sessionScope.id}">Account Management</a>
                                     </li>
                                     <a href="/customer/order/tracking" class="dropdown-item">Order Management</a>
-                                    <li><a class="dropdown-item" href="/order-history">Purchase History</a></li>
+                                    <!-- <li><a class="dropdown-item" href="/order-history">Purchase History</a></li> -->
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
