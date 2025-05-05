@@ -6,7 +6,7 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <title>Xóa Nhân Viên</title>
+            <title>Delete Employee</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
             <link rel="stylesheet" href="/css/ewstyle.css">
@@ -24,27 +24,27 @@
                     <div id="layoutSidenav_content">
                         <main>
                             <div class="container-fluid px-4">
-                                <h1 class="mt-4">Xóa Nhân Viên</h1>
+                                <h1 class="mt-4">Delete Employee</h1>
                                 <ol class="breadcrumb mb-4">
                                     <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
-                                    <li class="breadcrumb-item"><a href="/admin/employee">Nhân Viên</a></li>
-                                    <li class="breadcrumb-item active">Xóa</li>
+                                    <li class="breadcrumb-item"><a href="/admin/employee">Employee</a></li>
+                                    <li class="breadcrumb-item active">Delete</li>
                                 </ol>
                                 <div class="mt-5">
                                     <div class="row">
                                         <div class="col-12 mx-auto">
                                             <div class="d-flex justify-content-between">
-                                                <h3>Xóa nhân viên với email: ${email}</h3>
+                                                <h3>Delete an Employee with Email: ${email}</h3>
                                             </div>
                                             <hr />
                                             <div class="alert alert-danger">
-                                                Bạn có chắc chắn muốn xóa nhân viên này không?
+                                                Are you sure to delete this employee's account?
                                             </div>
                                             <form method="post" action="/admin/employee/delete">
                                                 <input type="hidden" name="_csrf" value="${_csrf.token}" />
                                                 <input type="hidden" name="id" value="${id}" />
-                                                <button type="submit" class="btn btn-danger">Xác nhận</button>
-                                                <a href="/admin/employee" class="btn btn-secondary">Hủy</a>
+                                                <button type="submit" class="btn btn-danger">Confirm</button>
+                                                <a href="/admin/employee" class="btn btn-secondary">Cancel</a>
                                             </form>
                                         </div>
                                     </div>

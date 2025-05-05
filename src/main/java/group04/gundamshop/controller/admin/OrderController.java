@@ -169,6 +169,7 @@ public class OrderController {
         return "customer/order/tracking";
     }
 
+<<<<<<< HEAD
     @GetMapping("/admin/order/update-to-complete/{id}")
     public String updateOrderToComplete(@PathVariable long id) {
         Optional<Order> optionalOrder = orderService.fetchOrderById(id);
@@ -176,8 +177,33 @@ public class OrderController {
             Order order = optionalOrder.get();
             order.setStatus("COMPLETE");
             orderService.updateOrder(order);
+=======
+    // @GetMapping("/admin/order/update-to-complete/{id}")
+    // public String updateOrderToComplete(@PathVariable long id) {
+    // Optional<Order> optionalOrder = orderService.fetchOrderById(id);
+    // if (optionalOrder.isPresent()) {
+    // Order order = optionalOrder.get();
+    // order.setStatus("COMPLETE");
+    // orderService.updateOrder(order);
+    // }
+    // return "redirect:/admin/order";
+    // }
+
+    // New helper methods
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal().equals("anonymousUser")) {
+            return null;
+>>>>>>> 23d0bc8586c05a3c3c081cc9b136c02c68f1f6f7
         }
-        return "redirect:/admin/order";
+        String email = authentication.getName();
+        return userService.findByEmail(email).orElse(null);
+    }
+
+    private String handleUnauthenticated(Model model, String view) {
+        model.addAttribute("error", "Please log in to view your orders");
+        return "redirect:/login";
     }
 
     // New helper methods

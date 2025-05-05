@@ -121,7 +121,7 @@
                 <script src="/client/lib/waypoints/waypoints.min.js"></script>
                 <script src="/client/lib/lightbox/js/lightbox.min.js"></script>
                 <script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
-                <jsp:include page="../layout/footer.jsp" />
+                <!-- <jsp:include page="../layout/footer.jsp" /> -->
 
                 <script src="/client/js/main.js"></script>
             </body>

@@ -160,7 +160,7 @@
                                                             <!-- Option "COMPLETE". -->
                                                             <form:option value="CANCEL">CANCEL</form:option>
                                                             <!-- Option "CANCEL". -->
-                                                            <form:option value="CANCEL">BANKING</form:option>
+                                                            <form:option value="BANKING">BANKING</form:option>
                                                             <!-- Option "BANKING". -->
                                                         </form:select>
                                                         <!-- Kết thúc select box. -->

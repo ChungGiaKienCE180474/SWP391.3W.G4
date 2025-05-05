@@ -70,6 +70,10 @@ prefix="form" %>
 										<form:input type="text" class="form-control" path="code" required="required" />
 									</div>
 									<div class="mb-3 col-12 col-md-6">
+										<label class="form-label">Voucher Title:</label>
+										<form:input type="text" class="form-control" path="title" required="required" />
+									</div>
+									<div class="mb-3 col-12 col-md-6">
 										<label class="form-label">Voucher Description:</label>
 										<form:input type="text" class="form-control" path="description" required="required" />
 									</div>
@@ -90,8 +94,24 @@ prefix="form" %>
 										</div>
 									</div>
 									<div class="mb-3 col-12 col-md-6">
-										<label class="form-label">Voucher Title:</label>
-										<form:input type="text" class="form-control" path="title" required="required" />
+										<label class="form-label">Voucher Quantity:</label>
+										<form:input
+											type="number"
+											min="0"
+											class="form-control"
+											path="quantity"
+											required="required"
+										/>
+									</div>
+
+									<div class="mb-3 col-12 col-md-6">
+										<label class="form-label">Voucher Start Date:</label>
+										<form:input type="date" class="form-control" path="validFrom" required="required" />
+									</div>
+
+									<div class="mb-3 col-12 col-md-6">
+										<label class="form-label">Voucher End Date:</label>
+										<form:input type="date" class="form-control" path="validTo" required="required" />
 									</div>
 
 									<div class="col-12 mb-5">

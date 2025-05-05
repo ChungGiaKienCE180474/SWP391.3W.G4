@@ -66,7 +66,6 @@
                                             <li class="list-group-item">Full Name: ${newEmployee.fullName}</li>
                                             <li class="list-group-item">Address: ${newEmployee.address}</li>
                                             <li class="list-group-item">Email: ${newEmployee.email}</li>
-                                            <li class="list-group-item">Email: ${newEmployee.email}</li>
                                             <li class="list-group-item">Phone Number: ${newEmployee.phone}</li>
                                         </ul>
                                     </div>

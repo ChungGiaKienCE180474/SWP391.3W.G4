@@ -104,8 +104,8 @@
                                                                     <c:when test="${order.status == 'BANKING'}">
                                                                         <a href="/admin/order/${order.id}"
                                                                             class="btn btn-success">View</a>
-                                                                        <a href="/admin/order/update-to-complete/${order.id}"
-                                                                            class="btn btn-warning mx-2">Complete</a>
+                                                                        <a href="/admin/order/update/${order.id}"
+                                                                            class="btn btn-warning mx-2">Update</a>
                                                                     </c:when>
                                                                     <c:when test="${order.status == 'SHIPPING'}">
                                                                         <a href="/admin/order/${order.id}"

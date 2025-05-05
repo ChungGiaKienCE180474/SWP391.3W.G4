@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %> <%@ taglib prefix="c"
-uri="http://java.sun.com/jsp/jstl/core" %>
+uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib uri="http://java.sun.com/jsp/jstl/functions"
+prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -19,6 +20,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 		<!-- Custom CSS -->
 		<link rel="stylesheet" href="/css/ewstyle.css" />
 	</head>
+
 	<body>
 		<div class="container-fluid d-flex p-0">
 			<jsp:include page="../layout/navbar.jsp" />
@@ -54,9 +56,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 											<tr>
 												<th>ID</th>
 												<th>Code</th>
-												<th>Description</th>
 												<th>Discount</th>
-												<th>Title</th>
+												<th>Quantity</th>
+												<th>Valid From</th>
+												<th>Valid To</th>
 												<th>Action</th>
 											</tr>
 										</thead>
@@ -65,12 +68,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 												<tr>
 													<td>${voucher.id}</td>
 													<td>${voucher.code}</td>
-													<td>${voucher.description}</td>
 													<td>${voucher.discount}</td>
-													<td>${voucher.title}</td>
+													<td>${voucher.quantity}</td>
+													<td>${fn:split(voucher.validFrom, ' ')[0]}</td>
+													<td>${fn:split(voucher.validTo, ' ')[0]}</td>
 													<td>
 														<a href="/admin/voucher/${voucher.id}" class="btn btn-success">View</a>
-														<a href="/admin/voucher/update/${voucher.id}" class="btn btn-warning mx-2">Edit</a>
+														<a href="/admin/voucher/update/${voucher.id}" class="btn btn-warning mx-2">Update</a>
 														<a href="/admin/voucher/delete/${voucher.id}" class="btn btn-danger">Delete</a>
 													</td>
 												</tr>
