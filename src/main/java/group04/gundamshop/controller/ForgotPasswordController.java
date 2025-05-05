@@ -15,8 +15,6 @@ import group04.gundamshop.domain.OTPForm;
 import group04.gundamshop.domain.ResetPasswordForm;
 import group04.gundamshop.domain.User;
 import group04.gundamshop.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
@@ -24,6 +22,8 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ForgotPasswordController {
@@ -150,28 +150,47 @@ public class ForgotPasswordController {
     }
 
     @PostMapping("/authentication/resetPassword")
-    public String resetPassword(HttpServletRequest request, @RequestParam("password") String password,
-            @RequestParam("confPassword") String confPassword, Model model) {
-        if (password.equals(confPassword)) {
-            HttpSession session = request.getSession();
-            String email = (String) session.getAttribute("email");
-            String newPassword = this.passwordEncoder.encode(password);
+    public String resetPassword(HttpServletRequest request,
+            @RequestParam("password") String password,
+            @RequestParam("confPassword") String confPassword,
+            Model model) {
 
-            if (email != null) {
-                this.userService.updatePassword(email, newPassword);
-                // Xóa session sau khi đổi mật khẩu thành công
-                session.invalidate();
-                request.setAttribute("message", "Password successfully updated!");
-                return "redirect:/login?resetsuccess";
-            } else {
-                request.setAttribute("message", "Session expired. Please try the process again.");
-                return "authentication/forgotPassword";
-            }
-        } else {
+        // Remove leading/trailing spaces
+        String trimmedPassword = password.trim();
+        String trimmedConfPassword = confPassword.trim();
 
+        // Check for password match
+        if (!trimmedPassword.equals(trimmedConfPassword)) {
             return "redirect:/authentication/resetPassword?invalidpassword";
         }
 
+        // Check for length
+        if (trimmedPassword.length() < 6) {
+            return "redirect:/authentication/resetPassword?shortpassword";
+        }
+
+        // Disallow passwords with only spaces or multiple spaces
+        if (trimmedPassword.matches(".*\\s{2,}.*") || trimmedPassword.replaceAll(" ", "").isEmpty()
+                || trimmedPassword.contains(" ")) {
+            return "redirect:/authentication/resetPassword?invalidspace";
+        }
+
+        if (trimmedConfPassword.matches(".*\\s{2,}.*") || trimmedConfPassword.replaceAll(" ", "").isEmpty()
+                || trimmedConfPassword.contains(" ")) {
+            return "redirect:/authentication/resetPassword?invalidspace";
+        }
+
+        HttpSession session = request.getSession();
+        String email = (String) session.getAttribute("email");
+
+        if (email != null) {
+            String newPassword = this.passwordEncoder.encode(trimmedPassword);
+            this.userService.updatePassword(email, newPassword);
+            session.invalidate();
+            return "redirect:/login?resetsuccess";
+        } else {
+            return "redirect:/forgotpassword?sessionexpired";
+        }
     }
 
 }

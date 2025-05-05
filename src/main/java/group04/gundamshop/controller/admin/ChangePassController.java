@@ -54,6 +54,22 @@ public class ChangePassController {
             return "admin/changepass/pass";
         }
 
+        String newPassword = passwordChangeForm.getNewPassword();
+        String confirmPassword = passwordChangeForm.getConfirmPassword();
+
+        if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+            model.addAttribute("errorMessage", "Password must contain at least 6 characters.");
+            return "admin/changepass/pass";
+        }
+
+        // ❗️Kiểm tra khoảng trắng liên tiếp hoặc toàn khoảng trắng
+        if (newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty() || newPassword.contains(" ")
+                || confirmPassword.contains(" ") ||
+                newPassword.matches(".*\\s{6,}.*") || confirmPassword.matches(".*\\s{6,}.*")) {
+            model.addAttribute("errorMessage", "Password cannot contain only spaces or 6+ consecutive spaces.");
+            return "admin/changepass/pass";
+        }
+
         Optional<User> user = userService.getUserByEmail(email);
         if (user.isEmpty()) {
             model.addAttribute("errorMessage", "User not found.");
@@ -115,6 +131,22 @@ public class ChangePassController {
             return "employee/changepass/pass";
         }
 
+        String newPassword = passwordChangeForm.getNewPassword();
+        String confirmPassword = passwordChangeForm.getConfirmPassword();
+
+        if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+            model.addAttribute("errorMessage", "Password must contain at least 6 characters.");
+            return "employee/changepass/pass";
+        }
+
+        // ❗️Kiểm tra khoảng trắng liên tiếp hoặc toàn khoảng trắng
+        if (newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty() || newPassword.contains(" ")
+                || confirmPassword.contains(" ") ||
+                newPassword.matches(".*\\s{6,}.*") || confirmPassword.matches(".*\\s{6,}.*")) {
+            model.addAttribute("errorMessage", "Password cannot contain only spaces or 6+ consecutive spaces.");
+            return "employee/changepass/pass";
+        }
+
         Optional<User> user = userService.getUserByEmail(email);
         if (user.isEmpty()) {
             model.addAttribute("errorMessage", "User not found.");
@@ -164,6 +196,22 @@ public class ChangePassController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "Please correct the errors below.");
+            return "customer/changepass/pass";
+        }
+
+        String newPassword = passwordChangeForm.getNewPassword();
+        String confirmPassword = passwordChangeForm.getConfirmPassword();
+
+        if (newPassword.length() < 6 || confirmPassword.length() < 6) {
+            model.addAttribute("errorMessage", "Password must contain at least 6 characters.");
+            return "customer/changepass/pass";
+        }
+
+        // ❗️Kiểm tra khoảng trắng liên tiếp hoặc toàn khoảng trắng
+        if (newPassword.trim().isEmpty() || confirmPassword.trim().isEmpty() || newPassword.contains(" ")
+                || confirmPassword.contains(" ") ||
+                newPassword.matches(".*\\s{6,}.*") || confirmPassword.matches(".*\\s{6,}.*")) {
+            model.addAttribute("errorMessage", "Password cannot contain only spaces or 6+ consecutive spaces.");
             return "customer/changepass/pass";
         }
 
