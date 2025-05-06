@@ -7,7 +7,7 @@
 
             <head>
                 <meta charset="UTF-8">
-                <title>Checkout Wishlist - GunDamshop</title>
+                <title>Checkout Wishlist - Legoshop</title>
                 <link rel="stylesheet" href="/client/css/bootstrap.min.css">
                 <link rel="stylesheet" href="/client/css/style.css">
             </head>

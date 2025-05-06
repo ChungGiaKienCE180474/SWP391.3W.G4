@@ -77,14 +77,14 @@ public class EmOrderController {
      * @param id ID của đơn hàng cần cập nhật.
      * @return Chuyển hướng đến trang danh sách đơn hàng.
      */
-    @GetMapping("/employee/order/update-to-complete/{id}")
-    public String updateOrderToComplete(@PathVariable long id) {
-        Optional<Order> optionalOrder = orderService.fetchOrderById(id);
-        if (optionalOrder.isPresent()) {
-            Order order = optionalOrder.get();
-            order.setStatus("COMPLETE");
-            orderService.updateOrder(order);
-        }
-        return "redirect:/employee/order";
-    }
+    // @GetMapping("/employee/order/update-to-complete/{id}")
+    // public String updateOrderToComplete(@PathVariable long id) {
+    //     Optional<Order> optionalOrder = orderService.fetchOrderById(id);
+    //     if (optionalOrder.isPresent()) {
+    //         Order order = optionalOrder.get();
+    //         order.setStatus("COMPLETE");
+    //         orderService.updateOrder(order);
+    //     }
+    //     return "redirect:/employee/order";
+    // }
 }

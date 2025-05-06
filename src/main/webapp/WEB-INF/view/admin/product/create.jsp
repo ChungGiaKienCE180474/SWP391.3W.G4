@@ -43,6 +43,7 @@
     
         function validateForm() {
             const name = document.querySelector('[name="name"]').value.trim();
+            const material = document.querySelector('[name="material"]').value.trim();
             const detailDesc = document.querySelector('[name="detailDesc"]').value.trim();
             const shortDesc = document.querySelector('[name="shortDesc"]').value.trim();
             const quantity = document.querySelector('[name="quantity"]').value;
@@ -52,6 +53,12 @@
     
             if (!isValidText(name)) {
                 errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
+            }
+    
+            // Material validation: must start with a letter, followed by letters, numbers, spaces
+            const materialPattern = /^[a-zA-Z][a-zA-Z0-9 ]*$/;
+            if (!materialPattern.test(material)) {
+                errors.push("Material must start with a letter and contain only letters, numbers, and spaces.");
             }
     
             if (!quantity || quantity <= 0) {

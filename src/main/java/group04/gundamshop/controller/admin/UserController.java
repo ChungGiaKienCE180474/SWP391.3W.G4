@@ -131,9 +131,17 @@ public class UserController {
                 hasError = true;
             }
 
-            // Kiểm tra email: không được trống
+            // Kiểm tra email: không được trống, đúng định dạng, bắt đầu bằng chữ và không
+            // toàn số
             if (customer.getEmail() == null || customer.getEmail().trim().isEmpty()) {
                 model.addAttribute("emailError", "Email must not be empty.");
+                hasError = true;
+            } else if (!customer.getEmail().matches("^[a-zA-Z][a-zA-Z0-9_.-]*@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+                model.addAttribute("emailError",
+                        "Email must start with a letter and be in a valid format (e.g. example@gmail.com).");
+                hasError = true;
+            } else if (this.userService.checkEmailExist(customer.getEmail())) {
+                model.addAttribute("emailExistError", "Email is already registered.");
                 hasError = true;
             }
 
@@ -148,9 +156,14 @@ public class UserController {
                 hasError = true;
             }
 
-            // Kiểm tra fullName: không được trống
+            // Cho phép chữ cái (có dấu) và khoảng trắng, không cho phép số hoặc ký tự đặc
+            // biệt
             if (customer.getFullName() == null || customer.getFullName().trim().isEmpty()) {
                 model.addAttribute("fullNameError", "Full name must not be empty.");
+                hasError = true;
+            } else if (!customer.getFullName().matches("^[\\p{L}\\s]+$")) {
+                model.addAttribute("fullNameError",
+                        "Full name must contain only letters and spaces.");
                 hasError = true;
             }
 
@@ -173,11 +186,11 @@ public class UserController {
                 hasError = true;
             }
 
-            // Kiểm tra email đã tồn tại
-            if (this.userService.checkEmailExist(customer.getEmail())) {
-                model.addAttribute("emailExistError", "Email is already registered.");
-                hasError = true;
-            }
+            // // Kiểm tra email đã tồn tại
+            // if (this.userService.checkEmailExist(customer.getEmail())) {
+            // model.addAttribute("emailExistError", "Email is already registered.");
+            // hasError = true;
+            // }
 
             if (hasError) {
                 return "admin/customer/create";
@@ -237,41 +250,40 @@ public class UserController {
             StringBuilder errorDetails = new StringBuilder();
             for (User user : customers) {
                 StringBuilder userErrors = new StringBuilder();
-            
+
                 // Kiểm tra email đã tồn tại
                 if (this.userService.checkEmailExist(user.getEmail())) {
                     userErrors.append("Email already exists; ");
                 }
-            
+
                 // Kiểm tra password
                 if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
                     userErrors.append("Password is empty; ");
                 }
-            
+
                 // Kiểm tra số điện thoại (bắt đầu bằng 0 và đủ 10 số)
                 if (user.getPhone() == null || !user.getPhone().matches("^0\\d{9}$")) {
                     userErrors.append("Phone number must start with 0 and have 10 digits; ");
                 }
-            
+
                 // Kiểm tra full name (tùy nếu bạn muốn bắt buộc)
                 if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
                     userErrors.append("Full name is empty; ");
                 }
 
-                //kiểm tra add rỗng
+                // kiểm tra add rỗng
                 if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
                     userErrors.append("Address is empty");
                 }
-                
-            
+
                 // Nếu có lỗi thì ghi lại và bỏ qua bản ghi này
                 if (userErrors.length() > 0) {
                     errorCount++;
                     errorDetails.append("User with email ").append(user.getEmail()).append(": ")
-                                .append(userErrors.toString()).append(" ");
+                            .append(userErrors.toString()).append(" ");
                     continue;
                 }
-            
+
                 // Nếu không có lỗi, thì encode password và lưu
                 try {
                     user.setPassword(this.passwordEncoder.encode(user.getPassword()));
@@ -280,10 +292,10 @@ public class UserController {
                 } catch (Exception e) {
                     errorCount++;
                     errorDetails.append("User with email ").append(user.getEmail())
-                                .append(": ").append(e.getMessage()).append("; ");
+                            .append(": ").append(e.getMessage()).append("; ");
                 }
             }
-            
+
             if (successCount > 0) {
                 redirectAttributes.addFlashAttribute("message",
                         "Imported " + successCount + " customers successfully.");
@@ -297,6 +309,7 @@ public class UserController {
         }
         return "redirect:/admin/customer";
     }
+
     @GetMapping("/admin/customer/delete/{id}")
     public String getDeleteCustomerPage(Model model, @PathVariable long id) {
         model.addAttribute("id", id);

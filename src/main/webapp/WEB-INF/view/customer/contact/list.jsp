@@ -18,7 +18,7 @@
         <c:if test="${not empty contacts}">
             <table class="table table-bordered">
                 <thead>
-                    <tr style="${anyHighlight ? 'background-color: #ffffcc;' : ''}">
+<tr>
                         <th>Subject</th>
                         <th>Note</th>
                         <th>Admin Reply</th>

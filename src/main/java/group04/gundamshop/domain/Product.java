@@ -49,7 +49,7 @@ public class Product {
     private String scale;
 
     @NotNull(message = "Material is required")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Material must contain only letters")
+    @Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9 ]*$", message = "Material must start with a letter and contain only letters, numbers, and spaces")
     private String material;
 
     @NotNull(message = "Dimensions is required")

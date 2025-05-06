@@ -7,8 +7,8 @@ prefix="form" %>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<meta name="description" content="Group 7 - Dự án gundamshop" />
-		<meta name="author" content="Group 7" />
+		<meta name="description" content="Group 4 - Dự án Legoshop" />
+		<meta name="author" content="Group 4" />
 		<title>Create Voucher</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"

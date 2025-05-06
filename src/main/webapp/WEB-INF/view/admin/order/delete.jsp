@@ -16,7 +16,7 @@
                 <!-- Khai báo chế độ tương thích với IE Edge. -->
                 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                 <!-- Thiết lập viewport cho responsive layout. -->
-                <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+                <meta name="description" content="Hỏi Dân IT - Dự án Legoshop" />
                 <!-- Mô tả trang web. -->
                 <meta name="author" content="Hỏi Dân IT" />
                 <!-- Tác giả của trang web. -->

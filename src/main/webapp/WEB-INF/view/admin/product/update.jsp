@@ -9,8 +9,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="Gruop 4 - Dự án Legoshop" />
-    <meta name="author" content="Gruop 4" />
+    <meta name="description" content="Group 4 - Dự án Legoshop" />
+    <meta name="author" content="Group 4" />
     <title>Update Product</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
@@ -50,6 +50,7 @@
     
         function validateForm() {
             const name = document.querySelector('[name="name"]').value.trim();
+            const material = document.querySelector('[name="material"]').value.trim();
             const detailDesc = document.querySelector('[name="detailDesc"]').value.trim();
             const shortDesc = document.querySelector('[name="shortDesc"]').value.trim();
             const quantity = document.querySelector('[name="quantity"]').value;
@@ -64,6 +65,11 @@
                 errors.push("Product name must contain at least one letter, and cannot have two consecutive spaces or special characters.");
             }
     
+            // Material validation: must start with a letter, followed by letters, numbers, spaces
+            const materialPattern = /^[a-zA-Z][a-zA-Z0-9 ]*$/;
+            if (!materialPattern.test(material)) {
+                errors.push("Material must start with a letter and contain only letters, numbers, and spaces.");
+            }
     
             // Kiểm tra số lượng
             if (!quantity || quantity < 0) {

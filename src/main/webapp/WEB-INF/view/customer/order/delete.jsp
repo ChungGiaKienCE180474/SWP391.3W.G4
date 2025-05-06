@@ -11,7 +11,7 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+    <meta name="description" content="Hỏi Dân IT - Dự án Legoshop" />
     <meta name="author" content="Hỏi Dân IT" />
     <title>Cancel Order</title>
     <link

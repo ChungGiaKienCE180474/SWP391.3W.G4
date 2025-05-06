@@ -45,24 +45,34 @@
                                 <div class="d-flex justify-content-between">
                                     <h3>Delete Category name = ${name}</h3>
                                 </div>
-
                                 <hr />
+
                                 <c:if test="${not empty flash.successMessage}">
                                     <div class="alert alert-success" role="alert">${flash.successMessage}</div>
                                 </c:if>
-                                <c:if test="${not empty flash.errorMessage}">
-                                    <div class="alert alert-danger" role="alert">${flash.errorMessage}</div>
-                                </c:if>
-                                <div class="alert alert-danger">
-                                    Are you sure you want to delete this Category?
-                                </div>
-                                <form:form method="post" action="/admin/category/delete" modelAttribute="newCategory">
-                                    <div class="mb-3" style="display: none;">
-                                        <label class="form-label">Id:</label>
-                                        <form:input value="${id}" type="text" class="form-control" path="id" />
-                                    </div>
-                                    <button class="btn btn-danger">Confirm</button>
-                                </form:form>
+
+                                <c:choose>
+                                    <c:when test="${assigned}">
+                                        <div class="alert alert-warning" role="alert">
+                                            This category cannot be deleted because it has assigned products.
+                                        </div>
+                                        <a href="${pageContext.request.contextPath}/admin/category/list" class="btn btn-secondary mt-3">Back to Category List</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="alert alert-danger">
+                                            Are you sure you want to delete this Category?
+                                        </div>
+                                        <form:form method="post" action="/admin/category/delete" modelAttribute="newCategory">
+                                            <div class="mb-3" style="display: none;">
+                                                <label class="form-label">Id:</label>
+                                                <form:input value="${id}" type="text" class="form-control" path="id" />
+                                            </div>
+                                            <button class="btn btn-danger">Confirm</button>
+                                            <a href="${pageContext.request.contextPath}/admin/category/list" class="btn btn-secondary ms-3">Cancel</a>
+                                        </form:form>
+                                    </c:otherwise>
+                                </c:choose>
+
                             </div>
                         </div>
                     </div>

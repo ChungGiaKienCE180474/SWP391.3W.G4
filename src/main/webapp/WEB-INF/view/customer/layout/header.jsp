@@ -167,6 +167,17 @@
                                         value="${sessionScope.wishlistSize != null ? sessionScope.wishlistSize : 0}" />
                                 </span>
                             </a>
+                            <!-- Contact Reply Notification -->
+                            <c:if test="${replyNotificationCount != null && replyNotificationCount > 0}">
+                                <a href="/contact/list" class="position-relative me-4 my-auto" title="Contact Replies">
+                                    <i class="fas fa-envelope fa-2x"></i>
+                                    <span
+                                        class="position-absolute bg-danger rounded-circle d-flex align-items-center justify-content-center text-white px-1"
+                                        style="top: -5px; left: 15px; height: 20px; min-width: 20px;">
+                                        ${replyNotificationCount}
+                                    </span>
+                                </a>
+                            </c:if>
                             <!-- User Dropdown -->
                             <div class="dropdown my-auto">
                                 <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
@@ -186,7 +197,7 @@
                                             href="/customer/profile/${sessionScope.id}">Account Management</a>
                                     </li>
                                     <a href="/customer/order/tracking" class="dropdown-item">Order Management</a>
-                                    <li><a class="dropdown-item" href="/order-history">Purchase History</a></li>
+                                    <!-- <li><a class="dropdown-item" href="/order-history">Purchase History</a></li> -->
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>

@@ -9,7 +9,7 @@
                 <meta charset="utf-8" />
                 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-                <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+                <meta name="description" content="Hỏi Dân IT - Dự án Legoshop" />
                 <meta name="author" content="Hỏi Dân IT" />
                 <title>Manager Order</title>
                 <link href="/css/styles.css" rel="stylesheet" />

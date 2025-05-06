@@ -8,7 +8,7 @@ prefix="form" %> <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix=
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<meta name="description" content="Group 4 - Dự án gundamshop" />
+		<meta name="description" content="Group 4 - Dự án Legoshop" />
 		<meta name="author" content="Group 4" />
 		<title>Update Voucher</title>
 		<!-- Bootstrap CSS -->

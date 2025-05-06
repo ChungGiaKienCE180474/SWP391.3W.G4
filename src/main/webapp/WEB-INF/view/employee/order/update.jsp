@@ -19,7 +19,7 @@
                     <!-- Khai báo chế độ tương thích với IE Edge. -->
                     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
                     <!-- Thiết lập viewport cho responsive layout. -->
-                    <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+                    <meta name="description" content="Hỏi Dân IT - Dự án Legoshop" />
                     <!-- Mô tả trang web. -->
                     <meta name="author" content="Hỏi Dân IT" />
                     <!-- Tác giả của trang web. -->
@@ -40,6 +40,38 @@
                     <!-- Custom CSS -->
                     <link rel="stylesheet" href="/css/ewstyle.css">
                     <!-- Liên kết đến CSS tùy chỉnh. -->
+                    <style>
+                        .form-box {
+                            width: 60%;
+                            margin: 30px auto;
+                            padding: 20px;
+                            border: 1px solid #ccc;
+                            border-radius: 10px;
+                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                            background-color: #fff;
+                        }
+
+                        .form-box .mb-3 {
+                            margin-bottom: 15px;
+                        }
+
+                        .form-box label {
+                            font-weight: bold;
+                            display: block;
+                            margin-bottom: 5px;
+                        }
+
+                        .form-box .form-label {
+                            margin-top: 10px;
+                        }
+
+                        .form-box input.form-control {
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #bbb;
+                            border-radius: 5px;
+                        }
+                    </style>
                 </head>
 
 
@@ -78,65 +110,67 @@
                                             <!-- Tiêu đề form. -->
                                             <hr />
                                             <!-- Tạo một đường kẻ ngang. -->
-                                            <form:form method="post" action="/admin/order/update" class="row"
+                                            <form:form method="post" action="/employee/order/update" class="row"
                                                 modelAttribute="newOrder">
                                                 <!-- Tạo một form Spring với phương thức POST, action là /admin/order/update và liên kết đến model attribute "newOrder". -->
 
 
-                                                <div class="mb-3" style="display: none;">
-                                                    <!-- Tạo một div với margin bottom là 3 và ẩn đi. -->
-                                                    <label class="form-label">Id:</label>
-                                                    <!-- Nhãn cho trường ID. -->
-                                                    <form:input type="text" class="form-control" path="id" />
-                                                    <!-- Trường input để nhập ID, liên kết đến thuộc tính "id" của model. -->
-                                                </div>
-                                                <div class="mb-3">
-                                                    <!-- Tạo một div với margin bottom là 3. -->
-                                                    <label>Order id = ${newOrder.id} </label>
-                                                    <!-- Hiển thị ID của đơn hàng. -->
-                                                           
-                                                    <label class="form-label">Price:
-                                                        <!-- Nhãn cho trường Price. -->
-                                                        <fmt:formatNumber type="number"
-                                                            value="${newOrder.totalPrice}" /> đ
-                                                    </label>
-                                                    <!-- Hiển thị giá của đơn hàng đã được định dạng. -->
-                                                </div>
+                                                <div class="form-box">
+                                                    <div class="mb-3" style="display: none;">
+                                                        <!-- Tạo một div với margin bottom là 3 và ẩn đi. -->
+                                                        <label class="form-label">Id:</label>
+                                                        <!-- Nhãn cho trường ID. -->
+                                                        <form:input type="text" class="form-control" path="id" />
+                                                        <!-- Trường input để nhập ID, liên kết đến thuộc tính "id" của model. -->
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <!-- Tạo một div với margin bottom là 3. -->
+                                                        <label>Order id = ${newOrder.id} </label>
+                                                        <!-- Hiển thị ID của đơn hàng. -->
 
-                                                <div class="mb-3 col-12 col-md-6">
-                                                    <!-- Tạo một div với margin bottom là 3 và chiếm 6 đơn vị (md) hoặc 12 đơn vị (xs). -->
-                                                    <label class="form-label">User:</label>
-                                                    <!-- Nhãn cho trường User. -->
-                                                    <form:input type="text" class="form-control" disabled="true"
-                                                        path="user.fullName" />
-                                                    <!-- Trường input để hiển thị tên người dùng, bị vô hiệu hóa và liên kết đến thuộc tính "user.fullName" của model. -->
-                                                </div>
+                                                        <label class="form-label">Price:
+                                                            <!-- Nhãn cho trường Price. -->
+                                                            <fmt:formatNumber type="number"
+                                                                value="${newOrder.totalPrice}" /> đ
+                                                        </label>
+                                                        <!-- Hiển thị giá của đơn hàng đã được định dạng. -->
+                                                    </div>
+                                                    <div class="mb-3 col-12 col-md-6">
+                                                        <!-- Tạo một div với margin bottom là 3 và chiếm 6 đơn vị (md) hoặc 12 đơn vị (xs). -->
+                                                        <label class="form-label">User:</label>
+                                                        <!-- Nhãn cho trường User. -->
+                                                        <form:input type="text" class="form-control" disabled="true"
+                                                            path="user.fullName" />
+                                                        <!-- Trường input để hiển thị tên người dùng, bị vô hiệu hóa và liên kết đến thuộc tính "user.fullName" của model. -->
+                                                    </div>
 
-                                                <div class="mb-3 col-12 col-md-6">
-                                                    <!-- Tạo một div với margin bottom là 3 và chiếm 6 đơn vị (md) hoặc 12 đơn vị (xs). -->
-                                                    <label class="form-label">Status:</label>
-                                                    <!-- Nhãn cho trường Status. -->
-                                                    <form:select class="form-select" path="status">
-                                                        <!-- Select box để chọn trạng thái đơn hàng, liên kết đến thuộc tính "status" của model. -->
-                                                        <form:option value="PENDING">PENDING</form:option>
-                                                        <!-- Option "PENDING". -->
-                                                        <form:option value="CONFIRM">CONFIRM</form:option>
-                                                        <!-- Option "CONFIRM". -->
-                                                        <form:option value="SHIPPING">SHIPPING</form:option>
-                                                        <!-- Option "SHIPPING". -->
-                                                        <form:option value="COMPLETE">COMPLETE</form:option>
-                                                        <!-- Option "COMPLETE". -->
-                                                        <form:option value="CANCEL">CANCEL</form:option>
-                                                        <!-- Option "CANCEL". -->
-                                                    </form:select>
-                                                    <!-- Kết thúc select box. -->
-                                                </div>
-                                                <div class="col-12 mb-5">
-                                                    <!-- Tạo một div với margin bottom là 5 và chiếm 12 đơn vị. -->
-                                                    <button type="submit" class="btn btn-warning">Update</button>
-                                                    <!-- Nút submit để cập nhật đơn hàng. -->
-                                                </div>
-                                                <!-- Kết thúc div. -->
+                                                    <div class="mb-3 col-12 col-md-6">
+                                                        <!-- Tạo một div với margin bottom là 3 và chiếm 6 đơn vị (md) hoặc 12 đơn vị (xs). -->
+                                                        <label class="form-label">Status:</label>
+                                                        <!-- Nhãn cho trường Status. -->
+                                                        <form:select class="form-select" path="status">
+                                                            <!-- Select box để chọn trạng thái đơn hàng, liên kết đến thuộc tính "status" của model. -->
+                                                            <form:option value="PENDING">PENDING</form:option>
+                                                            <!-- Option "PENDING". -->
+                                                            <form:option value="CONFIRM">CONFIRM</form:option>
+                                                            <!-- Option "CONFIRM". -->
+                                                            <form:option value="SHIPPING">SHIPPING</form:option>
+                                                            <!-- Option "SHIPPING". -->
+                                                            <form:option value="COMPLETE">COMPLETE</form:option>
+                                                            <!-- Option "COMPLETE". -->
+                                                            <form:option value="CANCEL">CANCEL</form:option>
+                                                            <!-- Option "CANCEL". -->
+                                                            <form:option value="BANKING">BANKING</form:option>
+                                                            <!-- Option "BANKING". -->
+                                                        </form:select>
+                                                        <!-- Kết thúc select box. -->
+                                                    </div>
+                                                    <div class="col-12 mb-5">
+                                                        <!-- Tạo một div với margin bottom là 5 và chiếm 12 đơn vị. -->
+                                                        <button type="submit" class="btn btn-warning">Update</button>
+                                                        <!-- Nút submit để cập nhật đơn hàng. -->
+                                                    </div>
+                                                    <!-- Kết thúc div. -->
                                             </form:form>
                                             <!-- Kết thúc form. -->
 

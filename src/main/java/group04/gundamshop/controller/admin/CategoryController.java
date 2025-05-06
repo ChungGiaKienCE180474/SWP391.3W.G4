@@ -226,29 +226,25 @@ public class CategoryController {
      * @return Điều hướng về trang danh sách danh mục.
      */
     @PostMapping("/admin/category/delete")
-    public String postDeleteCategory(Model model, @ModelAttribute("newCategory") Category category,
-            RedirectAttributes redirectAttributes) {
-        Category currentCategory = this.categoryService.getCategoryById(category.getId());
+    public String postDeleteCategory(Model model, @ModelAttribute("newCategory") Category category) {
+        Category currentCategory = categoryService.getCategoryById(category.getId());
 
-        // Nếu danh mục tồn tại, kiểm tra xem có sản phẩm nào gán với danh mục không
         if (currentCategory != null) {
             boolean hasProducts = productService.existsByCategoryId(currentCategory.getId());
             if (hasProducts) {
-    redirectAttributes.addFlashAttribute("errorMessage",
-        "Cannot delete category because it has assigned products.");
-    return "redirect:/admin/category/list";
-}
+                model.addAttribute("id", currentCategory.getId());
+                model.addAttribute("assigned", true); // This triggers the warning in JSP
+                model.addAttribute("name", currentCategory.getName()); // <-- THÊM DÒNG NÀY
+                model.addAttribute("newCategory", currentCategory); // Thêm dòng này
+                return "admin/category/delete";
+            }
 
             currentCategory.setStatus(false);
-            this.categoryService.handleSaveCategory(currentCategory);
-            // Fallback: redirect with query parameter for success message
+            categoryService.handleSaveCategory(currentCategory);
             return "redirect:/admin/category/list?successMessage=Category+deleted+successfully";
-        } else {
-            // Fallback: redirect with query parameter for error message
-            return "redirect:/admin/category/list?errorMessage=Category+not+found";
         }
 
-         //return "redirect:/admin/category";
+        return "redirect:/admin/category/list?errorMessage=Category+not+found";
     }
 
     /**

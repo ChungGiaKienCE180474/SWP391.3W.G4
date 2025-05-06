@@ -11,8 +11,8 @@ uri="http://www.springframework.org/tags/form" prefix="form" %>
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="Gruop 4 - Dự án LegoStore" />
-    <meta name="author" content="Gruop 4" />
+    <meta name="description" content="Group 4 - Dự án LegoStore" />
+    <meta name="author" content="Group 4" />
     <title>Create Users</title>
     <link
       href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css"

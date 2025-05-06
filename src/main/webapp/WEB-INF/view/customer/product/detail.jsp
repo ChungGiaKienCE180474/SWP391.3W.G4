@@ -169,7 +169,7 @@
                                                     <p>Scale: ${product.scale}</p>
                                                     <p>Material: ${product.material}</p>
                                                     <p>Weight: ${product.weight}</p>
-                                                    <p>Demension: ${product.dimensions}</p>
+                                                    <p>Dimension: ${product.dimensions}</p>
                                                 </div>
                                             </div>
 
